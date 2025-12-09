@@ -1,0 +1,28 @@
+{
+  "name": "@clockworkempire/theme-dev",
+  "version": "0.1.0",
+  "description": "Local development server for HostNet themes",
+  "bin": {
+    "hostnet": "./src/index.js"
+  },
+  "files": [
+    "src/",
+    "starters/"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clockworkempire/theme-dev.git"
+  },
+  "keywords": [
+    "hostnet",
+    "themes",
+    "liquid",
+    "development",
+    "docker"
+  ],
+  "author": "ClockworkEmpire",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
