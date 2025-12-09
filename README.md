@@ -9,11 +9,7 @@ Local development server for building and previewing HostNet themes.
 ## Installation
 
 ```bash
-# Configure npm for GitHub Packages (one-time setup)
-npm config set @clockworkempire:registry https://npm.pkg.github.com
-
-# Install globally
-npm install -g @clockworkempire/theme-dev
+npm install -g github:clockworkempire/theme-dev
 ```
 
 ## Quick Start
