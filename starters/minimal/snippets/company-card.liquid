@@ -1,0 +1,53 @@
+{% comment %}
+  Reusable company card component
+  Usage: {% hostnet_render 'company-card', company: company %}
+
+  Expected variables:
+    - company: Dataset record with name, description, logo, website
+{% endcomment %}
+
+<article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition p-6">
+  <div class="flex items-start gap-4">
+    {% if company.logo %}
+      <img
+        src="{{ company.logo | img_url: 'small' }}"
+        alt="{{ company.name }}"
+        class="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+      >
+    {% else %}
+      <div class="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+        <span class="text-2xl font-bold text-gray-400">
+          {{ company.name | slice: 0 }}
+        </span>
+      </div>
+    {% endif %}
+
+    <div class="flex-1 min-w-0">
+      <h3 class="font-bold text-lg truncate">
+        <a href="{{ company | item_url }}" class="hover:text-blue-600">
+          {{ company.name }}
+        </a>
+      </h3>
+
+      {% if company.industry %}
+        <p class="text-sm text-gray-500 mb-2">{{ company.industry }}</p>
+      {% endif %}
+
+      {% if company.description %}
+        <p class="text-gray-600 text-sm">
+          {{ company.description | truncate_words: 15 }}
+        </p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="mt-4 pt-4 border-t flex items-center justify-between">
+    {% if company.location %}
+      <span class="text-sm text-gray-500">{{ company.location }}</span>
+    {% endif %}
+
+    <a href="{{ company | item_url }}" class="text-sm text-blue-600 hover:text-blue-800">
+      View details →
+    </a>
+  </div>
+</article>

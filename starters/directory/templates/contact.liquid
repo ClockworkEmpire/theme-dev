@@ -1,0 +1,117 @@
+{% comment %}
+  Contact page template.
+  Contact form and business information.
+{% endcomment %}
+
+<div class="bg-page">
+  {% comment %} Hero section {% endcomment %}
+  <section class="section-sm bg-hero">
+    <div class="container">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="heading-1 text-inverse mb-4">Contact Us</h1>
+        <p class="text-lg" style="color: var(--color-neutral-300);">
+          Have questions? We'd love to hear from you.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {% comment %} Main content {% endcomment %}
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        {% comment %} Contact form - 2 columns {% endcomment %}
+        <div class="lg:col-span-2">
+          <div class="card p-8">
+            <h2 class="heading-4 mb-6">Send Us a Message</h2>
+
+            <form action="/contact" method="POST" class="space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label for="name" class="label">Name</label>
+                  <input type="text" id="name" name="name" class="input" placeholder="Your name" required>
+                </div>
+                <div>
+                  <label for="email" class="label">Email</label>
+                  <input type="email" id="email" name="email" class="input" placeholder="you@example.com" required>
+                </div>
+              </div>
+
+              <div>
+                <label for="subject" class="label">Subject</label>
+                <select id="subject" name="subject" class="input">
+                  <option value="">Select a topic...</option>
+                  <option value="general">General Inquiry</option>
+                  <option value="listing">List My Business</option>
+                  <option value="claim">Claim Existing Listing</option>
+                  <option value="report">Report a Problem</option>
+                  <option value="partnership">Partnership Opportunity</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="message" class="label">Message</label>
+                <textarea id="message" name="message" rows="6" class="input" placeholder="How can we help you?" required></textarea>
+              </div>
+
+              <div>
+                <button type="submit" class="btn btn-primary btn-lg">
+                  Send Message
+                  {% hostnet_render 'icon', name: 'arrow-right' %}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {% comment %} Contact info sidebar {% endcomment %}
+        <div class="lg:col-span-1">
+          {% comment %} Contact details {% endcomment %}
+          <div class="card p-6 mb-6">
+            <h3 class="heading-5 mb-4">Get in Touch</h3>
+            <div class="space-y-4">
+              <div class="flex items-start gap-3">
+                <span class="flex-shrink-0" style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'email' %}
+                </span>
+                <div>
+                  <p class="text-sm text-muted">Email</p>
+                  <a href="mailto:hello@example.com" class="text-link">hello@example.com</a>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="flex-shrink-0" style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'phone' %}
+                </span>
+                <div>
+                  <p class="text-sm text-muted">Phone</p>
+                  <a href="tel:+15551234567" class="text-link">(555) 123-4567</a>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="flex-shrink-0" style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'clock' %}
+                </span>
+                <div>
+                  <p class="text-sm text-muted">Hours</p>
+                  <p class="text-secondary">Mon-Fri: 9am - 5pm EST</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% comment %} Business listing CTA {% endcomment %}
+          <div class="card p-6" style="background-color: var(--color-primary-50); border-color: var(--color-primary-200);">
+            <h3 class="heading-5 mb-2">Want to List Your Business?</h3>
+            <p class="text-secondary text-sm mb-4">
+              Join hundreds of local businesses already in our directory.
+            </p>
+            <a href="/businesses" class="btn btn-primary btn-sm w-full">
+              Browse Listings
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

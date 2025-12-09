@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Site Settings",
+    "settings": [
+      {
+        "type": "text",
+        "id": "site_name",
+        "label": "Site Name",
+        "default": "Local Directory"
+      },
+      {
+        "type": "textarea",
+        "id": "site_description",
+        "label": "Site Description",
+        "default": "Find trusted local businesses and service providers in your area."
+      },
+      {
+        "type": "text",
+        "id": "contact_email",
+        "label": "Contact Email"
+      },
+      {
+        "type": "text",
+        "id": "contact_phone",
+        "label": "Contact Phone"
+      }
+    ]
+  },
+  {
+    "name": "Branding",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo Image"
+      },
+      {
+        "type": "text",
+        "id": "logo_text",
+        "label": "Logo Text (if no image)",
+        "default": "Directory"
+      }
+    ]
+  },
+  {
+    "name": "Social Media",
+    "settings": [
+      {
+        "type": "text",
+        "id": "facebook_url",
+        "label": "Facebook URL"
+      },
+      {
+        "type": "text",
+        "id": "twitter_url",
+        "label": "Twitter URL"
+      },
+      {
+        "type": "text",
+        "id": "linkedin_url",
+        "label": "LinkedIn URL"
+      }
+    ]
+  }
+]

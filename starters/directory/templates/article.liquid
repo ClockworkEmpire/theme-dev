@@ -1,0 +1,102 @@
+{% comment %}
+  Article detail template.
+  Displays a single blog post/article.
+
+  Expected context:
+    - item: The article record
+    - mount: Dataset mount configuration
+{% endcomment %}
+
+<div class="bg-page">
+  {% comment %} Article header {% endcomment %}
+  <section class="section-sm bg-hero">
+    <div class="container">
+      <div class="max-w-3xl mx-auto">
+        {% comment %} Breadcrumb {% endcomment %}
+        <nav class="mb-6 text-sm" style="color: var(--color-neutral-400);">
+          <a href="/" class="text-link" style="color: var(--color-neutral-300);">Home</a>
+          <span class="mx-2">/</span>
+          <a href="{{ mount.mount_path }}" class="text-link" style="color: var(--color-neutral-300);">{{ mount.alias | default: 'Blog' | capitalize }}</a>
+          <span class="mx-2">/</span>
+          <span>{{ item.title | truncate: 30 }}</span>
+        </nav>
+
+        <h1 class="heading-1 text-inverse mb-4">{{ item.title }}</h1>
+
+        {% comment %} Meta info {% endcomment %}
+        <div class="flex flex-wrap items-center gap-4 text-sm" style="color: var(--color-neutral-400);">
+          {% if item.author %}
+            <span class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-full flex items-center justify-center" style="background-color: var(--color-neutral-700);">
+                {{ item.author | slice: 0 | upcase }}
+              </span>
+              {{ item.author }}
+            </span>
+          {% endif %}
+          {% if item.published_at %}
+            <span class="flex items-center gap-2">
+              {% hostnet_render 'icon', name: 'clock', class: 'icon-sm' %}
+              {{ item.published_at | date: '%B %d, %Y' }}
+            </span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% comment %} Article content {% endcomment %}
+  <section class="section">
+    <div class="container">
+      <div class="max-w-3xl mx-auto">
+        {% comment %} Featured image {% endcomment %}
+        {% if item.image %}
+          <div class="mb-8" style="margin-top: calc(var(--space-8) * -1);">
+            <img
+              src="{{ item.image | img_url: 'large' }}"
+              alt="{{ item.title }}"
+              class="w-full rounded-lg"
+              style="border-radius: var(--radius-lg);"
+            >
+          </div>
+        {% endif %}
+
+        {% comment %} Article body {% endcomment %}
+        <article class="card p-8 mb-8">
+          <div class="prose text-secondary" style="line-height: var(--line-height-relaxed);">
+            {% if item.content %}
+              {{ item.content }}
+            {% elsif item.excerpt %}
+              <p>{{ item.excerpt }}</p>
+              <p class="text-muted italic mt-8">Full article content coming soon.</p>
+            {% else %}
+              <p class="text-muted">No content available.</p>
+            {% endif %}
+          </div>
+        </article>
+
+        {% comment %} Share / back links {% endcomment %}
+        <div class="flex items-center justify-between">
+          <a href="{{ mount.mount_path }}" class="btn btn-secondary">
+            {% hostnet_render 'icon', name: 'chevron-left' %}
+            Back to {{ mount.alias | default: 'Blog' | capitalize }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {% comment %} Related articles {% endcomment %}
+  {% assign other_articles = datasets.articles | where_exp: 'a', 'a.title != item.title' | limit: 3 %}
+  {% if other_articles.size > 0 %}
+    <section class="section bg-neutral-50">
+      <div class="container">
+        <h2 class="heading-4 mb-6 text-center">More Articles</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {% for article in other_articles %}
+            {% hostnet_render 'article-card', item: article %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+  {% endif %}
+</div>

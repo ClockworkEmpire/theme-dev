@@ -1,0 +1,8 @@
+<main>
+  <article>
+    <h1>{{ article.title | default: article.name }}</h1>
+    <div>{{ article.content }}</div>
+  </article>
+
+  <a href="{{ mount.mount_path }}">Back to {{ mount.alias }}</a>
+</main>

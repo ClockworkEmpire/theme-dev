@@ -1,0 +1,5 @@
+{
+  "name": "Demo Site",
+  "subdomain": "demo",
+  "url": "http://localhost:4000"
+}

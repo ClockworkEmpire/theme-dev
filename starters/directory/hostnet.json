@@ -1,0 +1,59 @@
+{
+  "name": "Local Directory",
+  "version": "1.0.0",
+  "description": "Business directory theme with listings, reviews, and blog functionality",
+  "author": "HostNet",
+
+  "datasets": {
+    "businesses": {
+      "description": "Business listings with contact info, ratings, and reviews",
+      "required": true,
+      "mount": {
+        "path": "/businesses",
+        "list_template": "collection",
+        "item_template": "business"
+      },
+      "fields": [
+        {"key": "name", "type": "string", "required": true, "description": "Business name"},
+        {"key": "slug", "type": "string", "required": true, "description": "URL slug"},
+        {"key": "description", "type": "text", "description": "Full business description"},
+        {"key": "services", "type": "array", "description": "List of services offered"},
+        {"key": "category", "type": "string", "description": "Business category"},
+        {"key": "address", "type": "string", "description": "Street address"},
+        {"key": "city", "type": "string", "description": "City"},
+        {"key": "state", "type": "string", "description": "State/province"},
+        {"key": "zip", "type": "string", "description": "ZIP/postal code"},
+        {"key": "lat", "type": "decimal", "description": "Latitude for map"},
+        {"key": "lng", "type": "decimal", "description": "Longitude for map"},
+        {"key": "google_place_id", "type": "string", "description": "Google Places ID"},
+        {"key": "google_business_url", "type": "string", "description": "Google Business Profile URL"},
+        {"key": "phone", "type": "string", "description": "Phone number"},
+        {"key": "email", "type": "string", "description": "Email address"},
+        {"key": "website", "type": "string", "description": "Website URL"},
+        {"key": "facebook", "type": "string", "description": "Facebook page URL"},
+        {"key": "featured", "type": "boolean", "description": "Show in featured section"},
+        {"key": "verified", "type": "boolean", "description": "Business is verified"},
+        {"key": "rating", "type": "decimal", "description": "Average rating (0-5)"},
+        {"key": "review_count", "type": "integer", "description": "Number of reviews"}
+      ]
+    },
+    "articles": {
+      "description": "Blog articles and news posts",
+      "required": false,
+      "mount": {
+        "path": "/blog",
+        "list_template": "blog",
+        "item_template": "article"
+      },
+      "fields": [
+        {"key": "title", "type": "string", "required": true, "description": "Article title"},
+        {"key": "slug", "type": "string", "required": true, "description": "URL slug"},
+        {"key": "excerpt", "type": "text", "description": "Short summary for listings"},
+        {"key": "content", "type": "text", "description": "Full article content"},
+        {"key": "image", "type": "string", "description": "Featured image URL"},
+        {"key": "author", "type": "string", "description": "Author name"},
+        {"key": "published_at", "type": "date", "description": "Publication date"}
+      ]
+    }
+  }
+}

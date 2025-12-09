@@ -1,0 +1,67 @@
+{% comment %}
+  Collection template - displays a paginated list of businesses.
+  Used when browsing /businesses or any mounted dataset collection.
+{% endcomment %}
+
+<div class="bg-page">
+  <div class="container section">
+    {% comment %} Breadcrumb {% endcomment %}
+    <nav class="mb-6 text-sm">
+      <a href="/" class="text-link">Home</a>
+      <span class="text-muted mx-2">/</span>
+      <span class="text-muted">{{ mount.alias | default: 'Businesses' | capitalize }}</span>
+    </nav>
+
+    {% comment %} Page header {% endcomment %}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div>
+        <h1 class="heading-2">{{ mount.alias | default: 'Businesses' | capitalize }}</h1>
+        {% if collection.size > 0 %}
+          <p class="text-muted mt-1">
+            Showing {{ collection.size }} {% if collection.size == 1 %}business{% else %}businesses{% endif %}
+            {% if pagination and pagination.total_pages > 1 %}
+              (page {{ pagination.current_page }} of {{ pagination.total_pages }})
+            {% endif %}
+          </p>
+        {% endif %}
+      </div>
+
+      {% comment %} Sort/filter controls placeholder {% endcomment %}
+      <div class="flex items-center gap-4">
+        <select class="input" style="width: auto;">
+          <option value="name">Sort by Name</option>
+          <option value="rating">Sort by Rating</option>
+          <option value="recent">Most Recent</option>
+        </select>
+      </div>
+    </div>
+
+    {% comment %} Business listing grid {% endcomment %}
+    {% if collection.size > 0 %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for item in collection %}
+          {% hostnet_render 'business-card', item: item %}
+        {% endfor %}
+      </div>
+
+      {% comment %} Pagination {% endcomment %}
+      <div class="mt-12">
+        {% hostnet_render 'pagination' %}
+      </div>
+    {% else %}
+      {% comment %} Empty state {% endcomment %}
+      <div class="card p-12 text-center">
+        <div class="text-muted mb-4">
+          {% hostnet_render 'icon', name: 'search', class: 'icon-xl' %}
+        </div>
+        <h3 class="heading-4 mb-2">No businesses found</h3>
+        <p class="text-secondary mb-6">
+          We couldn't find any businesses matching your criteria.
+        </p>
+        <a href="/" class="btn btn-primary">
+          Back to Home
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>

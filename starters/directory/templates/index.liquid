@@ -1,0 +1,62 @@
+{% comment %}
+  Homepage template
+  Displays hero search, featured businesses, and recent listings.
+{% endcomment %}
+
+{% comment %} Hero with search {% endcomment %}
+{% section 'hero-search' %}
+
+{% comment %} Featured businesses {% endcomment %}
+{% section 'featured-listings' %}
+
+{% comment %} Recent/All businesses section {% endcomment %}
+{% if datasets.businesses.size > 0 %}
+  <section class="section-sm bg-page">
+    <div class="container">
+      {% comment %} Section header {% endcomment %}
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="heading-3">Recent Listings</h2>
+        <a href="/businesses" class="btn btn-secondary btn-sm hide-mobile">
+          Browse All
+          {% hostnet_render 'icon', name: 'arrow-right', class: 'icon-sm' %}
+        </a>
+      </div>
+
+      {% comment %} Show non-featured businesses, or all if not enough {% endcomment %}
+      {% assign recent_businesses = datasets.businesses | where: 'featured', false | limit: 6 %}
+      {% if recent_businesses.size < 3 %}
+        {% assign recent_businesses = datasets.businesses | limit: 6 %}
+      {% endif %}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for item in recent_businesses %}
+          {% hostnet_render 'business-card', item: item %}
+        {% endfor %}
+      </div>
+
+      {% comment %} Mobile browse all link {% endcomment %}
+      <div class="mt-8 text-center hide-desktop">
+        <a href="/businesses" class="btn btn-secondary">
+          Browse All Businesses
+          {% hostnet_render 'icon', name: 'arrow-right', class: 'icon-sm' %}
+        </a>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% comment %} CTA Section {% endcomment %}
+<section class="section bg-hero">
+  <div class="container">
+    <div class="max-w-2xl mx-auto text-center">
+      <h2 class="heading-2 text-inverse mb-4">List Your Business</h2>
+      <p class="text-lg mb-8" style="color: var(--color-neutral-300);">
+        Join our growing directory of trusted professionals and connect with customers in your area.
+      </p>
+      <a href="/contact" class="btn btn-primary btn-lg">
+        Get Started
+        {% hostnet_render 'icon', name: 'arrow-right' %}
+      </a>
+    </div>
+  </div>
+</section>

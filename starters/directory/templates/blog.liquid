@@ -1,0 +1,104 @@
+{% comment %}
+  Blog listing template.
+  Displays a list of articles/blog posts.
+
+  Expected context:
+    - datasets.articles: Dataset proxy with article records
+    - collection: Array of article records (when routed via dataset mount)
+    - mount: Dataset mount configuration (when routed via dataset mount)
+    - pagination: Pagination object (if paginated)
+{% endcomment %}
+
+<div class="bg-page">
+  {% comment %} Hero section {% endcomment %}
+  <section class="section-sm bg-hero">
+    <div class="container">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="heading-1 text-inverse mb-4">Blog</h1>
+        <p class="text-lg" style="color: var(--color-neutral-300);">
+          Tips, guides, and industry insights to help you make informed decisions.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {% comment %} Main content {% endcomment %}
+  <section class="section">
+    <div class="container">
+      {% if datasets.articles.size > 0 %}
+        {% comment %} Featured article (first one) {% endcomment %}
+        {% for item in datasets.articles limit: 1 %}
+          <div class="card overflow-hidden mb-12">
+            <div class="grid grid-cols-1 lg:grid-cols-2">
+              {% if item.image %}
+                <div class="aspect-video lg:aspect-auto">
+                  <img
+                    src="{{ item.image | img_url: 'large' }}"
+                    alt="{{ item.title }}"
+                    class="w-full h-full object-cover"
+                  >
+                </div>
+              {% endif %}
+              <div class="p-8 flex flex-col justify-center">
+                <span class="badge badge-featured mb-4 w-fit">Featured</span>
+                <h2 class="heading-3 mb-4">
+                  <a href="{{ item | item_url }}" class="text-link" style="color: var(--color-text-primary);">
+                    {{ item.title }}
+                  </a>
+                </h2>
+                {% if item.excerpt %}
+                  <p class="text-secondary mb-4" style="line-height: var(--line-height-relaxed);">
+                    {{ item.excerpt | truncate: 200 }}
+                  </p>
+                {% endif %}
+                <div class="flex items-center gap-4 text-sm text-muted mb-6">
+                  {% if item.author %}
+                    <span>By {{ item.author }}</span>
+                  {% endif %}
+                  {% if item.published_at %}
+                    <span>{{ item.published_at | date: '%B %d, %Y' }}</span>
+                  {% endif %}
+                </div>
+                <a href="{{ item | item_url }}" class="btn btn-primary w-fit">
+                  Read Article
+                  {% hostnet_render 'icon', name: 'arrow-right' %}
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+
+        {% comment %} Article grid (remaining articles) {% endcomment %}
+        {% if datasets.articles.size > 1 %}
+          <h2 class="heading-4 mb-6">More Articles</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for item in datasets.articles offset: 1 %}
+              {% hostnet_render 'article-card', item: item %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% comment %} Pagination {% endcomment %}
+        {% if pagination and pagination.total_pages > 1 %}
+          <div class="mt-12">
+            {% hostnet_render 'pagination' %}
+          </div>
+        {% endif %}
+      {% else %}
+        {% comment %} Empty state {% endcomment %}
+        <div class="card p-12 text-center max-w-lg mx-auto">
+          <div class="text-muted mb-4">
+            {% hostnet_render 'icon', name: 'search', class: 'icon-xl' %}
+          </div>
+          <h3 class="heading-4 mb-2">No articles yet</h3>
+          <p class="text-secondary mb-6">
+            Check back soon for tips and insights.
+          </p>
+          <a href="/" class="btn btn-primary">
+            Back to Home
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</div>

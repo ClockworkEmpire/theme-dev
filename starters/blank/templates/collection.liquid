@@ -1,0 +1,12 @@
+<main>
+  <h1>{{ mount.alias | capitalize }}</h1>
+
+  {% for item in collection %}
+    <article>
+      <h2>{{ item.title | default: item.name }}</h2>
+      <a href="{{ item | item_url }}">View</a>
+    </article>
+  {% endfor %}
+
+  {% render 'pagination' %}
+</main>

@@ -1,0 +1,45 @@
+{% comment %}
+  Reusable article card component
+  Usage: {% hostnet_render 'article-card', article: article %}
+
+  Expected variables:
+    - article: Dataset record with title, excerpt, image, published_at
+{% endcomment %}
+
+<article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+  {% if article.image %}
+    <a href="{{ article | item_url }}">
+      <img
+        src="{{ article.image | img_url: 'medium' }}"
+        alt="{{ article.title }}"
+        class="w-full h-48 object-cover"
+      >
+    </a>
+  {% endif %}
+
+  <div class="p-6">
+    <h3 class="font-bold text-lg mb-2">
+      <a href="{{ article | item_url }}" class="hover:text-blue-600">
+        {{ article.title }}
+      </a>
+    </h3>
+
+    {% if article.excerpt %}
+      <p class="text-gray-600 text-sm mb-4">
+        {{ article.excerpt | truncate_words: 20 }}
+      </p>
+    {% endif %}
+
+    <div class="flex items-center justify-between text-sm text-gray-500">
+      {% if article.published_at %}
+        <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+          {{ article.published_at | date: '%b %d, %Y' }}
+        </time>
+      {% endif %}
+
+      <a href="{{ article | item_url }}" class="text-blue-600 hover:text-blue-800">
+        Read more →
+      </a>
+    </div>
+  </div>
+</article>

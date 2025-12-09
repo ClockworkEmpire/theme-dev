@@ -1,0 +1,42 @@
+{% comment %}
+  Pagination component for collection pages
+  Usage: {% hostnet_render 'pagination' %}
+
+  Uses global pagination object:
+    - pagination.current_page
+    - pagination.total_pages
+    - pagination.prev_url
+    - pagination.next_url
+{% endcomment %}
+
+<nav class="flex items-center justify-center gap-4 mt-12 pt-8 border-t" aria-label="Pagination">
+  {% if pagination.prev_url %}
+    <a
+      href="{{ pagination.prev_url }}"
+      class="px-4 py-2 border rounded-lg hover:bg-gray-50 transition"
+    >
+      ← Previous
+    </a>
+  {% else %}
+    <span class="px-4 py-2 border rounded-lg text-gray-400 cursor-not-allowed">
+      ← Previous
+    </span>
+  {% endif %}
+
+  <span class="text-gray-600">
+    Page {{ pagination.current_page }} of {{ pagination.total_pages }}
+  </span>
+
+  {% if pagination.next_url %}
+    <a
+      href="{{ pagination.next_url }}"
+      class="px-4 py-2 border rounded-lg hover:bg-gray-50 transition"
+    >
+      Next →
+    </a>
+  {% else %}
+    <span class="px-4 py-2 border rounded-lg text-gray-400 cursor-not-allowed">
+      Next →
+    </span>
+  {% endif %}
+</nav>

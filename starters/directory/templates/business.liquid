@@ -1,0 +1,306 @@
+{% comment %}
+  Business detail template.
+  Displays full information about a single business listing.
+
+  Expected context:
+    - item: The dataset record (generic variable always available)
+    - mount: Dataset mount configuration
+{% endcomment %}
+
+<div class="bg-page">
+  <div class="container section">
+    {% comment %} Breadcrumb {% endcomment %}
+    <nav class="mb-6 text-sm">
+      <a href="/" class="text-link">Home</a>
+      <span class="text-muted mx-2">/</span>
+      <a href="{{ mount.mount_path }}" class="text-link">{{ mount.alias | default: 'Businesses' | capitalize }}</a>
+      <span class="text-muted mx-2">/</span>
+      <span class="text-muted">{{ item.name }}</span>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {% comment %} Main content - 2 columns on large screens {% endcomment %}
+      <div class="lg:col-span-2">
+        {% comment %} Business header {% endcomment %}
+        <div class="card p-6 mb-6">
+          <div class="flex flex-col md:flex-row md:items-start gap-6">
+            {% comment %} Logo {% endcomment %}
+            <div class="flex-shrink-0">
+              {% if item.logo %}
+                <img
+                  src="{{ item.logo | img_url: 'medium' }}"
+                  alt="{{ item.name }}"
+                  class="w-24 h-24 md:w-32 md:h-32 object-cover"
+                  style="border-radius: var(--radius-lg);"
+                >
+              {% else %}
+                <div
+                  class="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center"
+                  style="background-color: var(--color-neutral-100); border-radius: var(--radius-lg);"
+                >
+                  <span class="heading-1 text-muted">
+                    {{ item.name | slice: 0 | upcase }}
+                  </span>
+                </div>
+              {% endif %}
+            </div>
+
+            {% comment %} Name, location, badges {% endcomment %}
+            <div class="flex-1">
+              <div class="flex flex-wrap items-start gap-3 mb-2">
+                <h1 class="heading-2">{{ item.name }}</h1>
+                {% if item.featured %}
+                  <span class="badge badge-featured">
+                    {% hostnet_render 'icon', name: 'star-filled', class: 'icon-sm' %}
+                    Featured
+                  </span>
+                {% endif %}
+                {% if item.verified %}
+                  <span class="badge badge-verified">
+                    {% hostnet_render 'icon', name: 'check', class: 'icon-sm' %}
+                    Verified
+                  </span>
+                {% endif %}
+              </div>
+
+              {% comment %} Location {% endcomment %}
+              {% if item.city or item.state %}
+                <p class="text-secondary flex items-center gap-2 mb-3">
+                  {% hostnet_render 'icon', name: 'map-pin' %}
+                  {% if item.address %}{{ item.address }}, {% endif %}
+                  {{ item.city }}{% if item.city and item.state %}, {% endif %}{{ item.state }}
+                  {% if item.zip %} {{ item.zip }}{% endif %}
+                </p>
+              {% endif %}
+
+              {% comment %} Rating {% endcomment %}
+              {% if item.rating %}
+                <div class="mb-4">
+                  {% hostnet_render 'rating-stars', rating: item.rating, count: item.review_count %}
+                </div>
+              {% endif %}
+
+              {% comment %} Category {% endcomment %}
+              {% if item.category %}
+                <span class="tag">{{ item.category }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        {% comment %} Tabs navigation (CSS-only for MVP) {% endcomment %}
+        <div class="tabs mb-6">
+          <a href="#description" class="tab tab-active">Description</a>
+          {% if item.services and item.services.size > 0 %}
+            <a href="#services" class="tab">Services</a>
+          {% endif %}
+          <a href="#reviews" class="tab">Reviews</a>
+        </div>
+
+        {% comment %} Description section {% endcomment %}
+        <div id="description" class="card p-6 mb-6">
+          <h2 class="heading-5 mb-4">About {{ item.name }}</h2>
+          {% if item.description %}
+            <div class="text-secondary" style="line-height: var(--line-height-relaxed);">
+              {{ item.description }}
+            </div>
+          {% else %}
+            <p class="text-muted">No description available.</p>
+          {% endif %}
+        </div>
+
+        {% comment %} Services section {% endcomment %}
+        {% if item.services and item.services.size > 0 %}
+          <div id="services" class="card p-6 mb-6">
+            <h2 class="heading-5 mb-4">Services Offered</h2>
+            <div class="flex flex-wrap gap-2">
+              {% for service in item.services %}
+                <span class="tag">{{ service }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% comment %} Reviews placeholder section {% endcomment %}
+        <div id="reviews" class="card p-6 mb-6">
+          <h2 class="heading-5 mb-4">Reviews</h2>
+          <div class="text-center py-8">
+            <p class="text-muted mb-4">
+              {% hostnet_render 'icon', name: 'star', class: 'icon-xl' %}
+            </p>
+            <p class="text-secondary">Reviews coming soon.</p>
+          </div>
+        </div>
+      </div>
+
+      {% comment %} Sidebar - contact info {% endcomment %}
+      <div class="lg:col-span-1">
+        {% comment %} Contact card {% endcomment %}
+        <div class="card p-6 mb-6">
+          <h3 class="heading-5 mb-4">Contact Information</h3>
+
+          <div class="space-y-4">
+            {% if item.phone %}
+              <a href="tel:{{ item.phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')' }}" class="flex items-center gap-3 text-secondary">
+                <span class="flex-shrink-0" style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'phone' %}
+                </span>
+                <span>{{ item.phone }}</span>
+              </a>
+            {% endif %}
+
+            {% if item.email %}
+              <a href="mailto:{{ item.email }}" class="flex items-center gap-3 text-secondary">
+                <span class="flex-shrink-0" style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'email' %}
+                </span>
+                <span>{{ item.email }}</span>
+              </a>
+            {% endif %}
+
+            {% if item.website %}
+              <a href="{{ item.website }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-secondary">
+                <span class="flex-shrink-0" style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'globe' %}
+                </span>
+                <span class="truncate">{{ item.website | remove: 'https://' | remove: 'http://' | remove: 'www.' }}</span>
+                {% hostnet_render 'icon', name: 'external-link', class: 'icon-sm' %}
+              </a>
+            {% endif %}
+
+            {% if item.facebook %}
+              <a href="{{ item.facebook }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 text-secondary">
+                <span class="flex-shrink-0" style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'facebook' %}
+                </span>
+                <span>Facebook</span>
+                {% hostnet_render 'icon', name: 'external-link', class: 'icon-sm' %}
+              </a>
+            {% endif %}
+          </div>
+
+          {% if item.phone %}
+            <div class="mt-6 pt-6" style="border-top: 1px solid var(--color-border);">
+              <a href="tel:{{ item.phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')' }}" class="btn btn-primary w-full">
+                {% hostnet_render 'icon', name: 'phone' %}
+                Call Now
+              </a>
+            </div>
+          {% endif %}
+        </div>
+
+        {% comment %} Google Maps embed - Priority: GBP URL > place_id > lat/lng > address {% endcomment %}
+        {% if item.google_business_url or item.google_place_id or item.lat or item.address or item.city %}
+          <div class="card p-6 mb-6">
+            <h3 class="heading-5 mb-4">Location</h3>
+            <div class="w-full overflow-hidden" style="border-radius: var(--radius-md);">
+              {% if item.google_place_id %}
+                {% comment %} Best option: Use Google Place ID directly {% endcomment %}
+                <iframe
+                  width="100%"
+                  height="200"
+                  style="border:0;"
+                  loading="lazy"
+                  allowfullscreen
+                  referrerpolicy="no-referrer-when-downgrade"
+                  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=place_id:{{ item.google_place_id }}"
+                ></iframe>
+              {% elsif item.lat and item.lng %}
+                {% comment %} Coordinates-based map {% endcomment %}
+                <iframe
+                  width="100%"
+                  height="200"
+                  style="border:0;"
+                  loading="lazy"
+                  allowfullscreen
+                  referrerpolicy="no-referrer-when-downgrade"
+                  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q={{ item.lat }},{{ item.lng }}&zoom=15"
+                ></iframe>
+              {% else %}
+                {% comment %} Address-based fallback {% endcomment %}
+                {% capture map_query %}{{ item.address | default: '' }}{% if item.address and item.city %}, {% endif %}{{ item.city | default: '' }}{% if item.city and item.state %}, {% endif %}{{ item.state | default: '' }}{% endcapture %}
+                <iframe
+                  width="100%"
+                  height="200"
+                  style="border:0;"
+                  loading="lazy"
+                  allowfullscreen
+                  referrerpolicy="no-referrer-when-downgrade"
+                  src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q={{ map_query | url_encode }}"
+                ></iframe>
+              {% endif %}
+            </div>
+            {% comment %} Link to GBP if available, otherwise directions {% endcomment %}
+            {% if item.google_business_url %}
+              <a
+                href="{{ item.google_business_url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-secondary btn-sm w-full mt-4"
+              >
+                {% hostnet_render 'icon', name: 'external-link', class: 'icon-sm' %}
+                View on Google Maps
+              </a>
+            {% elsif item.google_place_id %}
+              <a
+                href="https://www.google.com/maps/place/?q=place_id:{{ item.google_place_id }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-secondary btn-sm w-full mt-4"
+              >
+                {% hostnet_render 'icon', name: 'external-link', class: 'icon-sm' %}
+                View on Google Maps
+              </a>
+            {% elsif item.lat and item.lng %}
+              <a
+                href="https://www.google.com/maps/search/?api=1&query={{ item.lat }},{{ item.lng }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-secondary btn-sm w-full mt-4"
+              >
+                {% hostnet_render 'icon', name: 'external-link', class: 'icon-sm' %}
+                Get Directions
+              </a>
+            {% else %}
+              {% capture map_query %}{{ item.address | default: '' }}{% if item.address and item.city %}, {% endif %}{{ item.city | default: '' }}{% if item.city and item.state %}, {% endif %}{{ item.state | default: '' }}{% endcapture %}
+              <a
+                href="https://www.google.com/maps/search/?api=1&query={{ map_query | url_encode }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-secondary btn-sm w-full mt-4"
+              >
+                {% hostnet_render 'icon', name: 'external-link', class: 'icon-sm' %}
+                Get Directions
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% comment %} Business hours placeholder {% endcomment %}
+        {% if item.hours %}
+          <div class="card p-6 mb-6">
+            <h3 class="heading-5 mb-4">
+              {% hostnet_render 'icon', name: 'clock' %}
+              Business Hours
+            </h3>
+            <p class="text-secondary">{{ item.hours }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% comment %} Nearby businesses section {% endcomment %}
+    {% assign nearby = datasets.businesses | where: 'city', item.city | limit: 4 %}
+    {% assign nearby_filtered = nearby | where_exp: 'b', 'b.name != item.name' %}
+    {% if nearby_filtered.size > 0 %}
+      <section class="mt-12 pt-12" style="border-top: 1px solid var(--color-border);">
+        <h2 class="heading-4 mb-6">Nearby Businesses</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for nearby_item in nearby_filtered limit: 3 %}
+            {% hostnet_render 'business-card', item: nearby_item %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  </div>
+</div>

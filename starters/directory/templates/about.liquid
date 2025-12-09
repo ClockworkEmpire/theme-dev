@@ -1,0 +1,121 @@
+{% comment %}
+  About page template.
+  Static content page with company information.
+{% endcomment %}
+
+<div class="bg-page">
+  {% comment %} Hero section {% endcomment %}
+  <section class="section bg-hero">
+    <div class="container">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="heading-1 text-inverse mb-4">About Us</h1>
+        <p class="text-lg" style="color: var(--color-neutral-300);">
+          Connecting communities with trusted local businesses since 2020.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {% comment %} Main content {% endcomment %}
+  <section class="section">
+    <div class="container">
+      <div class="max-w-3xl mx-auto">
+        {% comment %} Mission {% endcomment %}
+        <div class="card p-8 mb-8">
+          <h2 class="heading-3 mb-4">Our Mission</h2>
+          <p class="text-secondary mb-4" style="line-height: var(--line-height-relaxed);">
+            We believe finding trusted local services shouldn't be a gamble. Our mission is to create a transparent,
+            reliable directory that helps communities connect with verified professionals who deliver quality work.
+          </p>
+          <p class="text-secondary" style="line-height: var(--line-height-relaxed);">
+            Every business in our directory goes through a verification process to ensure they meet our standards
+            for licensing, insurance, and customer service. When you choose a business from our directory,
+            you can trust you're making the right choice.
+          </p>
+        </div>
+
+        {% comment %} Values {% endcomment %}
+        <div class="card p-8 mb-8">
+          <h2 class="heading-3 mb-6">What We Stand For</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'check' %}
+                </span>
+                <h3 class="heading-5">Trust & Transparency</h3>
+              </div>
+              <p class="text-secondary text-sm">
+                Every listing includes verified credentials, real reviews, and accurate contact information.
+              </p>
+            </div>
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'star-filled' %}
+                </span>
+                <h3 class="heading-5">Quality Standards</h3>
+              </div>
+              <p class="text-secondary text-sm">
+                We only feature businesses that meet our rigorous standards for professionalism and service.
+              </p>
+            </div>
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'map-pin' %}
+                </span>
+                <h3 class="heading-5">Local Focus</h3>
+              </div>
+              <p class="text-secondary text-sm">
+                We're committed to supporting local economies by connecting residents with nearby professionals.
+              </p>
+            </div>
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <span style="color: var(--color-primary);">
+                  {% hostnet_render 'icon', name: 'phone' %}
+                </span>
+                <h3 class="heading-5">Easy Connection</h3>
+              </div>
+              <p class="text-secondary text-sm">
+                One-click contact options make it simple to reach businesses when you need them most.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {% comment %} Stats {% endcomment %}
+        <div class="card p-8 mb-8">
+          <h2 class="heading-3 mb-6 text-center">By the Numbers</h2>
+          <div class="grid grid-cols-3 gap-6 text-center">
+            <div>
+              <p class="heading-1" style="color: var(--color-primary);">{{ datasets.businesses.size | default: '500' }}+</p>
+              <p class="text-muted text-sm">Listed Businesses</p>
+            </div>
+            <div>
+              <p class="heading-1" style="color: var(--color-primary);">50+</p>
+              <p class="text-muted text-sm">Categories</p>
+            </div>
+            <div>
+              <p class="heading-1" style="color: var(--color-primary);">10K+</p>
+              <p class="text-muted text-sm">Monthly Visitors</p>
+            </div>
+          </div>
+        </div>
+
+        {% comment %} CTA {% endcomment %}
+        <div class="text-center">
+          <h2 class="heading-4 mb-4">Ready to List Your Business?</h2>
+          <p class="text-secondary mb-6">
+            Join our growing community of trusted professionals.
+          </p>
+          <a href="/contact" class="btn btn-primary btn-lg">
+            Get Started
+            {% hostnet_render 'icon', name: 'arrow-right' %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

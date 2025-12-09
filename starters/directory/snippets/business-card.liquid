@@ -1,0 +1,140 @@
+{% comment %}
+  Renders a business listing card.
+
+  Usage:
+    {% hostnet_render 'business-card', item: record %}
+    {% hostnet_render 'business-card', item: record, featured: true %}
+
+  Variables:
+    item (required): Dataset record with fields:
+      - name (string): Business name
+      - description (text): Business description
+      - city (string): City
+      - state (string): State abbreviation
+      - services (array): List of services offered
+      - phone (string): Phone number
+      - logo (image): Business logo
+      - featured (boolean): Is this a featured listing?
+      - verified (boolean): Is this a verified listing?
+      - rating (decimal): Average rating 0-5
+      - review_count (integer): Number of reviews
+      - category (string): Primary category
+    featured (optional): Boolean, renders larger featured variant if true
+{% endcomment %}
+
+{% assign is_featured = featured | default: item.featured %}
+
+<article class="{% if is_featured %}card-featured{% else %}card{% endif %} overflow-hidden">
+  <div class="p-6">
+    {% comment %} Header: Logo, Name, Location, Badges {% endcomment %}
+    <div class="flex items-start gap-4">
+      {% comment %} Logo or Initial {% endcomment %}
+      <div class="flex-shrink-0">
+        {% if item.logo %}
+          <img
+            src="{{ item.logo | img_url: 'small' }}"
+            alt="{{ item.name }}"
+            class="w-16 h-16 object-cover"
+            style="border-radius: var(--radius-lg);"
+          >
+        {% else %}
+          <div
+            class="w-16 h-16 flex items-center justify-center"
+            style="background-color: var(--color-neutral-100); border-radius: var(--radius-lg);"
+          >
+            <span class="heading-4 text-muted">
+              {{ item.name | slice: 0 | upcase }}
+            </span>
+          </div>
+        {% endif %}
+      </div>
+
+      {% comment %} Name and Location {% endcomment %}
+      <div class="flex-1 min-w-0">
+        <div class="flex items-start justify-between gap-2">
+          <h3 class="heading-5 truncate">
+            <a href="{{ item | item_url }}" class="text-link" style="color: var(--color-text-primary);">
+              {{ item.name }}
+            </a>
+          </h3>
+
+          {% comment %} Badges {% endcomment %}
+          <div class="flex items-center gap-2 flex-shrink-0">
+            {% if item.featured %}
+              <span class="badge badge-featured">
+                {% hostnet_render 'icon', name: 'star-filled', class: 'icon-sm' %}
+                Featured
+              </span>
+            {% endif %}
+            {% if item.verified %}
+              <span class="badge badge-verified">
+                {% hostnet_render 'icon', name: 'check', class: 'icon-sm' %}
+                Verified
+              </span>
+            {% endif %}
+          </div>
+        </div>
+
+        {% comment %} Location {% endcomment %}
+        {% if item.city or item.state %}
+          <p class="text-sm text-muted flex items-center gap-1 mt-1">
+            {% hostnet_render 'icon', name: 'map-pin', class: 'icon-sm' %}
+            {{ item.city }}{% if item.city and item.state %}, {% endif %}{{ item.state }}
+          </p>
+        {% endif %}
+
+        {% comment %} Rating {% endcomment %}
+        {% if item.rating %}
+          <div class="mt-2">
+            {% hostnet_render 'rating-stars', rating: item.rating, count: item.review_count %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% comment %} Description {% endcomment %}
+    {% if item.description %}
+      <p class="text-secondary mt-4">
+        {{ item.description | truncate_words: 25 }}
+      </p>
+    {% endif %}
+
+    {% comment %} Services Tags {% endcomment %}
+    {% if item.services and item.services.size > 0 %}
+      <div class="flex flex-wrap gap-2 mt-4">
+        {% for service in item.services limit: 3 %}
+          <span class="tag">{{ service }}</span>
+        {% endfor %}
+        {% assign remaining = item.services.size | minus: 3 %}
+        {% if remaining > 0 %}
+          <span class="tag">+{{ remaining }} more</span>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% comment %} Category (if no services) {% endcomment %}
+    {% if item.category and item.services.size == 0 %}
+      <div class="mt-4">
+        <span class="tag">{{ item.category }}</span>
+      </div>
+    {% endif %}
+
+    {% comment %} Footer: Contact + CTA {% endcomment %}
+    <div class="flex items-center justify-between mt-6 pt-4" style="border-top: 1px solid var(--color-border-light);">
+      {% comment %} Phone (if featured card) {% endcomment %}
+      {% if is_featured and item.phone %}
+        <a href="tel:{{ item.phone | remove: ' ' | remove: '-' | remove: '(' | remove: ')' }}" class="text-sm text-secondary flex items-center gap-1">
+          {% hostnet_render 'icon', name: 'phone', class: 'icon-sm' %}
+          {{ item.phone }}
+        </a>
+      {% else %}
+        <span></span>
+      {% endif %}
+
+      <a href="{{ item | item_url }}" class="btn btn-sm {% if is_featured %}btn-primary{% else %}btn-secondary{% endif %}">
+        View Details
+        {% hostnet_render 'icon', name: 'arrow-right', class: 'icon-sm' %}
+      </a>
+    </div>
+  </div>
+</article>

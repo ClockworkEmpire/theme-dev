@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title | default: site.name }}</title>
+  <meta name="description" content="{{ page_description | default: settings.site_description }}">
+
+  <!-- Tailwind CSS CDN (layout utilities only) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Theme CSS (design system) -->
+  <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
+
+  {% comment %} Load skin CSS if not default - request.skin is set by URL param ?skin=name {% endcomment %}
+  {% assign active_skin = request.skin | default: site.skin | default: 'default' %}
+  {% if active_skin != 'default' and active_skin != '' %}
+    <link rel="stylesheet" href="{{ 'skins/' | append: active_skin | append: '.css' | asset_url }}">
+  {% endif %}
+</head>
+<body class="min-h-screen flex flex-col bg-page" data-skin="{{ active_skin }}">
+  {% section 'header' %}
+
+  <main class="flex-1">
+    {{ content_for_layout }}
+  </main>
+
+  {% section 'footer' %}
+</body>
+</html>

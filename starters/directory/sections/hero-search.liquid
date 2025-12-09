@@ -1,0 +1,133 @@
+{% comment %}
+  Hero section with search functionality for homepage.
+  Displays a prominent title, subtitle, and dual search inputs.
+{% endcomment %}
+
+<section class="bg-hero">
+  <div class="container section-lg">
+    <div class="max-w-3xl mx-auto text-center">
+      {% comment %} Title {% endcomment %}
+      <h1 class="heading-1 text-inverse mb-4">
+        {{ section.settings.title | default: 'Find Trusted Professionals' }}
+      </h1>
+
+      {% comment %} Subtitle {% endcomment %}
+      {% if section.settings.subtitle %}
+        <p class="text-xl mb-8" style="color: var(--color-neutral-300);">
+          {{ section.settings.subtitle }}
+        </p>
+      {% endif %}
+
+      {% comment %} Search Form (visual only for MVP - no JS) {% endcomment %}
+      <div class="bg-card p-2 flex flex-col md:flex-row gap-2" style="border-radius: var(--radius-lg);">
+        {% comment %} What are you looking for? {% endcomment %}
+        <div class="flex-1 relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">
+            {% hostnet_render 'icon', name: 'search' %}
+          </span>
+          <input
+            type="text"
+            placeholder="{{ section.settings.search_placeholder | default: 'What are you looking for?' }}"
+            class="input input-lg w-full"
+            style="padding-left: 3rem;"
+          >
+        </div>
+
+        {% comment %} Location input {% endcomment %}
+        <div class="flex-1 relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-muted">
+            {% hostnet_render 'icon', name: 'map-pin' %}
+          </span>
+          <input
+            type="text"
+            placeholder="{{ section.settings.location_placeholder | default: 'City or ZIP code' }}"
+            class="input input-lg w-full"
+            style="padding-left: 3rem;"
+          >
+        </div>
+
+        {% comment %} Search button {% endcomment %}
+        <button type="button" class="btn btn-primary btn-lg">
+          {% hostnet_render 'icon', name: 'search' %}
+          <span class="hide-mobile">Search</span>
+        </button>
+      </div>
+
+      {% comment %} Quick links / popular searches {% endcomment %}
+      {% if section.settings.show_popular_searches %}
+        <div class="mt-6 flex flex-wrap items-center justify-center gap-2">
+          <span class="text-sm" style="color: var(--color-neutral-400);">Popular:</span>
+          <a href="/businesses?category=plumbers" class="text-sm" style="color: var(--color-neutral-300);">Plumbers</a>
+          <span style="color: var(--color-neutral-500);">&middot;</span>
+          <a href="/businesses?category=electricians" class="text-sm" style="color: var(--color-neutral-300);">Electricians</a>
+          <span style="color: var(--color-neutral-500);">&middot;</span>
+          <a href="/businesses?category=contractors" class="text-sm" style="color: var(--color-neutral-300);">Contractors</a>
+          <span style="color: var(--color-neutral-500);">&middot;</span>
+          <a href="/businesses?category=landscapers" class="text-sm" style="color: var(--color-neutral-300);">Landscapers</a>
+        </div>
+      {% endif %}
+
+      {% comment %} Trust indicators {% endcomment %}
+      {% if section.settings.show_trust_indicators %}
+        <div class="mt-8 pt-8 flex flex-wrap items-center justify-center gap-8" style="border-top: 1px solid var(--color-neutral-700);">
+          <div class="flex items-center gap-2">
+            {% hostnet_render 'icon', name: 'check', class: 'icon-lg' %}
+            <span class="text-sm" style="color: var(--color-neutral-300);">Verified Businesses</span>
+          </div>
+          <div class="flex items-center gap-2">
+            {% hostnet_render 'icon', name: 'star-filled', class: 'icon-lg' %}
+            <span class="text-sm" style="color: var(--color-neutral-300);">Trusted Reviews</span>
+          </div>
+          <div class="flex items-center gap-2">
+            {% hostnet_render 'icon', name: 'phone', class: 'icon-lg' %}
+            <span class="text-sm" style="color: var(--color-neutral-300);">Direct Contact</span>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero Search",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Find Trusted Professionals"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Discover verified local businesses and service providers in your area."
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search Placeholder",
+      "default": "What are you looking for?"
+    },
+    {
+      "type": "text",
+      "id": "location_placeholder",
+      "label": "Location Placeholder",
+      "default": "City or ZIP code"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_popular_searches",
+      "label": "Show Popular Searches",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust_indicators",
+      "label": "Show Trust Indicators",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

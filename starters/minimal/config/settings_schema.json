@@ -1,0 +1,41 @@
+[
+  {
+    "name": "General",
+    "settings": [
+      {
+        "type": "text",
+        "id": "site_description",
+        "label": "Site Description",
+        "info": "Used in meta description tag",
+        "default": "A website built with HostNet"
+      }
+    ]
+  },
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "text",
+        "id": "logo_text",
+        "label": "Logo Text",
+        "info": "Leave blank to use site name"
+      }
+    ]
+  },
+  {
+    "name": "Footer",
+    "settings": [
+      {
+        "type": "textarea",
+        "id": "footer_about",
+        "label": "About Text",
+        "default": "Welcome to our site."
+      },
+      {
+        "type": "text",
+        "id": "contact_email",
+        "label": "Contact Email"
+      }
+    ]
+  }
+]

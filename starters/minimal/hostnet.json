@@ -1,0 +1,44 @@
+{
+  "name": "Minimal",
+  "version": "1.0.0",
+  "description": "A minimal starter theme with articles and company listings",
+  "author": "HostNet",
+
+  "datasets": {
+    "articles": {
+      "description": "Blog articles and news posts",
+      "required": false,
+      "mount": {
+        "path": "/blog",
+        "list_template": "collection",
+        "item_template": "article"
+      },
+      "fields": [
+        {"key": "title", "type": "string", "required": true, "description": "Article title"},
+        {"key": "slug", "type": "string", "required": true, "description": "URL slug"},
+        {"key": "excerpt", "type": "text", "description": "Short summary"},
+        {"key": "content", "type": "text", "description": "Full article content"},
+        {"key": "image_url", "type": "string", "description": "Featured image URL"},
+        {"key": "author", "type": "string", "description": "Author name"},
+        {"key": "published_at", "type": "date", "description": "Publication date"}
+      ]
+    },
+    "companies": {
+      "description": "Company or business listings",
+      "required": false,
+      "mount": {
+        "path": "/companies",
+        "list_template": "collection",
+        "item_template": "company"
+      },
+      "fields": [
+        {"key": "name", "type": "string", "required": true, "description": "Company name"},
+        {"key": "slug", "type": "string", "required": true, "description": "URL slug"},
+        {"key": "description", "type": "text", "description": "Company description"},
+        {"key": "industry", "type": "string", "description": "Industry category"},
+        {"key": "logo_url", "type": "string", "description": "Logo image URL"},
+        {"key": "website", "type": "string", "description": "Company website"}
+      ]
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{% comment %}
+  Renders a star rating display.
+
+  Usage:
+    {% hostnet_render 'rating-stars', rating: 4.5 %}
+    {% hostnet_render 'rating-stars', rating: 4.5, count: 23 %}
+    {% hostnet_render 'rating-stars', rating: business.rating, count: business.review_count %}
+
+  Variables:
+    rating (required): Decimal value 0-5
+    count (optional): Number of reviews to display, e.g., "(23 reviews)"
+    show_empty (optional): If true, shows stars even when rating is 0 or nil
+{% endcomment %}
+
+{% if rating or show_empty %}
+  <div class="rating">
+    <span class="rating-stars">
+      {% comment %} Calculate full, half, and empty stars {% endcomment %}
+      {% assign rating_value = rating | default: 0 | times: 1.0 %}
+      {% assign full_stars = rating_value | floor %}
+      {% assign decimal_part = rating_value | modulo: 1 %}
+      {% assign has_half_star = false %}
+      {% if decimal_part >= 0.25 and decimal_part < 0.75 %}
+        {% assign has_half_star = true %}
+      {% elsif decimal_part >= 0.75 %}
+        {% assign full_stars = full_stars | plus: 1 %}
+      {% endif %}
+
+      {% comment %} Render full stars {% endcomment %}
+      {% for i in (1..full_stars) %}
+        {% hostnet_render 'icon', name: 'star-filled', class: 'icon-sm' %}
+      {% endfor %}
+
+      {% comment %} Render half star if needed {% endcomment %}
+      {% if has_half_star %}
+        {% hostnet_render 'icon', name: 'star-half', class: 'icon-sm' %}
+      {% endif %}
+
+      {% comment %} Calculate and render empty stars {% endcomment %}
+      {% assign stars_shown = full_stars %}
+      {% if has_half_star %}
+        {% assign stars_shown = stars_shown | plus: 1 %}
+      {% endif %}
+      {% assign empty_stars = 5 | minus: stars_shown %}
+
+      {% for i in (1..empty_stars) %}
+        <span class="star-empty">
+          {% hostnet_render 'icon', name: 'star', class: 'icon-sm' %}
+        </span>
+      {% endfor %}
+    </span>
+
+    {% if count %}
+      <span class="rating-count">({{ count }} {% if count == 1 %}review{% else %}reviews{% endif %})</span>
+    {% endif %}
+  </div>
+{% endif %}

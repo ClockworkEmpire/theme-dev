@@ -1,0 +1,40 @@
+{% comment %}
+  Collection template - displays a paginated list of dataset records
+  Available variables:
+    - collection: Array of records for current page
+    - pagination: Pagination info (current_page, total_pages, next_url, prev_url)
+    - mount: Dataset mount info (alias, mount_path)
+{% endcomment %}
+
+<div class="container mx-auto px-4 py-12">
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold">{{ mount.alias | capitalize }}</h1>
+    <p class="text-gray-600 mt-2">
+      Showing page {{ pagination.current_page }} of {{ pagination.total_pages }}
+    </p>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% for item in collection %}
+      {% comment %}
+        Use the appropriate card based on the dataset type.
+        Default to a generic card if no specific one exists.
+      {% endcomment %}
+      {% if mount.alias == 'articles' %}
+        {% hostnet_render 'article-card', article: item %}
+      {% elsif mount.alias == 'companies' %}
+        {% hostnet_render 'company-card', company: item %}
+      {% else %}
+        {% hostnet_render 'generic-card', item: item %}
+      {% endif %}
+    {% else %}
+      <p class="col-span-3 text-center text-gray-500 py-12">
+        No items found.
+      </p>
+    {% endfor %}
+  </div>
+
+  {% if pagination.total_pages > 1 %}
+    {% hostnet_render 'pagination' %}
+  {% endif %}
+</div>

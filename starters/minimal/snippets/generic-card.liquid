@@ -1,0 +1,37 @@
+{% comment %}
+  Generic card component for any dataset type
+  Usage: {% hostnet_render 'generic-card', item: record %}
+
+  Expected variables:
+    - item: Any dataset record (uses common field names)
+{% endcomment %}
+
+<article class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition">
+  {% if item.image %}
+    <a href="{{ item | item_url }}">
+      <img
+        src="{{ item.image | img_url: 'medium' }}"
+        alt="{{ item.title | default: item.name }}"
+        class="w-full h-48 object-cover"
+      >
+    </a>
+  {% endif %}
+
+  <div class="p-6">
+    <h3 class="font-bold text-lg mb-2">
+      <a href="{{ item | item_url }}" class="hover:text-blue-600">
+        {{ item.title | default: item.name }}
+      </a>
+    </h3>
+
+    {% if item.description or item.excerpt %}
+      <p class="text-gray-600 text-sm mb-4">
+        {{ item.description | default: item.excerpt | truncate_words: 20 }}
+      </p>
+    {% endif %}
+
+    <a href="{{ item | item_url }}" class="text-sm text-blue-600 hover:text-blue-800">
+      View details →
+    </a>
+  </div>
+</article>

@@ -1,0 +1,89 @@
+{% comment %}
+  Featured listings section for homepage.
+  Displays a grid of featured/highlighted businesses.
+{% endcomment %}
+
+<section class="section bg-page">
+  <div class="container">
+    {% comment %} Section header {% endcomment %}
+    <div class="flex items-center justify-between mb-8">
+      <h2 class="heading-3">
+        {{ section.settings.title | default: 'Featured Businesses' }}
+      </h2>
+
+      {% if section.settings.show_view_all %}
+        <a href="{{ section.settings.view_all_url | default: '/businesses' }}" class="btn btn-secondary btn-sm hide-mobile">
+          View All
+          {% hostnet_render 'icon', name: 'arrow-right', class: 'icon-sm' %}
+        </a>
+      {% endif %}
+    </div>
+
+    {% comment %} Business cards grid {% endcomment %}
+    {% assign featured_count = section.settings.count | default: 6 %}
+    {% assign businesses_to_show = datasets.businesses | where: 'featured', true | limit: featured_count %}
+
+    {% comment %} Fallback: if no featured businesses, show any businesses {% endcomment %}
+    {% if businesses_to_show.size == 0 %}
+      {% assign businesses_to_show = datasets.businesses | limit: featured_count %}
+    {% endif %}
+
+    {% if businesses_to_show.size > 0 %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for item in businesses_to_show %}
+          {% hostnet_render 'business-card', item: item, featured: true %}
+        {% endfor %}
+      </div>
+
+      {% comment %} Mobile view all link {% endcomment %}
+      {% if section.settings.show_view_all %}
+        <div class="mt-8 text-center hide-desktop">
+          <a href="{{ section.settings.view_all_url | default: '/businesses' }}" class="btn btn-secondary">
+            View All Businesses
+            {% hostnet_render 'icon', name: 'arrow-right', class: 'icon-sm' %}
+          </a>
+        </div>
+      {% endif %}
+    {% else %}
+      {% comment %} Empty state {% endcomment %}
+      <div class="text-center py-12">
+        <p class="text-muted">No featured businesses yet.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Listings",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Featured Businesses"
+    },
+    {
+      "type": "range",
+      "id": "count",
+      "label": "Number to Show",
+      "min": 3,
+      "max": 12,
+      "step": 3,
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show View All Link",
+      "default": true
+    },
+    {
+      "type": "url",
+      "id": "view_all_url",
+      "label": "View All URL",
+      "default": "/businesses"
+    }
+  ]
+}
+{% endschema %}

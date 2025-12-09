@@ -1,0 +1,85 @@
+{% comment %}
+  Renders pagination controls for collection pages.
+
+  Usage:
+    {% hostnet_render 'pagination' %}
+
+  Variables:
+    None - uses the global `pagination` object from collection context.
+
+  Expected pagination object structure:
+    pagination.current_page - Current page number (1-indexed)
+    pagination.total_pages - Total number of pages
+    pagination.prev_url - URL for previous page (nil if on first page)
+    pagination.next_url - URL for next page (nil if on last page)
+    pagination.items_per_page - Items shown per page
+{% endcomment %}
+
+{% if pagination and pagination.total_pages > 1 %}
+  <nav class="pagination" aria-label="Pagination">
+    {% comment %} Previous button {% endcomment %}
+    {% if pagination.prev_url %}
+      <a href="{{ pagination.prev_url }}" class="pagination-item" aria-label="Previous page">
+        {% hostnet_render 'icon', name: 'chevron-left', class: 'icon-sm' %}
+      </a>
+    {% else %}
+      <span class="pagination-item pagination-item-disabled" aria-disabled="true">
+        {% hostnet_render 'icon', name: 'chevron-left', class: 'icon-sm' %}
+      </span>
+    {% endif %}
+
+    {% comment %} Page numbers {% endcomment %}
+    {% assign start_page = pagination.current_page | minus: 2 %}
+    {% if start_page < 1 %}
+      {% assign start_page = 1 %}
+    {% endif %}
+
+    {% assign end_page = start_page | plus: 4 %}
+    {% if end_page > pagination.total_pages %}
+      {% assign end_page = pagination.total_pages %}
+      {% assign start_page = end_page | minus: 4 %}
+      {% if start_page < 1 %}
+        {% assign start_page = 1 %}
+      {% endif %}
+    {% endif %}
+
+    {% comment %} First page + ellipsis {% endcomment %}
+    {% if start_page > 1 %}
+      <a href="{{ pagination.first_url | default: '?page=1' }}" class="pagination-item">1</a>
+      {% if start_page > 2 %}
+        <span class="pagination-item pagination-item-disabled">...</span>
+      {% endif %}
+    {% endif %}
+
+    {% comment %} Page number links {% endcomment %}
+    {% for page in (start_page..end_page) %}
+      {% if page == pagination.current_page %}
+        <span class="pagination-item pagination-item-active" aria-current="page">{{ page }}</span>
+      {% else %}
+        {% comment %} Build page URL - simple query param approach {% endcomment %}
+        {% assign page_url = '?page=' | append: page %}
+        <a href="{{ page_url }}" class="pagination-item">{{ page }}</a>
+      {% endif %}
+    {% endfor %}
+
+    {% comment %} Last page + ellipsis {% endcomment %}
+    {% if end_page < pagination.total_pages %}
+      {% if end_page < pagination.total_pages | minus: 1 %}
+        <span class="pagination-item pagination-item-disabled">...</span>
+      {% endif %}
+      {% assign last_url = '?page=' | append: pagination.total_pages %}
+      <a href="{{ pagination.last_url | default: last_url }}" class="pagination-item">{{ pagination.total_pages }}</a>
+    {% endif %}
+
+    {% comment %} Next button {% endcomment %}
+    {% if pagination.next_url %}
+      <a href="{{ pagination.next_url }}" class="pagination-item" aria-label="Next page">
+        {% hostnet_render 'icon', name: 'chevron-right', class: 'icon-sm' %}
+      </a>
+    {% else %}
+      <span class="pagination-item pagination-item-disabled" aria-disabled="true">
+        {% hostnet_render 'icon', name: 'chevron-right', class: 'icon-sm' %}
+      </span>
+    {% endif %}
+  </nav>
+{% endif %}

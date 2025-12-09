@@ -1,0 +1,115 @@
+{% comment %}
+  Footer section - Dark footer with site info and links
+
+  Schema settings:
+    - tagline: Site tagline/description
+    - copyright: Copyright text
+    - email: Contact email
+    - phone: Contact phone
+{% endcomment %}
+
+<footer class="bg-footer">
+  <div class="container section-sm">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Brand column -->
+      <div>
+        <div class="text-inverse text-lg mb-2" style="font-weight: var(--font-weight-bold);">
+          {{ site.name }}
+        </div>
+        {% if section.settings.tagline %}
+          <p class="text-inverse opacity-70 text-sm">
+            {{ section.settings.tagline }}
+          </p>
+        {% endif %}
+      </div>
+
+      <!-- Quick links -->
+      <div>
+        <div class="text-inverse text-sm mb-3" style="font-weight: var(--font-weight-semibold);">
+          Quick Links
+        </div>
+        <ul class="space-y-2">
+          <li><a href="/" class="text-inverse opacity-70 hover:opacity-100 text-sm">Home</a></li>
+          <li><a href="/businesses" class="text-inverse opacity-70 hover:opacity-100 text-sm">Browse Listings</a></li>
+          <li><a href="/blog" class="text-inverse opacity-70 hover:opacity-100 text-sm">Blog</a></li>
+          <li><a href="/about" class="text-inverse opacity-70 hover:opacity-100 text-sm">About Us</a></li>
+          <li><a href="/contact" class="text-inverse opacity-70 hover:opacity-100 text-sm">Contact</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact info -->
+      <div>
+        <div class="text-inverse text-sm mb-3" style="font-weight: var(--font-weight-semibold);">
+          Contact
+        </div>
+        <ul class="space-y-2">
+          {% if section.settings.email %}
+            <li>
+              <a href="mailto:{{ section.settings.email }}" class="text-inverse opacity-70 hover:opacity-100 text-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                {{ section.settings.email }}
+              </a>
+            </li>
+          {% endif %}
+          {% if section.settings.phone %}
+            <li>
+              <a href="tel:{{ section.settings.phone }}" class="text-inverse opacity-70 hover:opacity-100 text-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                </svg>
+                {{ section.settings.phone }}
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="mt-8 pt-6 border-t border-white/10">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-inverse opacity-50 text-sm">
+          {{ section.settings.copyright | default: '© 2024 All rights reserved.' }}
+        </p>
+        <div class="flex items-center gap-4 text-sm">
+          <a href="/privacy" class="text-inverse opacity-50 hover:opacity-100">Privacy Policy</a>
+          <a href="/terms" class="text-inverse opacity-50 hover:opacity-100">Terms of Use</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Find trusted professionals in your area"
+    },
+    {
+      "type": "text",
+      "id": "copyright",
+      "label": "Copyright Text",
+      "default": "© 2024 All rights reserved."
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Contact Email",
+      "default": "hello@example.com"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Contact Phone",
+      "default": "(555) 123-4567"
+    }
+  ]
+}
+{% endschema %}

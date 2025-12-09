@@ -1,0 +1,54 @@
+{% comment %}
+  Renders an article/blog post card.
+
+  Usage:
+    {% hostnet_render 'article-card', item: article %}
+
+  Variables:
+    item (required): Article record with fields:
+      - title (string): Article title
+      - excerpt (text): Short summary
+      - image (image): Featured image
+      - author (string): Author name
+      - published_at (date): Publication date
+{% endcomment %}
+
+<article class="card overflow-hidden">
+  {% if item.image %}
+    <a href="{{ item | item_url }}" class="block aspect-video overflow-hidden">
+      <img
+        src="{{ item.image | img_url: 'medium' }}"
+        alt="{{ item.title }}"
+        class="w-full h-full object-cover"
+        style="transition: transform var(--transition-normal);"
+        onmouseover="this.style.transform='scale(1.05)'"
+        onmouseout="this.style.transform='scale(1)'"
+      >
+    </a>
+  {% endif %}
+
+  <div class="p-6">
+    <h3 class="heading-5 mb-2">
+      <a href="{{ item | item_url }}" class="text-link" style="color: var(--color-text-primary);">
+        {{ item.title }}
+      </a>
+    </h3>
+
+    {% if item.excerpt %}
+      <p class="text-secondary text-sm mb-4">
+        {{ item.excerpt | truncate: 120 }}
+      </p>
+    {% endif %}
+
+    <div class="flex items-center justify-between text-sm text-muted">
+      <div class="flex items-center gap-2">
+        {% if item.author %}
+          <span>{{ item.author }}</span>
+        {% endif %}
+      </div>
+      {% if item.published_at %}
+        <span>{{ item.published_at | date: '%b %d, %Y' }}</span>
+      {% endif %}
+    </div>
+  </div>
+</article>

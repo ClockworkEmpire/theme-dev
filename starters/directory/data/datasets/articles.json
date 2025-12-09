@@ -1,0 +1,64 @@
+{
+  "mount_path": "/blog",
+  "alias": "articles",
+  "slug_field": "slug",
+  "list_template": "blog",
+  "item_template": "article",
+  "count": 6,
+  "records": [
+    {
+      "title": "How to Choose the Right Local Service Provider",
+      "slug": "how-to-choose-right-local-service-provider",
+      "excerpt": "Finding a reliable local service provider can be challenging. Here are our top tips for vetting businesses and making informed decisions.",
+      "content": "Finding a reliable local service provider can be challenging. With so many options available, how do you know which business to trust?\n\nFirst, always check for proper licensing and insurance. Any reputable business should be able to provide proof of both. This protects you in case something goes wrong.\n\nSecond, read reviews from multiple sources. Don't just rely on one platform. Check Google, Yelp, and industry-specific review sites to get a complete picture.\n\nThird, ask for references. A business with nothing to hide will be happy to connect you with past customers who can speak to their experience.\n\nFinally, get multiple quotes. This helps you understand fair market pricing and gives you leverage in negotiations.",
+      "image": "https://picsum.photos/seed/article1/800/400",
+      "author": "Sarah Johnson",
+      "published_at": "2024-11-15"
+    },
+    {
+      "title": "5 Questions to Ask Before Hiring Any Contractor",
+      "slug": "5-questions-ask-before-hiring-contractor",
+      "excerpt": "Don't sign that contract until you've asked these essential questions. Protect yourself and ensure quality work.",
+      "content": "Hiring a contractor is a significant decision that can impact your home and wallet. Before you commit, make sure to ask these five essential questions.\n\n1. Are you licensed and insured? Never skip this step. Request copies of current licenses and insurance certificates.\n\n2. Can you provide a detailed written estimate? A professional contractor should break down costs for labor, materials, and any additional fees.\n\n3. What is your timeline? Get specific start and completion dates in writing, along with penalties for delays.\n\n4. Who will be doing the actual work? Some contractors subcontract work. Know who will be on your property.\n\n5. What is your warranty policy? Understand what's covered and for how long after the work is completed.",
+      "image": "https://picsum.photos/seed/article2/800/400",
+      "author": "Mike Chen",
+      "published_at": "2024-11-08"
+    },
+    {
+      "title": "The Benefits of Hiring Local Businesses",
+      "slug": "benefits-hiring-local-businesses",
+      "excerpt": "Supporting local businesses does more than help your neighbors – it strengthens your entire community.",
+      "content": "When you hire a local business, you're doing more than completing a project – you're investing in your community.\n\nLocal businesses recirculate a larger share of every dollar back into the local economy. They're more likely to hire locally, source materials locally, and support other local businesses.\n\nLocal service providers also offer advantages that national chains can't match. They have reputation to protect in the community, so they're often more accountable. They understand local building codes, climate considerations, and community standards.\n\nAdditionally, local businesses provide personalized service. You're not a ticket number – you're a neighbor. This often translates to better communication, flexibility, and care in the work performed.",
+      "image": "https://picsum.photos/seed/article3/800/400",
+      "author": "Emily Rodriguez",
+      "published_at": "2024-10-28"
+    },
+    {
+      "title": "Red Flags to Watch For When Hiring Service Providers",
+      "slug": "red-flags-hiring-service-providers",
+      "excerpt": "Learn to spot the warning signs of unreliable contractors before it's too late.",
+      "content": "Not every business operates with integrity. Here are red flags that should make you think twice before hiring.\n\nDemanding large upfront payments. While some deposit is reasonable, be wary of anyone asking for more than 30% upfront.\n\nNo physical address or only a P.O. box. Legitimate businesses have real offices or at least a verifiable home base.\n\nPressure to sign immediately. High-pressure sales tactics often indicate a business that doesn't want you to do your research.\n\nCash-only requests. This can indicate tax evasion and makes it harder to prove payment if disputes arise.\n\nNo written contract. Everything should be documented. Verbal agreements offer no protection.\n\nUnusually low bids. If a quote seems too good to be true, it probably is. Low bids often lead to cut corners or hidden fees.",
+      "image": "https://picsum.photos/seed/article4/800/400",
+      "author": "David Park",
+      "published_at": "2024-10-15"
+    },
+    {
+      "title": "Understanding Service Provider Reviews",
+      "slug": "understanding-service-provider-reviews",
+      "excerpt": "Not all reviews are created equal. Learn how to read between the lines and spot fake reviews.",
+      "content": "Online reviews are valuable tools, but they require critical reading. Here's how to get the most from them.\n\nLook for specific details. Genuine reviews typically mention specific aspects of the service, timelines, and interactions. Generic praise or complaints may be fake.\n\nCheck the reviewer's history. Reviewers who only have one review or multiple reviews posted on the same day may not be legitimate.\n\nPay attention to how businesses respond. A professional response to negative reviews shows accountability. Defensive or aggressive responses are red flags.\n\nConsider the overall pattern. Every business gets occasional negative reviews. Look at the trend over time and common themes in feedback.\n\nDon't ignore the 3-star reviews. These balanced reviews often provide the most honest and useful information.",
+      "image": "https://picsum.photos/seed/article5/800/400",
+      "author": "Sarah Johnson",
+      "published_at": "2024-10-01"
+    },
+    {
+      "title": "Seasonal Home Maintenance Checklist",
+      "slug": "seasonal-home-maintenance-checklist",
+      "excerpt": "Stay ahead of costly repairs with this comprehensive seasonal maintenance guide.",
+      "content": "Regular maintenance prevents small issues from becoming expensive emergencies. Follow this seasonal guide to protect your home.\n\nSpring: Clean gutters, inspect roof for winter damage, service HVAC system, check outdoor faucets for freeze damage.\n\nSummer: Trim trees away from structures, clean dryer vents, inspect deck and patio, check for pest entry points.\n\nFall: Clean gutters again, winterize irrigation systems, service heating system, seal gaps around windows and doors.\n\nWinter: Monitor for ice dams, check insulation in attic, test smoke and carbon monoxide detectors, inspect pipes in cold areas.\n\nStaying on top of these tasks helps you catch problems early when they're cheaper to fix and keeps your home running efficiently year-round.",
+      "image": "https://picsum.photos/seed/article6/800/400",
+      "author": "Mike Chen",
+      "published_at": "2024-09-20"
+    }
+  ]
+}

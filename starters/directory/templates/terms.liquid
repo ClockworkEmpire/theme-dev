@@ -1,0 +1,93 @@
+{% comment %}
+  Terms of Use page template.
+  Standard terms of service content.
+{% endcomment %}
+
+<div class="bg-page">
+  {% comment %} Header {% endcomment %}
+  <section class="section-sm bg-hero">
+    <div class="container">
+      <div class="max-w-3xl mx-auto text-center">
+        <h1 class="heading-1 text-inverse mb-4">Terms of Use</h1>
+        <p class="text-sm" style="color: var(--color-neutral-400);">
+          Last updated: {{ 'now' | date: '%B %d, %Y' }}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {% comment %} Content {% endcomment %}
+  <section class="section">
+    <div class="container">
+      <div class="max-w-3xl mx-auto">
+        <div class="card p-8">
+          <div class="prose">
+            <h2 class="heading-4 mb-4">Acceptance of Terms</h2>
+            <p class="text-secondary mb-6" style="line-height: var(--line-height-relaxed);">
+              By accessing and using {{ site.name | default: 'this website' }}, you accept and agree to be bound by
+              the terms and provisions of this agreement. If you do not agree to these terms, please do not use our services.
+            </p>
+
+            <h2 class="heading-4 mb-4">Use of Service</h2>
+            <p class="text-secondary mb-4" style="line-height: var(--line-height-relaxed);">
+              You agree to use this service only for lawful purposes and in accordance with these Terms. You agree not to:
+            </p>
+            <ul class="list-disc pl-6 mb-6 text-secondary space-y-2">
+              <li>Use the service in any way that violates applicable laws or regulations</li>
+              <li>Attempt to gain unauthorized access to any portion of the service</li>
+              <li>Use the service to transmit any advertising or promotional material without our consent</li>
+              <li>Impersonate or attempt to impersonate another person or entity</li>
+              <li>Engage in any conduct that restricts or inhibits anyone's use of the service</li>
+            </ul>
+
+            <h2 class="heading-4 mb-4">Business Listings</h2>
+            <p class="text-secondary mb-6" style="line-height: var(--line-height-relaxed);">
+              Businesses listed in our directory are responsible for the accuracy of their information.
+              We reserve the right to remove or modify any listing that violates our guidelines or is found to be
+              fraudulent, misleading, or inappropriate.
+            </p>
+
+            <h2 class="heading-4 mb-4">User Content</h2>
+            <p class="text-secondary mb-6" style="line-height: var(--line-height-relaxed);">
+              By submitting reviews, ratings, or other content, you grant us a non-exclusive, royalty-free,
+              perpetual license to use, modify, and display that content. You represent that you have the right
+              to submit such content and that it does not violate any third-party rights.
+            </p>
+
+            <h2 class="heading-4 mb-4">Disclaimer of Warranties</h2>
+            <p class="text-secondary mb-6" style="line-height: var(--line-height-relaxed);">
+              This service is provided "as is" without warranties of any kind. We do not guarantee the accuracy,
+              completeness, or reliability of any business listing, review, or other content on this site.
+              Your use of any information obtained through this service is at your own risk.
+            </p>
+
+            <h2 class="heading-4 mb-4">Limitation of Liability</h2>
+            <p class="text-secondary mb-6" style="line-height: var(--line-height-relaxed);">
+              We shall not be liable for any indirect, incidental, special, consequential, or punitive damages
+              resulting from your use of or inability to use the service, even if we have been advised of the
+              possibility of such damages.
+            </p>
+
+            <h2 class="heading-4 mb-4">Changes to Terms</h2>
+            <p class="text-secondary mb-6" style="line-height: var(--line-height-relaxed);">
+              We reserve the right to modify these terms at any time. We will notify users of any material changes
+              by posting the new terms on this page. Your continued use of the service after such changes constitutes
+              your acceptance of the new terms.
+            </p>
+
+            <h2 class="heading-4 mb-4">Governing Law</h2>
+            <p class="text-secondary mb-6" style="line-height: var(--line-height-relaxed);">
+              These terms shall be governed by and construed in accordance with applicable laws,
+              without regard to conflict of law principles.
+            </p>
+
+            <h2 class="heading-4 mb-4">Contact</h2>
+            <p class="text-secondary">
+              Questions about these Terms? <a href="/contact" class="text-link">Contact us</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

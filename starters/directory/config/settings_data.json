@@ -1,0 +1,36 @@
+{
+  "current": {
+    "site_name": "Local Directory",
+    "site_description": "Find trusted local businesses and service providers in your area.",
+    "logo_text": "Directory",
+    "contact_email": "hello@example.com",
+    "contact_phone": "(555) 123-4567",
+    "sections": {
+      "header": {
+        "logo_text": "Directory",
+        "cta_text": "Add Listing",
+        "cta_url": "/contact"
+      },
+      "footer": {
+        "tagline": "Your trusted source for local businesses",
+        "copyright": "2024 Local Directory. All rights reserved.",
+        "email": "hello@example.com",
+        "phone": "(555) 123-4567"
+      },
+      "hero-search": {
+        "title": "Find Trusted Professionals",
+        "subtitle": "Discover verified local businesses and service providers in your area.",
+        "search_placeholder": "What are you looking for?",
+        "location_placeholder": "City or ZIP code",
+        "show_popular_searches": true,
+        "show_trust_indicators": true
+      },
+      "featured-listings": {
+        "title": "Featured Businesses",
+        "count": 6,
+        "show_view_all": true,
+        "view_all_url": "/businesses"
+      }
+    }
+  }
+}
