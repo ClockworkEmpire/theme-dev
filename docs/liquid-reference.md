@@ -43,6 +43,18 @@ Access array elements by index:
 
 These objects are available in every template.
 
+| Object | Description |
+|--------|-------------|
+| `site` | Current site information |
+| `media` | Site's media library (images, files) |
+| `settings` | Theme settings values |
+| `request` | Current HTTP request info |
+| `datasets` | Mounted datasets |
+| `authors` | Site authors |
+| `posts` | Published blog posts |
+| `pages` | Static pages |
+| `tags` | Content tags |
+
 ### site
 
 Current site information.
@@ -54,11 +66,108 @@ Current site information.
 | `site.url` | String | Current environment URL |
 | `site.staging_url` | String | Staging environment URL |
 | `site.production_url` | String | Production environment URL |
+| `site.media` | MediaProxy | Access to site's media library |
 
 ```liquid
 <title>{{ page_title | default: site.name }}</title>
 <link rel="canonical" href="{{ site.url }}{{ request.path }}">
 ```
+
+### media
+
+Top-level access to the site's media library (uploaded images and files). See also [Media Library](../features/media-library.md).
+
+**Access by alias (recommended):**
+
+Media files can have aliases - short, memorable names for cleaner templates:
+
+```liquid
+{{ media.hero_banner.url }}
+{{ media.logo.url }}
+{{ media.background.url }}
+```
+
+Aliases are set when uploading or editing media files in the dashboard.
+
+**Access by filename:**
+```liquid
+{{ media['logo.png'].url }}
+{{ media['hero-image.jpg'].url }}
+{{ media['Screenshot 2025-12-08 121448.png'].url }}
+```
+
+**Access without extension** (tries common image extensions):
+```liquid
+{{ media.logo.url }}
+{{ media.favicon.url }}
+```
+
+**Underscore-to-hyphen conversion:**
+```liquid
+{{ media.hero_image.url }}  {% comment %} Looks for "hero-image.png", etc. {% endcomment %}
+```
+
+**Lookup priority:**
+
+When accessing `media.something`, HostNet looks for files in this order:
+1. Alias match: file with `alias = "something"`
+2. Exact filename: file named `something`
+3. Filename with extension: `something.png`, `something.jpg`, etc.
+4. Hyphenated variant: `something-name` (if using underscores like `something_name`)
+
+**Media file properties:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `url` | String | URL path (e.g., `/media/logo.png`) |
+| `filename` | String | File name |
+| `alias` | String | Short alias (if set) |
+| `content_type` | String | MIME type (e.g., `image/png`) |
+| `size` | Integer | File size in bytes |
+| `width` | Integer | Image width (images only) |
+| `height` | Integer | Image height (images only) |
+| `alt` | String | Alt text (if set) |
+
+**Iterate all media files:**
+```liquid
+{% for file in media %}
+  {% if file.image? %}
+    <img src="{{ file.url }}" alt="{{ file.alt | default: file.filename }}">
+  {% else %}
+    <a href="{{ file.url }}">{{ file.filename }}</a>
+  {% endif %}
+{% endfor %}
+```
+
+**Check if file exists:**
+```liquid
+{% assign logo = media.logo %}
+{% if logo %}
+  <img src="{{ logo.url }}" alt="{{ logo.alt }}" width="{{ logo.width }}" height="{{ logo.height }}">
+{% else %}
+  <span class="site-name">{{ site.name }}</span>
+{% endif %}
+```
+
+**Image variants:**
+```liquid
+<img src="{{ media.hero.url }}?size=thumbnail" alt="Thumbnail">
+<img src="{{ media.hero.url }}?size=large" alt="Large">
+<img src="{{ media.hero.url }}?size=800x600" alt="Custom size">
+```
+
+Available sizes: `thumbnail`, `small`, `medium`, `large`, `xlarge`, or custom `WxH`.
+
+### site.media
+
+Legacy access to the site's media library. Identical to the top-level `media` object.
+
+```liquid
+{{ site.media.logo.url }}
+{{ site.media['hero.png'].url }}
+```
+
+**Note:** Prefer using the top-level `media` object for cleaner templates.
 
 ### settings
 
@@ -113,8 +222,223 @@ Dataset records are Liquid drops with dynamic properties based on your dataset s
 {{ article.slug }}
 {{ article.excerpt }}
 {{ article.published_at | date: '%B %d, %Y' }}
-{{ article.author }}
 {{ article.image | img_url: 'large' }}
+```
+
+Records may also have an `author` property if one is assigned:
+
+```liquid
+{% if article.author %}
+  <p class="byline">By {{ article.author.name }}</p>
+{% endif %}
+```
+
+### authors
+
+Access to all authors attached to the current site. Authors support E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness) fields for SEO.
+
+**Access by slug:**
+```liquid
+{{ authors.jane-smith.name }}
+{{ authors.jane-smith.bio }}
+{{ authors.jane-smith.job_title }}
+{{ authors.jane-smith.organization }}
+{{ authors.jane-smith.credentials }}
+{{ authors.jane-smith.avatar_url }}
+```
+
+**Iterate all site authors:**
+```liquid
+{% for author in authors %}
+  <div class="author-card">
+    <img src="{{ author.avatar_url }}" alt="{{ author.name }}">
+    <h3>{{ author.name }}</h3>
+    <p>{{ author.job_title }}, {{ author.organization }}</p>
+    <p>{{ author.bio }}</p>
+  </div>
+{% endfor %}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `author.id` | String | Prefix ID (e.g., `author_abc123`) |
+| `author.name` | String | Full name |
+| `author.slug` | String | URL-friendly identifier |
+| `author.bio` | String | Biography text |
+| `author.email` | String | Contact email |
+| `author.website_url` | String | Personal website |
+| `author.job_title` | String | Professional title (E-E-A-T) |
+| `author.organization` | String | Company/organization (E-E-A-T) |
+| `author.credentials` | String | Degrees, certifications (E-E-A-T) |
+| `author.avatar_url` | String | Avatar image URL |
+| `author.social_links` | Object | Social media handles |
+
+**Schema.org Person markup:**
+```liquid
+{% if article.author %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "author": {
+    "@type": "Person",
+    "name": "{{ article.author.name }}",
+    "jobTitle": "{{ article.author.job_title }}",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "{{ article.author.organization }}"
+    }
+  }
+}
+</script>
+{% endif %}
+```
+
+### posts
+
+Access to all published blog posts for the current site.
+
+**Access by slug:**
+```liquid
+{{ posts.getting-started.title }}
+{{ posts.getting-started.excerpt }}
+{{ posts.getting-started.published_at | date: '%B %d, %Y' }}
+```
+
+**Iterate all posts (newest first):**
+```liquid
+{% for post in posts %}
+  <article>
+    <h2><a href="/blog/{{ post.slug }}">{{ post.title }}</a></h2>
+    <p class="meta">{{ post.published_at | date: '%B %d, %Y' }}</p>
+    <p>{{ post.excerpt }}</p>
+  </article>
+{% endfor %}
+```
+
+**Get recent posts:**
+```liquid
+{% for post in posts.recent limit: 5 %}
+  <li><a href="/blog/{{ post.slug }}">{{ post.title }}</a></li>
+{% endfor %}
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `post.id` | String | Prefix ID (e.g., `post_abc123`) |
+| `post.title` | String | Post title |
+| `post.slug` | String | URL-friendly identifier |
+| `post.url` | String | Full URL path (e.g., `/blog/my-post`) |
+| `post.excerpt` | String | Short summary |
+| `post.content` | String | Full rich text content |
+| `post.published_at` | DateTime | Publication date |
+| `post.author` | Object | Author object (if assigned) |
+| `post.tags` | Array | Array of tag objects |
+| `post.schema_type` | String | Schema.org type (BlogPosting, Article, etc.) |
+
+**Post with tags:**
+```liquid
+{% for tag in post.tags %}
+  <a href="/tags/{{ tag.slug }}" class="tag">{{ tag.name }}</a>
+{% endfor %}
+```
+
+### pages
+
+Access to all static pages for the current site, ordered by position.
+
+**Access by slug:**
+```liquid
+{{ pages.about.title }}
+{{ pages.about.content }}
+{{ pages.contact.title }}
+```
+
+**Iterate all pages (for navigation):**
+```liquid
+<nav>
+  {% for page in pages %}
+    <a href="{{ page.url }}"
+       {% if request.path == page.url %}class="active"{% endif %}>
+      {{ page.title }}
+    </a>
+  {% endfor %}
+</nav>
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `page.id` | String | Prefix ID (e.g., `page_abc123`) |
+| `page.title` | String | Page title |
+| `page.slug` | String | URL-friendly identifier |
+| `page.url` | String | Full URL path (e.g., `/about`) |
+| `page.content` | String | Full rich text content |
+| `page.position` | Integer | Sort order for navigation |
+| `page.author` | Object | Author object (if assigned) |
+| `page.schema_type` | String | Schema.org type (WebPage, AboutPage, etc.) |
+
+### tags
+
+Access to all tags for the current site.
+
+**Access by slug:**
+```liquid
+{{ tags.ruby.name }}
+{{ tags.javascript.slug }}
+```
+
+**Iterate all tags:**
+```liquid
+<div class="tag-cloud">
+  {% for tag in tags %}
+    <a href="/tags/{{ tag.slug }}">{{ tag.name }}</a>
+  {% endfor %}
+</div>
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `tag.name` | String | Tag display name |
+| `tag.slug` | String | URL-friendly identifier |
+| `tag.url` | String | Full URL path (e.g., `/tags/ruby`) |
+
+### post (contextual)
+
+Available in `templates/post.liquid` when rendering an individual blog post. Contains the current post data.
+
+```liquid
+{% comment %} templates/post.liquid {% endcomment %}
+<article>
+  <h1>{{ post.title }}</h1>
+  <p class="meta">
+    Published {{ post.published_at | date: '%B %d, %Y' }}
+    {% if post.author %}by {{ post.author.name }}{% endif %}
+  </p>
+  <div class="content">{{ post.content }}</div>
+</article>
+```
+
+### page (contextual)
+
+Available in `templates/page.liquid` when rendering an individual static page. Contains the current page data.
+
+```liquid
+{% comment %} templates/page.liquid {% endcomment %}
+<article class="page">
+  <h1>{{ page.title }}</h1>
+  <div class="content">{{ page.content }}</div>
+</article>
+```
+
+### current_tag (contextual)
+
+Available when viewing `/tags/:tag` URLs. Contains the current tag being filtered.
+
+```liquid
+<h1>Posts tagged "{{ current_tag }}"</h1>
+{% for post in posts %}
+  {% hostnet_render 'post-card', post: post %}
+{% endfor %}
 ```
 
 ### collection
@@ -175,6 +499,38 @@ Available on dataset list and item pages. Contains information about the dataset
     / {{ article.title }}
   {% endif %}
 </nav>
+```
+
+### route_params
+
+Available when a template is rendered via a parameterized route pattern (defined with `{% routes %}`). Contains all captured URL parameters.
+
+```liquid
+{% routes %}
+/companies/:city/:state/:slug
+{% endroutes %}
+
+<!-- Access via route_params object -->
+{{ route_params.city }}
+{{ route_params.state }}
+{{ route_params.slug }}
+
+<!-- Or directly as top-level variables -->
+{{ city }}
+{{ state }}
+{{ slug }}
+```
+
+Use route params to filter datasets or customize content:
+
+```liquid
+{% assign company = datasets.companies | where: 'slug', route_params.slug | first %}
+{% if company %}
+  <h1>{{ company.name }}</h1>
+  <p>Located in {{ route_params.city }}, {{ route_params.state }}</p>
+{% else %}
+  <p>Company not found.</p>
+{% endif %}
 ```
 
 ### content_for_layout
@@ -312,6 +668,181 @@ Defines configurable settings for a section. Only valid in section files. Render
 
 Place the schema block at the end of your section file. See [Settings Schema](settings-schema.md) for full schema documentation.
 
+### routes
+
+Defines parameterized URL patterns for a template. Only valid in template files. Renders nothing - it's metadata only.
+
+```liquid
+{% routes %}
+/companies/:city/:state/:slug
+/companies/:slug
+{% endroutes %}
+```
+
+**Pattern syntax:**
+- Static segments match exactly: `/companies` matches "companies"
+- Dynamic segments start with `:` and capture values: `:slug` captures "acme-corp"
+- Multiple patterns per template are supported
+- More specific patterns (more segments, more static parts) are matched first
+
+**Accessing route parameters:**
+
+Parameters are available both as top-level variables and via the `route_params` object:
+
+```liquid
+{% routes %}
+/companies/:city/:state/:slug
+{% endroutes %}
+
+<!-- Both access styles work -->
+<h1>Companies in {{ city }}, {{ state }}</h1>
+<h1>Companies in {{ route_params.city }}, {{ route_params.state }}</h1>
+
+<!-- Use params to fetch data -->
+{% assign company = datasets.companies | where: 'slug', slug | first %}
+<h2>{{ company.name }}</h2>
+```
+
+**Example use cases:**
+
+Location-based filtering:
+```liquid
+{% routes %}
+/properties/:city/:neighborhood
+/properties/:city
+{% endroutes %}
+
+<h1>Properties in {{ city }}{% if neighborhood %}, {{ neighborhood }}{% endif %}</h1>
+{% assign results = datasets.properties | where: 'city', city %}
+```
+
+Category pages:
+```liquid
+{% routes %}
+/products/:category/:subcategory
+/products/:category
+{% endroutes %}
+
+{% for product in datasets.products %}
+  {% if product.category == category %}
+    {% hostnet_render 'product-card', product: product %}
+  {% endif %}
+{% endfor %}
+```
+
+**How routing priority works:**
+
+1. Exact template match (e.g., `/about` → `templates/about.liquid`)
+2. Parameterized route patterns (sorted by specificity)
+3. Dataset mount points (e.g., `/blog/my-post`)
+4. 404 page
+
+Specificity is calculated by:
+- Number of segments (more = higher priority)
+- Static vs dynamic segments (static segments score higher)
+- Position (earlier segments weighted more)
+
+### dropin
+
+Renders a drop-in (user-managed content block). Drop-ins are HTML/text content blocks managed by site owners through the dashboard, not stored in theme files.
+
+**Basic usage:**
+```liquid
+{% dropin 'footer-disclaimer' %}
+{% dropin 'contact-info' %}
+{% dropin 'promo-banner' %}
+```
+
+**With fallback:**
+
+Since `dropin` returns an empty string if not found, use `capture` with the `default` filter:
+```liquid
+{% capture content %}{% dropin 'contact-info' %}{% endcapture %}
+{{ content | default: 'Contact us at info@example.com' }}
+```
+
+**Cascading scope:**
+
+Drop-ins support cascading lookup:
+1. First checks for a site-specific drop-in with that name
+2. Falls back to account-wide drop-in if no site-specific exists
+3. Returns empty string if neither exists
+
+This allows site owners to:
+- Create account-wide drop-ins shared across all sites
+- Override specific drop-ins for individual sites
+
+**Important:** Unlike snippets and sections, drop-ins contain plain HTML only. Liquid code inside drop-ins is NOT processed - it will be output as-is.
+
+### json_ld
+
+Generates Schema.org JSON-LD structured data for SEO. Automatically detects the current content type (post, page, or dataset record) and outputs appropriate markup.
+
+**Basic usage:**
+```liquid
+{% json_ld %}
+```
+
+**In a post template:**
+```liquid
+{% comment %} templates/post.liquid {% endcomment %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ post.title }} | {{ site.name }}</title>
+  {% json_ld %}
+</head>
+```
+
+Output (for BlogPosting):
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Getting Started with Rails",
+  "datePublished": "2025-01-15T10:30:00Z",
+  "dateModified": "2025-01-16T14:20:00Z",
+  "author": {
+    "@type": "Person",
+    "name": "Jane Smith",
+    "jobTitle": "Senior Developer"
+  }
+}
+</script>
+```
+
+**In a page template:**
+```liquid
+{% comment %} templates/page.liquid {% endcomment %}
+<head>
+  {% json_ld %}
+</head>
+```
+
+Output (for WebPage, AboutPage, ContactPage, or FAQPage):
+```html
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About Us",
+  "url": "/about",
+  "dateModified": "2025-01-10T08:00:00Z"
+}
+</script>
+```
+
+**Supported types:**
+
+| Context | Schema Type | Source |
+|---------|-------------|--------|
+| Post | BlogPosting, Article, NewsArticle | `post.schema_type` |
+| Page | WebPage, AboutPage, ContactPage, FAQPage | `page.schema_type` |
+| Dataset Record | Article (default) | Article schema |
+
+The tag automatically includes author information when available, using E-E-A-T fields (name, job title, organization) from the Author model.
+
 ---
 
 ## Custom Filters
@@ -332,9 +863,20 @@ Output depends on storage configuration (local path or CDN URL).
 
 ### img_url
 
-Generates a sized image URL. Works with image fields from datasets or media library.
+Generates a sized image URL. Works with:
+1. **Media library files** - Looks up by filename in site's media library
+2. **Dataset attachment filenames** - Resolves via current dataset context
+3. **External URLs** - Passes through unchanged
+4. **ActiveStorage blobs** - Generates Rails variant URLs
 
-**Named sizes:**
+**Media library files:**
+```liquid
+{{ "logo.png" | img_url }}                 <!-- /media/logo.png -->
+{{ "hero.jpg" | img_url: 'large' }}        <!-- /media/hero.jpg?size=large -->
+{{ "banner.png" | img_url: '800x400' }}    <!-- /media/banner.png?size=800x400 -->
+```
+
+**Dataset image fields:**
 ```liquid
 {{ article.image | img_url: 'small' }}    <!-- 100x100 -->
 {{ article.image | img_url: 'medium' }}   <!-- 300x300 -->
@@ -347,6 +889,20 @@ Generates a sized image URL. Works with image fields from datasets or media libr
 {{ article.image | img_url: '800x400' }}
 {{ product.image | img_url: '400x400' }}
 ```
+
+**External URLs** (passed through unchanged):
+```liquid
+{{ "https://example.com/image.jpg" | img_url: 'large' }}
+<!-- Output: https://example.com/image.jpg -->
+```
+
+**Resolution order:**
+1. External URLs (http://, https://) - passed through
+2. Absolute paths (/) - passed through
+3. ActiveStorage blobs - variant URLs generated
+4. Media library files - looked up by filename
+5. Dataset attachments - resolved via context
+6. Fallback - treated as theme asset
 
 ### item_url
 

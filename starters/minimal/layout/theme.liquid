@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
 </head>
 <body class="min-h-screen flex flex-col bg-gray-50 text-gray-900">
+  {% dropin 'announcement-banner' %}
+
   {% section 'header' %}
 
   <main class="flex-1">
@@ -20,5 +22,7 @@
   </main>
 
   {% section 'footer' %}
+
+  {% dropin 'cookie-notice' %}
 </body>
 </html>

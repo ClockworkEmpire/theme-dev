@@ -39,12 +39,14 @@ theme/
 | Object | Description | Example |
 |--------|-------------|---------|
 | `site` | Site info | `{{ site.name }}` |
+| `site.media` | Media library | `{{ site.media.logo.url }}` |
 | `settings` | Theme settings | `{{ settings.logo_text }}` |
 | `request` | Current request | `{{ request.path }}` |
 | `datasets` | Mounted datasets | `{% for p in datasets.posts %}` |
 | `collection` | Records (list pages) | `{% for item in collection %}` |
 | `pagination` | Page info (list pages) | `{{ pagination.current_page }}` |
 | `mount` | Dataset mount info | `{{ mount.alias }}` |
+| `route_params` | URL params (parameterized routes) | `{{ route_params.city }}` |
 | `content_for_layout` | Page content (layouts) | `{{ content_for_layout }}` |
 | `section` | Section context | `{{ section.settings.title }}` |
 
@@ -57,6 +59,16 @@ theme/
 {{ site.url }}
 {{ site.staging_url }}
 {{ site.production_url }}
+
+# site.media (media library)
+{{ site.media['logo.png'].url }}        # By filename
+{{ site.media.logo.url }}               # Without extension
+{{ site.media.hero_image.url }}         # Underscores → hyphens
+{{ site.media.logo.width }}             # Image dimensions
+{{ site.media.logo.height }}
+{{ site.media.logo.content_type }}
+{{ site.media.logo.size }}              # Bytes
+{{ site.media.logo.alt }}               # Alt text
 
 # request
 {{ request.path }}
@@ -109,6 +121,51 @@ Renders a snippet from `snippets/` with isolated variable scope.
 {% endschema %}
 ```
 Defines configurable settings for a section. Renders nothing.
+
+### Drop-In Tag
+```liquid
+{% dropin 'footer-disclaimer' %}
+{% dropin 'announcement-banner' %}
+{% dropin 'cookie-notice' %}
+```
+Renders user-managed HTML content from the dashboard. Returns empty string if not found.
+
+**With fallback:**
+```liquid
+{% capture content %}{% dropin 'promo' %}{% endcapture %}
+{{ content | default: '<p>Default text</p>' }}
+```
+
+Drop-ins are plain HTML only (no Liquid), managed by site owners, and support cascading scope (site-specific overrides account-wide).
+
+### Routes Tag (templates only)
+```liquid
+{% routes %}
+/companies/:city/:state/:slug
+/companies/:slug
+{% endroutes %}
+```
+Defines parameterized URL patterns. Dynamic segments start with `:` and capture values.
+
+**Accessing params:**
+```liquid
+{{ city }}                    <!-- top-level variable -->
+{{ route_params.city }}       <!-- via route_params object -->
+```
+
+**Complete example:**
+```liquid
+{% routes %}
+/products/:category
+{% endroutes %}
+
+<h1>{{ category | capitalize }} Products</h1>
+{% for product in datasets.products %}
+  {% if product.category == category %}
+    {% hostnet_render 'product-card', product: product %}
+  {% endif %}
+{% endfor %}
+```
 
 ---
 
@@ -177,9 +234,10 @@ Defines configurable settings for a section. Renders nothing.
 Priority order:
 
 1. **Template match:** `/about` → `templates/about.liquid`
-2. **Dataset list:** `/blog` → `templates/collection.liquid`
-3. **Dataset item:** `/blog/my-post` → `templates/article.liquid`
-4. **404:** `templates/404.liquid`
+2. **Parameterized routes:** `/companies/seattle/wa/acme` → template with matching `{% routes %}`
+3. **Dataset list:** `/blog` → `templates/collection.liquid`
+4. **Dataset item:** `/blog/my-post` → `templates/article.liquid`
+5. **404:** `templates/404.liquid`
 
 ---
 
@@ -268,6 +326,30 @@ Priority order:
   ]
 }
 {% endschema %}
+```
+
+### Media Library Usage
+```liquid
+<!-- Logo from media library (with fallback) -->
+{% assign logo = site.media['logo.png'] %}
+{% if logo %}
+  <img src="{{ logo.url }}" alt="{{ site.name }}" width="{{ logo.width }}" height="{{ logo.height }}">
+{% else %}
+  <span class="site-name">{{ site.name }}</span>
+{% endif %}
+
+<!-- Image with variant -->
+<img src="{{ site.media.hero.url }}?size=large" alt="Hero image">
+
+<!-- Using img_url filter -->
+<img src="{{ "banner.jpg" | img_url: '800x400' }}" alt="Banner">
+
+<!-- Iterate all images -->
+{% for file in site.media %}
+  {% if file.image? %}
+    <img src="{{ file.url }}" alt="{{ file.alt | default: file.filename }}">
+  {% endif %}
+{% endfor %}
 ```
 
 ### Dataset Access on Any Page

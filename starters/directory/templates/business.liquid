@@ -286,8 +286,12 @@
             <p class="text-secondary">{{ item.hours }}</p>
           </div>
         {% endif %}
+
+        {% dropin 'listing-cta' %}
       </div>
     </div>
+
+    {% dropin 'listing-disclaimer' %}
 
     {% comment %} Nearby businesses section {% endcomment %}
     {% assign nearby = datasets.businesses | where: 'city', item.city | limit: 4 %}

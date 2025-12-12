@@ -19,6 +19,8 @@
   {% endif %}
 </head>
 <body class="min-h-screen flex flex-col bg-page" data-skin="{{ active_skin }}">
+  {% dropin 'announcement-banner' %}
+
   {% section 'header' %}
 
   <main class="flex-1">
@@ -26,5 +28,7 @@
   </main>
 
   {% section 'footer' %}
+
+  {% dropin 'cookie-notice' %}
 </body>
 </html>

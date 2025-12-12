@@ -720,3 +720,109 @@ Build complex layouts from simple components:
   <!-- 200 lines of mixed HTML and Liquid -->
 </article>
 ```
+
+---
+
+## Drop-Ins
+
+Drop-ins are a third type of reusable content, distinct from sections and snippets.
+
+### What Are Drop-Ins?
+
+Drop-ins are **user-managed HTML/text blocks** stored in the database, not in theme files. Unlike snippets:
+
+- They're edited via the dashboard UI, not theme code
+- They contain plain HTML only (no Liquid processing)
+- They support cascading scope (site-specific overrides account-wide)
+
+### When to Use Drop-Ins
+
+| Component | Managed By | Contains Liquid | Use For |
+|-----------|------------|-----------------|---------|
+| **Sections** | Theme developer | Yes | Configurable page components (hero, header) |
+| **Snippets** | Theme developer | Yes | Reusable UI patterns (cards, icons) |
+| **Drop-Ins** | Site owner | No (plain HTML) | User-managed content (disclaimers, promos) |
+
+**Use drop-ins for content that:**
+- Site owners need to update without editing theme files
+- May vary between sites in an account
+- Contains only HTML/text (no dynamic data needed)
+
+### Including Drop-Ins
+
+Use the `{% dropin %}` tag:
+
+```liquid
+{% dropin 'footer-disclaimer' %}
+{% dropin 'announcement-banner' %}
+{% dropin 'contact-info' %}
+```
+
+If the drop-in doesn't exist, it renders nothing (empty string).
+
+### Fallback Content
+
+Since drop-ins may not exist, use `capture` with the `default` filter:
+
+```liquid
+{% capture content %}{% dropin 'promo-banner' %}{% endcapture %}
+{{ content | default: '<p>Default promotional text</p>' }}
+```
+
+### Cascading Scope
+
+Drop-ins support two levels:
+
+1. **Account-wide** - Available to all sites in the account
+2. **Site-specific** - Overrides account-wide drop-in with same name
+
+This lets site owners:
+- Create shared content once at the account level
+- Override specific drop-ins for individual sites when needed
+
+### Common Drop-In Use Cases
+
+| Drop-In Name | Purpose | Location |
+|--------------|---------|----------|
+| `announcement-banner` | Top-of-page announcements | Layout (before header) |
+| `cookie-notice` | GDPR/privacy notice | Layout (before `</body>`) |
+| `footer-disclaimer` | Legal disclaimers | Footer section |
+| `social-links` | Social media icons | Footer section |
+| `header-cta` | Navigation CTA button | Header section |
+| `article-cta` | Call-to-action after content | Article template |
+| `contact-info` | Contact details | Contact page |
+
+### Example: Using Drop-Ins in Layout
+
+```liquid
+<!-- layout/theme.liquid -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ page_title | default: site.name }}</title>
+</head>
+<body>
+  {% dropin 'announcement-banner' %}
+
+  {% section 'header' %}
+
+  <main>{{ content_for_layout }}</main>
+
+  {% section 'footer' %}
+
+  {% dropin 'cookie-notice' %}
+</body>
+</html>
+```
+
+### Key Differences from Snippets
+
+| Aspect | Snippets | Drop-Ins |
+|--------|----------|----------|
+| Storage | Theme files | Database |
+| Editing | Theme developer | Site owner (dashboard) |
+| Liquid support | Yes | No (plain HTML only) |
+| Variables | Passed explicitly | None |
+| Scope | Theme-wide | Account/site cascading |
+
+See the [Liquid Reference](liquid-reference.md#dropin) for full tag documentation.

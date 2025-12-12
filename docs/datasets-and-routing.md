@@ -23,9 +23,10 @@ Your theme doesn't define what data exists - it renders whatever datasets the si
 When a request comes in, HostNet resolves URLs in this order:
 
 1. **Exact template match** - `/about` → `templates/about.liquid`
-2. **Dataset list page** - `/blog` → `templates/collection.liquid`
-3. **Dataset item page** - `/blog/my-post` → `templates/article.liquid`
-4. **404 page** - `templates/404.liquid`
+2. **Parameterized route patterns** - `/companies/seattle/wa/acme` → template with matching `{% routes %}` block
+3. **Dataset list page** - `/blog` → `templates/collection.liquid`
+4. **Dataset item page** - `/blog/my-post` → `templates/article.liquid`
+5. **404 page** - `templates/404.liquid`
 
 ### Template Matching
 
@@ -55,6 +56,148 @@ This configuration determines:
 - `/blog/my-first-post` → single article page
 - `/products` → collection page showing products
 - `/products/widget-pro` → single product page
+
+---
+
+## Parameterized Route Patterns
+
+Templates can define custom URL patterns that capture dynamic segments. This is useful for:
+- Location-based pages (e.g., `/properties/seattle/downtown`)
+- Category filtering (e.g., `/products/electronics/phones`)
+- Custom record lookups (e.g., `/companies/acme-corp`)
+
+### Defining Routes
+
+Use the `{% routes %}` block at the top of a template to define URL patterns:
+
+```liquid
+{% routes %}
+/companies/:city/:state/:slug
+/companies/:slug
+{% endroutes %}
+
+<h1>{{ company.name }}</h1>
+```
+
+**Pattern syntax:**
+- Static segments match exactly: `/companies` matches "companies"
+- Dynamic segments start with `:` and capture URL values: `:slug` captures any value in that position
+- Multiple patterns per template are supported (one per line)
+
+### Accessing Captured Parameters
+
+Parameters captured from the URL are available in two ways:
+
+**1. As top-level variables:**
+```liquid
+{{ city }}
+{{ state }}
+{{ slug }}
+```
+
+**2. Via the `route_params` object:**
+```liquid
+{{ route_params.city }}
+{{ route_params.state }}
+{{ route_params.slug }}
+```
+
+Both approaches are equivalent. Use whichever is clearer in context.
+
+### Pattern Specificity
+
+When multiple patterns could match a URL, the most specific pattern wins. Specificity is calculated by:
+
+1. **Number of segments** - More segments = higher priority
+2. **Static vs dynamic** - Static segments score higher than dynamic ones
+3. **Position** - Earlier segments are weighted more heavily
+
+Example: For URL `/companies/seattle/wa/acme`:
+- `/companies/:city/:state/:slug` (4 segments, 1 static) - **wins**
+- `/companies/:slug` (2 segments) - lower priority
+
+### Real-World Examples
+
+**Location-based business directory:**
+```liquid
+{% routes %}
+/businesses/:city/:category
+/businesses/:city
+{% endroutes %}
+
+<h1>
+  {% if category %}
+    {{ category | capitalize }} in {{ city | capitalize }}
+  {% else %}
+    Businesses in {{ city | capitalize }}
+  {% endif %}
+</h1>
+
+{% for business in datasets.businesses %}
+  {% if business.city == city %}
+    {% if category == blank or business.category == category %}
+      {% hostnet_render 'business-card', business: business %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+```
+
+**Product category pages:**
+```liquid
+{% routes %}
+/shop/:category/:subcategory
+/shop/:category
+{% endroutes %}
+
+<nav class="breadcrumb">
+  <a href="/">Home</a> /
+  <a href="/shop/{{ category }}">{{ category | capitalize }}</a>
+  {% if subcategory %}
+    / {{ subcategory | capitalize }}
+  {% endif %}
+</nav>
+
+<div class="product-grid">
+  {% for product in datasets.products %}
+    {% if product.category == category %}
+      {% if subcategory == blank or product.subcategory == subcategory %}
+        {% hostnet_render 'product-card', product: product %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</div>
+```
+
+**Custom record lookup:**
+```liquid
+{% routes %}
+/team/:slug
+{% endroutes %}
+
+{% assign member = datasets.team | where: 'slug', slug | first %}
+
+{% if member %}
+  <article class="team-member">
+    <h1>{{ member.name }}</h1>
+    <p class="title">{{ member.title }}</p>
+    <div class="bio">{{ member.bio }}</div>
+  </article>
+{% else %}
+  <p>Team member not found.</p>
+{% endif %}
+```
+
+### When to Use Parameterized Routes vs Dataset Mounts
+
+| Use Case | Solution |
+|----------|----------|
+| Standard blog/articles | Dataset mount (automatic list + item pages) |
+| Product catalog with categories | Parameterized routes for category filtering |
+| Location-based directory | Parameterized routes for location segments |
+| Simple record detail pages | Dataset mount item pages |
+| Complex multi-segment URLs | Parameterized routes |
+
+**Key difference:** Dataset mounts automatically handle list/item pages with pagination. Parameterized routes give you full control but require manual data fetching.
 
 ---
 

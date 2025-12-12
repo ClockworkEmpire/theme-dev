@@ -67,6 +67,8 @@
       </div>
     </div>
 
+    {% dropin 'footer-disclaimer' %}
+
     <!-- Bottom bar -->
     <div class="mt-8 pt-6 border-t border-white/10">
       <div class="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -74,6 +76,7 @@
           {{ section.settings.copyright | default: '© 2024 All rights reserved.' }}
         </p>
         <div class="flex items-center gap-4 text-sm">
+          {% dropin 'social-links' %}
           <a href="/privacy" class="text-inverse opacity-50 hover:opacity-100">Privacy Policy</a>
           <a href="/terms" class="text-inverse opacity-50 hover:opacity-100">Terms of Use</a>
         </div>

@@ -378,6 +378,37 @@ Defines section settings (metadata only, renders nothing).
 {% endschema %}
 ```
 
+### dropin
+
+Renders user-managed HTML content from the dashboard. Drop-ins are stored in the database, not theme files, and are managed by site owners.
+
+```liquid
+{% dropin 'footer-disclaimer' %}
+{% dropin 'announcement-banner' %}
+{% dropin 'cookie-notice' %}
+```
+
+**Key characteristics:**
+- Plain HTML only (no Liquid processing)
+- Managed via dashboard, not theme files
+- Cascading scope: site-specific overrides account-wide
+- Returns empty string if not found
+
+**With fallback:**
+```liquid
+{% capture content %}{% dropin 'promo-banner' %}{% endcapture %}
+{{ content | default: '<p>Default promotional text</p>' }}
+```
+
+**Common drop-in placements:**
+| Name | Purpose | Location |
+|------|---------|----------|
+| `announcement-banner` | Top-of-page announcements | Layout (before header) |
+| `cookie-notice` | GDPR/privacy notice | Layout (before `</body>`) |
+| `footer-disclaimer` | Legal disclaimers | Footer section |
+| `social-links` | Social media icons | Footer section |
+| `article-cta` | Call-to-action after content | Article template |
+
 ---
 
 ## Custom Filters
@@ -1014,6 +1045,7 @@ Or use helper:
 |-----|---------|
 | `{% section 'name' %}` | Render section with settings |
 | `{% hostnet_render 'name' %}` | Render snippet |
+| `{% dropin 'name' %}` | Render user-managed HTML content |
 | `{% schema %}...{% endschema %}` | Define section settings |
 
 ### Custom Filters

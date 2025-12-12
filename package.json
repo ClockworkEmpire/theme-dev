@@ -1,6 +1,6 @@
 {
   "name": "@clockworkempire/theme-dev",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Local development server for HostNet themes",
   "bin": {
     "hostnet": "./src/index.js"
@@ -24,5 +24,8 @@
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   }
 }

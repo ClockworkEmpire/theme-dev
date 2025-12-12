@@ -47,9 +47,12 @@
       </div>
     </div>
 
+    {% dropin 'footer-disclaimer' %}
+
     <!-- Copyright -->
     <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
       <p>&copy; {{ 'now' | date: '%Y' }} {{ site.name }}. All rights reserved.</p>
+      {% dropin 'social-links' %}
     </div>
   </div>
 </footer>
