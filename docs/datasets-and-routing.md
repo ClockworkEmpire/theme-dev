@@ -424,6 +424,23 @@ Handle missing or empty fields gracefully:
 {% endif %}
 ```
 
+### Field Aliases
+
+Site owners can configure **field aliases** in the schema editor. Aliases allow multiple names to resolve to the same field. For example, if a dataset has a field `company_name` with aliases `business_name` and `name`, all of these work:
+
+```liquid
+{{ record.company_name }}    <!-- canonical key -->
+{{ record.business_name }}   <!-- alias -->
+{{ record.name }}            <!-- alias -->
+```
+
+**Why this matters for theme developers:**
+- You can use common field names like `name`, `title`, `description` without knowing the exact schema
+- Site owners can map their dataset's fields to match your template expectations
+- Themes become more portable across different datasets
+
+**Best practice:** Document which field names your theme expects. Site owners can then configure aliases to make their data work with your theme.
+
 ---
 
 ## Generating URLs
@@ -713,6 +730,8 @@ Different sites may use different field names. Use sensible fallbacks:
 {{ item.title | default: item.name | default: 'Untitled' }}
 {{ item.excerpt | default: item.description | default: item.content | truncate_words: 30 }}
 ```
+
+**Better approach:** Document your expected field names and let site owners use [field aliases](#field-aliases) to map their data. For example, if your theme uses `{{ record.title }}`, site owners can add `title` as an alias to their `company_name` field.
 
 ### 3. Use Generic Templates
 
