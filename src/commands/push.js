@@ -54,9 +54,12 @@ module.exports = function(args) {
   // Mount the theme directory and run push command
   dockerArgs.push('-v', `${themePath}:/theme`);
 
-  // Pass through environment variable for API token if set
-  if (process.env.HOSTNET_API_TOKEN) {
-    dockerArgs.push('-e', `HOSTNET_API_TOKEN=${process.env.HOSTNET_API_TOKEN}`);
+  // Pass through environment variables if set
+  const envVars = ['HOSTNET_API_TOKEN', 'HOSTNET_API_URL', 'HOSTNET_ACCOUNT_ID'];
+  for (const envVar of envVars) {
+    if (process.env[envVar]) {
+      dockerArgs.push('-e', `${envVar}=${process.env[envVar]}`);
+    }
   }
 
   dockerArgs.push(DOCKER_IMAGE, 'push', '/theme', ...passArgs);
