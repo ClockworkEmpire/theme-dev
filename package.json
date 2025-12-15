@@ -1,6 +1,6 @@
 {
   "name": "@clockworkempire/theme-dev",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Local development server for HostNet themes",
   "bin": {
     "hostnet": "./src/index.js"
