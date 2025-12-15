@@ -10,7 +10,8 @@ module.exports = function(args) {
 
   // Find theme path (first non-flag argument that's not a value for a flag)
   let themePath = '.';
-  const flagsWithValues = ['--config', '-c', '--token', '-t', '--url', '-u', '--account', '-a', '--theme-id'];
+  const flagsWithValues = ['--config', '-c', '--token', '-t', '--url', '-u', '--account', '-a', '--theme-id', '--theme-name'];
+  const booleanFlags = ['--create', '--help'];
   const passArgs = [];
 
   for (let i = 0; i < args.length; i++) {
@@ -23,8 +24,11 @@ module.exports = function(args) {
         passArgs.push(args[i + 1]);
         i++;
       }
+    } else if (booleanFlags.includes(arg)) {
+      // Boolean flags (no value)
+      passArgs.push(arg);
     } else if (arg.startsWith('-')) {
-      // Other flags (like --help)
+      // Other flags
       passArgs.push(arg);
     } else if (themePath === '.') {
       // First non-flag argument is the theme path
