@@ -7,6 +7,7 @@ const DOCKER_IMAGE = 'ghcr.io/clockworkempire/theme-dev:latest';
 module.exports = function(args) {
   const portIndex = args.indexOf('--port');
   const port = portIndex !== -1 ? args[portIndex + 1] : '4000';
+  const wsPort = String(parseInt(port) + 1); // WebSocket port is HTTP port + 1
 
   // Find theme path (first non-flag argument)
   let themePath = args.find(a => !a.startsWith('-') && a !== port) || '.';
@@ -31,6 +32,7 @@ module.exports = function(args) {
     '-it',
     '-v', `${themePath}:/theme`,
     '-p', `${port}:4000`,
+    '-p', `${wsPort}:4001`,
     DOCKER_IMAGE
   ], { stdio: 'inherit' });
 
