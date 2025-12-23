@@ -702,3 +702,35 @@ Use the `item_url` filter to generate URLs from records:
 ```
 
 This produces URLs like `/blog/my-post` based on the dataset's `mount_path` and `slug_field`.
+
+### Importing Sample Data to Production
+
+When you upload a theme with `data/datasets/*.json` files, HostNet captures these sample datasets and makes them available for import. This allows theme designers to provide realistic demo content that site owners can import with one click.
+
+**How it works:**
+
+1. Include sample data JSON files in `data/datasets/` (same format as dev server)
+2. Upload the theme ZIP to HostNet
+3. On the theme's detail page, a "Sample Datasets" card appears
+4. Click "Import" to create a real dataset with all the sample records
+
+**Benefits for theme designers:**
+- Provide realistic demo content matching your templates
+- Show off the theme's full capabilities with real data
+- Pre-configure schema, slug field, and mount paths
+- Users can customize the dataset name during import
+
+**Example workflow:**
+
+```
+# 1. Create sample data during development
+data/datasets/businesses.json  # 10 sample business listings
+
+# 2. Upload theme to HostNet
+# Sample datasets are automatically extracted
+
+# 3. Site owner clicks "Import" → "Businesses"
+# Creates: Dataset named "Businesses" with 10 records
+```
+
+The imported dataset uses the field schema from your `hostnet.json` manifest combined with the records from the sample data file.

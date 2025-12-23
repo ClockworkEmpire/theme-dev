@@ -154,9 +154,12 @@ When accessing `media.something`, HostNet looks for files in this order:
 <img src="{{ media.hero.url }}?size=thumbnail" alt="Thumbnail">
 <img src="{{ media.hero.url }}?size=large" alt="Large">
 <img src="{{ media.hero.url }}?size=800x600" alt="Custom size">
+<img src="{{ media.hero.url }}?size=original" alt="Original unoptimized">
 ```
 
-Available sizes: `thumbnail`, `small`, `medium`, `large`, `xlarge`, or custom `WxH`.
+Available sizes: `thumbnail`, `small`, `medium`, `large`, `xlarge`, `original`, or custom `WxH`.
+
+**Note:** Images are automatically optimized on upload (85% quality, max 2400px). Use the `original` variant to access the uncompressed original file.
 
 ### site.media
 
@@ -861,13 +864,29 @@ Generates a URL for a theme asset in the `assets/` directory.
 
 Output depends on storage configuration (local path or CDN URL).
 
+**Theme asset images support variants** (same as media library):
+
+```liquid
+<!-- Direct URL with query param -->
+<img src="{{ 'logo.png' | asset_url }}?size=large">
+
+<!-- Or use filename variant pattern -->
+<img src="/assets/logo-large.png">
+<img src="/assets/hero-800x600.jpg">
+```
+
+Available sizes: `thumbnail`, `small`, `medium`, `large`, `xlarge`, or custom `WxH`.
+
+Non-image assets (CSS, JS, fonts) ignore variant parameters.
+
 ### img_url
 
 Generates a sized image URL. Works with:
 1. **Media library files** - Looks up by filename in site's media library
 2. **Dataset attachment filenames** - Resolves via current dataset context
-3. **External URLs** - Passes through unchanged
-4. **ActiveStorage blobs** - Generates Rails variant URLs
+3. **Theme assets** - Falls back to theme asset lookup
+4. **External URLs** - Passes through unchanged
+5. **ActiveStorage blobs** - Generates Rails variant URLs
 
 **Media library files:**
 ```liquid
@@ -896,13 +915,21 @@ Generates a sized image URL. Works with:
 <!-- Output: https://example.com/image.jpg -->
 ```
 
+**Theme assets:**
+```liquid
+{{ "logo.png" | img_url: 'large' }}        <!-- /assets/logo.png?size=large -->
+{{ "hero.jpg" | img_url: '800x400' }}      <!-- /assets/hero.jpg?size=800x400 -->
+```
+
+Theme assets are used as a fallback when no media library file or dataset attachment matches.
+
 **Resolution order:**
 1. External URLs (http://, https://) - passed through
 2. Absolute paths (/) - passed through
 3. ActiveStorage blobs - variant URLs generated
 4. Media library files - looked up by filename
 5. Dataset attachments - resolved via context
-6. Fallback - treated as theme asset
+6. Theme assets - fallback lookup in `assets/` directory
 
 ### item_url
 

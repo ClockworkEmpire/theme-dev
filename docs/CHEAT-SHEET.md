@@ -183,6 +183,15 @@ Defines parameterized URL patterns. Dynamic segments start with `:` and capture 
 | `stylesheet_tag` | `{{ url \| stylesheet_tag }}` | `<link rel="stylesheet">` |
 | `script_tag` | `{{ url \| script_tag }}` | `<script src="...">` |
 
+### Theme Asset Variants
+
+Image assets support variants (same as media library):
+```liquid
+<img src="{{ 'logo.png' | asset_url }}?size=large">
+<img src="/assets/logo-large.png">
+<img src="/assets/hero-800x600.jpg">
+```
+
 ### Image Sizes
 
 | Size | Dimensions |
@@ -191,11 +200,15 @@ Defines parameterized URL patterns. Dynamic segments start with `:` and capture 
 | `medium` | 300x300 |
 | `large` | 600x600 |
 | `xlarge` | 1200x1200 |
+| `original` | Unoptimized upload |
 | `WxH` | Custom, e.g., `400x300` |
+
+Images are auto-optimized on upload (85% quality, max 2400px). Use `original` to access uncompressed file.
 
 ```liquid
 {{ article.image | img_url: 'medium' }}
 {{ article.image | img_url: '800x400' }}
+{{ article.image | img_url: 'original' }}
 ```
 
 ---
