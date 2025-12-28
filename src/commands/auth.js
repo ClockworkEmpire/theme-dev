@@ -1,19 +1,29 @@
 const { spawn } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 const os = require('os');
 
 const DOCKER_IMAGE = 'ghcr.io/clockworkempire/theme-dev:latest';
 
 module.exports = function(args) {
-  // Path to hostnetrc (API key storage)
-  const hostnetrcPath = path.join(os.homedir(), '.hostnetrc');
+  // Path to global config (API key storage)
+  const configPath = path.join(os.homedir(), '.hostnet.yml');
+
+  // Create the file if it doesn't exist (Docker would create a directory otherwise)
+  // Also handle the case where it exists as a directory from a previous failed mount
+  if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(configPath, '', { mode: 0o600 });
+  } else if (fs.statSync(configPath).isDirectory()) {
+    fs.rmdirSync(configPath);
+    fs.writeFileSync(configPath, '', { mode: 0o600 });
+  }
 
   // Build Docker args
   const dockerArgs = [
     'run',
     '--rm',
     '-it',
-    '-v', `${hostnetrcPath}:/root/.hostnetrc`
+    '-v', `${configPath}:/root/.hostnet.yml`
   ];
 
   // Pass through additional arguments (like --server-url)

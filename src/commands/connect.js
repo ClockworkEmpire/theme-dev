@@ -16,21 +16,26 @@ module.exports = function(args) {
     process.exit(1);
   }
 
-  // Path to hostnetrc (API key storage)
-  const hostnetrcPath = path.join(os.homedir(), '.hostnetrc');
+  // Path to global config (API key storage)
+  const configPath = path.join(os.homedir(), '.hostnet.yml');
+
+  // Create the file if it doesn't exist (Docker would create a directory otherwise)
+  // Also handle the case where it exists as a directory from a previous failed mount
+  if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(configPath, '', { mode: 0o600 });
+  } else if (fs.statSync(configPath).isDirectory()) {
+    fs.rmdirSync(configPath);
+    fs.writeFileSync(configPath, '', { mode: 0o600 });
+  }
 
   // Build Docker args
   const dockerArgs = [
     'run',
     '--rm',
     '-it',
-    '-v', `${themePath}:/theme`
+    '-v', `${themePath}:/theme`,
+    '-v', `${configPath}:/root/.hostnet.yml`
   ];
-
-  // Mount hostnetrc if it exists
-  if (fs.existsSync(hostnetrcPath)) {
-    dockerArgs.push('-v', `${hostnetrcPath}:/root/.hostnetrc`);
-  }
 
   // Pass through additional arguments (like --server-url)
   const passthroughArgs = args.filter(a => a.startsWith('-'));
