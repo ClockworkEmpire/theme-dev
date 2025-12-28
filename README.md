@@ -18,12 +18,26 @@ npm install -g github:clockworkempire/theme-dev
 # Create a new theme
 hostnet new my-theme
 
-# Start the dev server
+# Start the dev server (offline mode)
 cd my-theme
 hostnet dev
 ```
 
 Open http://localhost:4000 to view your theme.
+
+### Tunnel Mode (Connect to HostNet)
+
+Use the full Theme Editor UI while editing files locally:
+
+```bash
+# Authenticate once
+hostnet auth
+
+# Connect to HostNet
+hostnet connect ./my-theme
+```
+
+This opens the Theme Editor at HostNet with your local files.
 
 ## Commands
 
@@ -31,8 +45,10 @@ Open http://localhost:4000 to view your theme.
 |---------|-------------|
 | `hostnet new <name>` | Create a new theme from blank scaffold |
 | `hostnet new <name> --example` | Create from full example theme |
-| `hostnet dev [path]` | Start dev server (default: current dir) |
+| `hostnet dev [path]` | Start local dev server (offline mode) |
 | `hostnet dev --port 3000` | Use custom port |
+| `hostnet connect [path]` | Connect to HostNet Theme Editor (tunnel mode) |
+| `hostnet auth` | Authenticate with HostNet (save API key) |
 | `hostnet update` | Pull latest version |
 | `hostnet version` | Show version info |
 | `hostnet help` | Show help |

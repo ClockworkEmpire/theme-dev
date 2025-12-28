@@ -3,6 +3,8 @@
 const commands = {
   new: require('./commands/new'),
   dev: require('./commands/dev'),
+  connect: require('./commands/connect'),
+  auth: require('./commands/auth'),
   push: require('./commands/push'),
   update: require('./commands/update'),
   version: require('./commands/version'),
@@ -30,8 +32,14 @@ Commands:
   new <name>           Create a new theme
     --example          Use the full example theme instead of blank scaffold
 
-  dev [path]           Start the development server
+  dev [path]           Start local development server (offline mode)
     --port <port>      Port to listen on (default: 4000)
+
+  connect [path]       Connect to HostNet Theme Editor (tunnel mode)
+    --server-url <url> HostNet server URL (default: https://hostnet.io)
+
+  auth                 Authenticate with HostNet (save API key)
+    --server-url <url> HostNet server URL (default: https://hostnet.io)
 
   push [path]          Push theme to HostNet server
     --url <url>        API URL (e.g., https://app.hostnet.com)
@@ -48,9 +56,10 @@ Commands:
 
 Examples:
   hostnet new my-theme
-  hostnet new my-theme --example
   hostnet dev
   hostnet dev ./my-theme --port 3000
+  hostnet connect ./my-theme
+  hostnet auth
   hostnet push --url https://app.hostnet.com --account acct_xxx --theme-id theme_xxx
 
 Documentation: https://github.com/clockworkempire/theme-dev

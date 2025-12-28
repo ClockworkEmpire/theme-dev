@@ -17,6 +17,9 @@
   {% if active_skin != 'default' and active_skin != '' %}
     <link rel="stylesheet" href="{{ 'skins/' | append: active_skin | append: '.css' | asset_url }}">
   {% endif %}
+
+  <!-- Theme Design Overrides (colors, fonts, etc. from Theme Settings) -->
+  {% theme_overrides %}
 </head>
 <body class="min-h-screen flex flex-col bg-page" data-skin="{{ active_skin }}">
   {% dropin 'announcement-banner' %}
