@@ -5,6 +5,7 @@ const commands = {
   dev: require('./commands/dev'),
   connect: require('./commands/connect'),
   auth: require('./commands/auth'),
+  env: require('./commands/env'),
   push: require('./commands/push'),
   update: require('./commands/update'),
   version: require('./commands/version'),
@@ -36,10 +37,19 @@ Commands:
     --port <port>      Port to listen on (default: 4000)
 
   connect [path]       Connect to HostNet Theme Editor (tunnel mode)
+    --env <name>       Environment to use (default: current)
     --server-url <url> HostNet server URL (default: https://hostnet.io)
 
   auth                 Authenticate with HostNet (save API key)
+    --env <name>       Environment to authenticate (default: current)
     --server-url <url> HostNet server URL (default: https://hostnet.io)
+
+  env                  Manage environments (production, staging, local)
+    list               List all environments
+    show [name]        Show environment details
+    use <name>         Set the default environment
+    add <name>         Add a new environment
+    remove <name>      Remove an environment
 
   push [path]          Push theme to HostNet server
     --url <url>        API URL (e.g., https://app.hostnet.com)
@@ -60,6 +70,8 @@ Examples:
   hostnet dev ./my-theme --port 3000
   hostnet connect ./my-theme
   hostnet auth
+  hostnet env use staging
+  hostnet connect --env staging ./my-theme
   hostnet push --url https://app.hostnet.com --account acct_xxx --theme-id theme_xxx
 
 Documentation: https://github.com/clockworkempire/theme-dev

@@ -26,24 +26,7 @@ module.exports = function(args) {
     '-v', `${configPath}:/root/.hostnet.yml`
   ];
 
-  // Pass through additional arguments (like --server-url, --env)
-  // Handle flags that take values
-  const passthroughArgs = [];
-  const flagsWithValues = ['--server-url', '-s', '--env', '-e'];
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (flagsWithValues.includes(arg)) {
-      passthroughArgs.push(arg);
-      if (i + 1 < args.length) {
-        passthroughArgs.push(args[i + 1]);
-        i++;
-      }
-    } else if (arg.startsWith('-')) {
-      passthroughArgs.push(arg);
-    }
-  }
-
-  dockerArgs.push(DOCKER_IMAGE, 'auth', ...passthroughArgs);
+  dockerArgs.push(DOCKER_IMAGE, 'env', ...args);
 
   const docker = spawn('docker', dockerArgs, { stdio: 'inherit' });
 
@@ -51,7 +34,7 @@ module.exports = function(args) {
     if (err.code === 'ENOENT') {
       console.error('Error: Docker not found.');
       console.error();
-      console.error('The hostnet CLI requires Docker to run authentication.');
+      console.error('The hostnet CLI requires Docker to manage environments.');
       console.error('Install Docker: https://docs.docker.com/get-docker/');
     } else {
       console.error('Error starting Docker:', err.message);

@@ -37,8 +37,25 @@ module.exports = function(args) {
     '-v', `${configPath}:/root/.hostnet.yml`
   ];
 
-  // Pass through additional arguments (like --server-url)
-  const passthroughArgs = args.filter(a => a.startsWith('-'));
+  // Pass through additional arguments (like --server-url, --env)
+  // Handle flags that take values
+  const passthroughArgs = [];
+  const flagsWithValues = ['--server-url', '-s', '--env', '-e', '--account', '-a'];
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === themePath || arg === path.resolve(process.cwd(), themePath)) {
+      continue; // Skip the theme path, it's handled separately
+    }
+    if (flagsWithValues.includes(arg)) {
+      passthroughArgs.push(arg);
+      if (i + 1 < args.length && !args[i + 1].startsWith('-')) {
+        passthroughArgs.push(args[i + 1]);
+        i++;
+      }
+    } else if (arg.startsWith('-')) {
+      passthroughArgs.push(arg);
+    }
+  }
 
   dockerArgs.push(DOCKER_IMAGE, 'connect', '/theme', ...passthroughArgs);
 
