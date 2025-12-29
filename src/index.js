@@ -4,7 +4,6 @@ const commands = {
   new: require('./commands/new'),
   dev: require('./commands/dev'),
   connect: require('./commands/connect'),
-  auth: require('./commands/auth'),
   env: require('./commands/env'),
   push: require('./commands/push'),
   update: require('./commands/update'),
@@ -38,25 +37,20 @@ Commands:
 
   connect [path]       Connect to HostNet Theme Editor (tunnel mode)
     --env <name>       Environment to use (default: current)
-    --server-url <url> HostNet server URL (default: https://hostnet.io)
-
-  auth                 Authenticate with HostNet (save API key)
-    --env <name>       Environment to authenticate (default: current)
-    --server-url <url> HostNet server URL (default: https://hostnet.io)
+    --server-url <url> HostNet server URL
 
   env                  Manage environments (production, staging, local)
     list               List all environments
     show [name]        Show environment details
     use <name>         Set the default environment
-    add <name>         Add a new environment
+    add <name>         Add a new environment interactively
     remove <name>      Remove an environment
 
   push [path]          Push theme to HostNet server
-    --url <url>        API URL (e.g., https://app.hostnet.com)
-    --account <id>     Account ID (e.g., acct_xxx)
-    --theme-id <id>    Theme ID to push to (e.g., theme_xxx)
-    --token <token>    API token (or set HOSTNET_API_TOKEN env var)
-    --config <file>    Config file (default: .hostnet.yml)
+    --env <name>       Environment to use (default: current)
+    --account <id>     Account ID (overrides environment)
+    --theme-id <id>    Theme ID to update (creates new if omitted)
+    --theme-name <n>   Theme name for new themes
 
   update               Pull the latest Docker image
 
@@ -64,15 +58,27 @@ Commands:
 
   help                 Show this help message
 
+Configuration:
+  Create ~/.hostnet.yml or .hostnet.yml in your project:
+
+    default_environment: development
+    environments:
+      development:
+        api_key: your_api_key_here
+        server_url: http://localhost:3000
+        account_id: acct_xxx
+      production:
+        api_key: your_prod_key
+        server_url: https://hostnet.io
+        account_id: acct_yyy
+
 Examples:
   hostnet new my-theme
-  hostnet dev
-  hostnet dev ./my-theme --port 3000
+  hostnet dev ./my-theme
   hostnet connect ./my-theme
-  hostnet auth
-  hostnet env use staging
-  hostnet connect --env staging ./my-theme
-  hostnet push --url https://app.hostnet.com --account acct_xxx --theme-id theme_xxx
+  hostnet push ./my-theme
+  hostnet env use production
+  hostnet push --env staging ./my-theme
 
 Documentation: https://github.com/clockworkempire/theme-dev
 `);
