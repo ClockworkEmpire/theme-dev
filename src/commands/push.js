@@ -1,16 +1,28 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 const DOCKER_IMAGE = 'ghcr.io/clockworkempire/theme-dev:latest';
 
 module.exports = function(args) {
+  // Path to global config (API key storage)
+  const configPath = path.join(os.homedir(), '.hostnet.yml');
+
+  // Create the file if it doesn't exist (Docker would create a directory otherwise)
+  if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(configPath, '', { mode: 0o600 });
+  } else if (fs.statSync(configPath).isDirectory()) {
+    fs.rmdirSync(configPath);
+    fs.writeFileSync(configPath, '', { mode: 0o600 });
+  }
+
   // Parse arguments to find theme path and pass-through options
   const dockerArgs = ['run', '--rm', '-it'];
 
   // Find theme path (first non-flag argument that's not a value for a flag)
   let themePath = '.';
-  const flagsWithValues = ['--config', '-c', '--token', '-t', '--url', '-u', '--account', '-a', '--theme-id', '--theme-name'];
+  const flagsWithValues = ['--config', '-c', '--token', '-t', '--url', '-u', '--account', '-a', '--theme-id', '--theme-name', '-n', '--env', '-e'];
   const booleanFlags = ['--create', '--help'];
   const passArgs = [];
 
@@ -51,11 +63,16 @@ module.exports = function(args) {
     process.exit(1);
   }
 
-  // Mount the theme directory and run push command
+  // Mount the theme directory, global config, and local config
   dockerArgs.push('-v', `${themePath}:/theme`);
+  dockerArgs.push('-v', `${configPath}:/root/.hostnet.yml`);
+
+  // Mount theme directory's parent for local .hostnet.yml access
+  const themeParent = path.dirname(themePath);
+  dockerArgs.push('-v', `${themeParent}:/workdir`);
 
   // Pass through environment variables if set
-  const envVars = ['HOSTNET_API_TOKEN', 'HOSTNET_API_URL', 'HOSTNET_ACCOUNT_ID'];
+  const envVars = ['HOSTNET_API_KEY', 'HOSTNET_API_TOKEN', 'HOSTNET_API_URL', 'HOSTNET_ACCOUNT_ID', 'HOSTNET_SERVER_URL'];
   for (const envVar of envVars) {
     if (process.env[envVar]) {
       dockerArgs.push('-e', `${envVar}=${process.env[envVar]}`);
