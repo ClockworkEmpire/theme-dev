@@ -1,19 +1,17 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
-
-const DOCKER_IMAGE = 'ghcr.io/clockworkempire/theme-dev:latest';
+const { DOCKER_IMAGE } = require('../docker');
 
 module.exports = function(args) {
   const portIndex = args.indexOf('--port');
   const port = portIndex !== -1 ? args[portIndex + 1] : '4000';
-  const wsPort = String(parseInt(port) + 1); // WebSocket port is HTTP port + 1
+  const wsPort = String(parseInt(port) + 1);
 
   // Find theme path (first non-flag argument)
   let themePath = args.find(a => !a.startsWith('-') && a !== port) || '.';
   themePath = path.resolve(process.cwd(), themePath);
 
-  // Validate theme directory exists
   if (!fs.existsSync(themePath)) {
     console.error(`Error: Theme directory not found: ${themePath}`);
     process.exit(1);
@@ -26,6 +24,7 @@ module.exports = function(args) {
   console.log('Press Ctrl+C to stop');
   console.log();
 
+  // Dev server doesn't need workdir mount - it only uses theme files
   const docker = spawn('docker', [
     'run',
     '--rm',

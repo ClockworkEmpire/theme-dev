@@ -1,6 +1,5 @@
 const { spawn } = require('child_process');
-
-const DOCKER_IMAGE = 'ghcr.io/clockworkempire/theme-dev:latest';
+const { DOCKER_IMAGE } = require('../docker');
 
 module.exports = function() {
   console.log('Pulling latest HostNet theme dev server...');
