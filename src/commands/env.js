@@ -18,12 +18,17 @@ module.exports = function(args) {
     fs.writeFileSync(configPath, '', { mode: 0o600 });
   }
 
+  // Current working directory (for local .hostnet.yml)
+  const cwd = process.cwd();
+
   // Build Docker args
   const dockerArgs = [
     'run',
     '--rm',
     '-it',
-    '-v', `${configPath}:/root/.hostnet.yml`
+    '-v', `${configPath}:/root/.hostnet.yml`,
+    '-v', `${cwd}:/workdir`,
+    '-w', '/workdir'
   ];
 
   dockerArgs.push(DOCKER_IMAGE, 'env', ...args);
