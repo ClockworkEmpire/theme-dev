@@ -126,6 +126,96 @@ hostnet help new
 hostnet help dev
 ```
 
+### `hostnet connect`
+
+Connect to the HostNet server for remote editing via the browser-based Theme Editor. This creates a tunnel between your local files and the HostNet platform.
+
+```bash
+hostnet connect                        # Connect using current environment
+hostnet connect ./my-theme             # Connect from specific path
+hostnet connect --env staging          # Use staging environment
+hostnet connect --open                 # Auto-open browser to editor
+hostnet connect --keepalive 60         # Custom keepalive interval (seconds)
+```
+
+When connected:
+- Your local files are accessible through the HostNet Theme Editor
+- Changes made in the browser are written to your local filesystem
+- A convenience redirect runs at `http://localhost:4000` pointing to the editor
+- Keepalive pings are sent every 30 seconds (configurable) to maintain the connection
+
+**Requirements:**
+- API key configured for the environment
+- Account ID configured for the environment
+
+### `hostnet push`
+
+Upload your theme to the HostNet server.
+
+```bash
+hostnet push                           # Push current directory
+hostnet push ./my-theme                # Push specific path
+hostnet push --env production          # Push to production environment
+hostnet push --create                  # Create a new theme
+hostnet push --theme-id abc123         # Update existing theme
+hostnet push --theme-name "My Theme"   # Set theme name (for new themes)
+```
+
+**Modes:**
+- **Create**: Use `--create` when pushing a new theme (no `theme_id` in config)
+- **Update**: Automatically used when `theme_id` exists in environment config
+
+### `hostnet env`
+
+Manage environments for connecting to different HostNet servers or accounts. Environments work like git remotes - each stores its own API key, server URL, account ID, and theme ID.
+
+```bash
+hostnet env                            # List all environments
+hostnet env list                       # Same as above
+hostnet env show production            # Show production details
+hostnet env use staging                # Switch to staging environment
+hostnet env add local                  # Add new "local" environment
+hostnet env remove staging             # Remove staging environment
+```
+
+**Environment configuration** is stored in `.hostnet.yml` in your theme directory:
+
+```yaml
+current_environment: development
+
+# Keepalive interval for tunnel connections (seconds, default: 30)
+keepalive_interval: 30
+
+environments:
+  development:
+    server_url: http://localhost:3000
+    account_id: acct_abc123
+    theme_id: theme_xyz789
+
+  production:
+    server_url: https://hostnet.io
+    account_id: acct_def456
+    theme_id: theme_uvw012
+```
+
+**API keys** are stored separately in `~/.hostnet.yml` (not committed to git):
+
+```yaml
+environments:
+  development:
+    api_key: sk_dev_xxxxx
+  production:
+    api_key: sk_prod_xxxxx
+```
+
+**Using environments with commands:**
+
+```bash
+hostnet connect --env staging
+hostnet push --env production
+hostnet dev --env local
+```
+
 ---
 
 ## Theme Directory Structure

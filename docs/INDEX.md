@@ -41,12 +41,22 @@ See [Local Development](local-development.md) for detailed installation and usag
 ## CLI Commands
 
 ```bash
+# Local development
 hostnet new <name>           # Create a new theme (blank scaffold)
 hostnet new <name> --example # Create from full example theme
 hostnet dev [path]           # Start dev server with live reload
+
+# Server integration
+hostnet connect [path]       # Connect to HostNet for browser-based editing
+hostnet push [path]          # Upload theme to HostNet server
+hostnet env                  # Manage environments (server URLs, API keys)
+
+# Utility
 hostnet update               # Pull latest Docker image
 hostnet help                 # Show help
 ```
+
+See [Local Development](local-development.md) for detailed command documentation.
 
 ---
 
