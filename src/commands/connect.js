@@ -13,6 +13,7 @@ module.exports = function(args) {
 
   runDockerCommand('connect', passArgs, {
     themePath: resolvedPath,
-    errorContext: 'run the tunnel client'
+    errorContext: 'run the tunnel client',
+    ports: { '4000': '4000' }
   });
 };
