@@ -50,16 +50,9 @@ function buildDockerArgs(options = {}) {
 
   const args = ['run', '--rm'];
 
-  // On Linux, use host network mode so localhost works directly
-  // On macOS/Windows, use host.docker.internal with add-host
-  const isLinux = os.platform() === 'linux';
-  if (isLinux) {
-    args.push('--network', 'host');
-    // Tell Ruby not to transform localhost URLs (host network means localhost works)
-    args.push('-e', 'DOCKER_HOST_NETWORK=1');
-  } else {
-    args.push('--add-host=host.docker.internal:host-gateway');
-  }
+  // Use host.docker.internal to reach host services
+  // host-gateway maps to the host's gateway IP, works in both rootless and regular Docker
+  args.push('--add-host=host.docker.internal:host-gateway');
 
   if (interactive) {
     args.push('-it');
