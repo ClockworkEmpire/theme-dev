@@ -50,6 +50,10 @@ function buildDockerArgs(options = {}) {
 
   const args = ['run', '--rm'];
 
+  // On Linux, host.docker.internal doesn't resolve by default (unlike macOS/Windows)
+  // Add it explicitly so the container can reach services on the host
+  args.push('--add-host=host.docker.internal:host-gateway');
+
   if (interactive) {
     args.push('-it');
   }
