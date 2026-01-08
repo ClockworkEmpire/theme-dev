@@ -1,0 +1,25 @@
+{
+  "name": "Businesses",
+  "description": "Business listings with contact info, ratings, and reviews",
+  "slug_field": "slug",
+  "fields": [
+    { "key": "name", "generator": "company" },
+    { "key": "slug", "generator": "slug" },
+    { "key": "description", "generator": "paragraph" },
+    { "key": "services", "generator": "words:5" },
+    { "key": "category", "generator": "words:2" },
+    { "key": "address", "generator": "address" },
+    { "key": "city", "generator": "city" },
+    { "key": "state", "generator": "words:1" },
+    { "key": "zip", "generator": "number:10000-99999" },
+    { "key": "lat", "generator": "number:30-45" },
+    { "key": "lng", "generator": "number:-120--70" },
+    { "key": "phone", "generator": "phone" },
+    { "key": "email", "generator": "email" },
+    { "key": "website", "generator": "url" },
+    { "key": "featured", "generator": "boolean" },
+    { "key": "verified", "generator": "boolean" },
+    { "key": "rating", "generator": "number:3-5" },
+    { "key": "review_count", "generator": "number:10-200" }
+  ]
+}

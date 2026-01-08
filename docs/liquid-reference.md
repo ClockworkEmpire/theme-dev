@@ -46,8 +46,9 @@ These objects are available in every template.
 | Object | Description |
 |--------|-------------|
 | `site` | Current site information |
+| `site_settings` | **Core site settings** (brand, contact, social) - persists across themes |
 | `media` | Site's media library (images, files) |
-| `settings` | Theme settings values |
+| `settings` | Merged settings (core + theme defaults + overrides) |
 | `request` | Current HTTP request info |
 | `datasets` | Mounted datasets |
 | `authors` | Site authors |
@@ -72,6 +73,57 @@ Current site information.
 <title>{{ page_title | default: site.name }}</title>
 <link rel="canonical" href="{{ site.url }}{{ request.path }}">
 ```
+
+### site_settings
+
+**Platform-defined core settings** that persist across theme switches. Use this for brand identity, contact info, and social links that should remain constant regardless of which theme is active.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `site_settings.brand_name` | String | Business/brand name |
+| `site_settings.tagline` | String | Brand tagline or slogan |
+| `site_settings.logo_url` | String | Logo image URL |
+| `site_settings.email` | String | Contact email |
+| `site_settings.phone` | String | Contact phone |
+| `site_settings.address_street` | String | Street address |
+| `site_settings.address_city` | String | City |
+| `site_settings.address_state` | String | State/Province |
+| `site_settings.address_zip` | String | ZIP/Postal code |
+| `site_settings.address_country` | String | Country |
+| `site_settings.facebook_url` | String | Facebook page URL |
+| `site_settings.twitter_url` | String | Twitter/X profile URL |
+| `site_settings.instagram_url` | String | Instagram profile URL |
+| `site_settings.linkedin_url` | String | LinkedIn profile URL |
+| `site_settings.youtube_url` | String | YouTube channel URL |
+
+**Example usage:**
+```liquid
+<header>
+  {% if site_settings.logo_url %}
+    <img src="{{ site_settings.logo_url }}" alt="{{ site_settings.brand_name }}">
+  {% else %}
+    <span class="brand-name">{{ site_settings.brand_name }}</span>
+  {% endif %}
+  <p class="tagline">{{ site_settings.tagline }}</p>
+</header>
+
+<footer>
+  <address>
+    {{ site_settings.address_street }}<br>
+    {{ site_settings.address_city }}, {{ site_settings.address_state }} {{ site_settings.address_zip }}
+  </address>
+  <p>Email: <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a></p>
+
+  {% if site_settings.facebook_url %}
+    <a href="{{ site_settings.facebook_url }}">Facebook</a>
+  {% endif %}
+  {% if site_settings.twitter_url %}
+    <a href="{{ site_settings.twitter_url }}">Twitter</a>
+  {% endif %}
+</footer>
+```
+
+**Recommendation:** Use `site_settings.*` for core site data. These values are guaranteed to exist and won't conflict with theme-specific settings. See `settings` below for the merged view.
 
 ### media
 
@@ -174,17 +226,34 @@ Legacy access to the site's media library. Identical to the top-level `media` ob
 
 ### settings
 
-Theme settings defined in `config/settings_schema.json` and section schemas. Values come from theme defaults merged with site-specific overrides.
+**Merged view** of all settings. Values are merged in this priority (highest wins):
+1. **Theme overrides** - Site-specific customizations from the editor
+2. **Theme defaults** - Defaults from `config/settings_schema.json`
+3. **Core settings** - Values from `site_settings`
+
+Use `settings` for theme-specific values like colors, layout options, and CTAs.
 
 ```liquid
-{{ settings.logo_text }}
-{{ settings.primary_color }}
-{{ settings.show_newsletter }}
+{{ settings.primary_color }}        <!-- Theme-specific -->
+{{ settings.signup_url }}           <!-- Theme-specific -->
+{{ settings.show_newsletter }}      <!-- Theme-specific -->
+{{ settings.brand_name }}           <!-- Also works (from core) -->
 
 {% if settings.custom_css %}
   <style>{{ settings.custom_css }}</style>
 {% endif %}
 ```
+
+**When to use `settings` vs `site_settings`:**
+
+| Use Case | Recommended | Why |
+|----------|-------------|-----|
+| Brand name, logo | `site_settings.brand_name` | Persists across theme switches |
+| Contact info | `site_settings.email` | Always available, predictable |
+| Social links | `site_settings.facebook_url` | Theme-independent |
+| Theme colors | `settings.primary_color` | Theme-specific |
+| CTA buttons | `settings.signup_url` | Theme-specific |
+| Layout options | `settings.show_sidebar` | Theme-specific |
 
 ### request
 
@@ -630,7 +699,7 @@ HostNet uses a custom database-backed render implementation. The `hostnet_render
 
 Snippets have isolated scope. They only receive:
 - Variables explicitly passed
-- Global objects (`site`, `settings`, `request`, `datasets`, `mount`)
+- Global objects (`site`, `site_settings`, `settings`, `request`, `datasets`, `mount`)
 
 Variables from the parent template are NOT automatically available:
 ```liquid

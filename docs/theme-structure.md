@@ -41,13 +41,21 @@ my-theme/
 │       └── cool.css
 │
 ├── config/
-│   ├── settings_schema.json    # Theme settings definition
-│   └── settings_data.json      # Default setting values
+│   ├── settings_schema.json    # Theme-level settings definition
+│   ├── settings_data.json      # Theme-level default values
+│   ├── sections/               # Section schema definitions
+│   │   ├── header.json
+│   │   ├── footer.json
+│   │   └── hero.json
+│   ├── snippets/               # Snippet schema definitions (optional)
+│   │   └── card.json
+│   └── datasets/               # Sample data for local development
+│       ├── articles.schema.json   # Generator schema
+│       ├── articles.json          # Sample records or {"generate": N}
+│       └── businesses.schema.json
 │
-├── data/                       # Dev server mock data (not for production)
-│   ├── site.json               # Site info and skin selection
-│   └── datasets/
-│       └── articles.json       # Mock dataset records
+├── data/                       # Dev server runtime data (not for production)
+│   └── site.json               # Site info and skin selection
 │
 └── locales/
     ├── en.default.json         # English translations (default)
@@ -412,7 +420,14 @@ assets/
 
 ### config/
 
-Theme configuration files that define settings and defaults.
+Theme configuration files including settings, schemas, and sample data.
+
+The `config/` directory mirrors the template structure for schemas:
+- `config/sections/hero.json` → schema for `sections/hero.liquid`
+- `config/snippets/card.json` → schema for `snippets/card.liquid`
+- `config/datasets/` → sample data definitions for local development
+
+#### Theme Settings
 
 **settings_schema.json**
 
@@ -469,6 +484,101 @@ Default values for all settings:
 ```
 
 Site owners can override these values. Their customizations are stored separately and merged with defaults at render time.
+
+#### Section Schemas (config/sections/)
+
+Section schemas define configurable settings for section components. Each JSON file corresponds to a section Liquid file.
+
+**config/sections/hero.json**
+```json
+{
+  "name": "Hero Banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Welcome"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#3b82f6"
+    }
+  ]
+}
+```
+
+The schema file name matches the section file: `config/sections/hero.json` → `sections/hero.liquid`.
+
+#### Snippet Schemas (config/snippets/)
+
+Snippets can also have schemas for configurable defaults. While snippets primarily receive data through variables, schemas allow defining default settings.
+
+```json
+{
+  "name": "Card",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show Image",
+      "default": true
+    }
+  ]
+}
+```
+
+#### Dataset Schemas (config/datasets/)
+
+Sample data for local development uses two file types:
+
+**Schema file** (`*.schema.json`) - Defines how to auto-generate records:
+```json
+{
+  "name": "Articles",
+  "description": "Blog articles with author info",
+  "slug_field": "slug",
+  "fields": [
+    { "key": "slug", "generator": "slug" },
+    { "key": "title", "generator": "sentence" },
+    { "key": "excerpt", "generator": "paragraph" },
+    { "key": "author", "generator": "name" },
+    { "key": "published_at", "generator": "date:past" }
+  ]
+}
+```
+
+**Data file** (`*.json`) - Either hand-crafted records or auto-generate count:
+
+```json
+{
+  "generate": 10
+}
+```
+
+Or with explicit records:
+```json
+{
+  "records": [
+    {
+      "slug": "getting-started",
+      "title": "Getting Started",
+      "excerpt": "Learn how to get started...",
+      "author": "Jane Doe",
+      "published_at": "2024-01-15"
+    }
+  ]
+}
+```
+
+When `generate` is used, records are auto-generated from the schema using Faker.
 
 ---
 
@@ -564,23 +674,27 @@ my-theme.zip
 
 ---
 
-## Development Data (data/)
+## Development Data
 
-When developing themes locally with the Theme Dev Server, the `data/` directory provides mock data that simulates production content.
+When developing themes locally with the Theme Dev Server, sample data is defined in `config/datasets/` and runtime data in `data/`.
 
-> **Note:** The `data/` directory is only used during development. In production, data comes from the HostNet database.
+> **Note:** These directories are only used during development. In production, data comes from the HostNet database.
 
 ### Directory Structure
 
 ```
+config/
+└── datasets/              # Sample data definitions
+    ├── articles.schema.json   # Generator schema
+    ├── articles.json          # Sample records or {"generate": N}
+    ├── businesses.schema.json
+    └── businesses.json
+
 data/
-├── site.json              # Site info and settings
-└── datasets/
-    ├── articles.json      # Blog articles dataset
-    └── businesses.json    # Business listings dataset
+└── site.json              # Site info and settings
 ```
 
-### site.json
+### data/site.json
 
 Contains site metadata and skin configuration:
 
@@ -599,51 +713,52 @@ Available in templates as `site.*`:
 <title>{{ page_title | default: site.name }}</title>
 ```
 
-### Dataset Files
+### Dataset Files (config/datasets/)
 
-Each JSON file in `data/datasets/` defines a dataset with its routing and content.
+Each dataset uses two files: a schema file for auto-generation and a data file for records.
 
-**Basic structure:**
+**Schema file** (`*.schema.json`) - Defines the generator pattern:
 ```json
 {
-  "alias": "articles",
-  "mount_path": "/blog",
+  "name": "Articles",
+  "description": "Blog articles",
   "slug_field": "slug",
-  "list_template": "blog",
-  "item_template": "article",
-  "schema": { ... },
-  "records": [ ... ]
+  "fields": [
+    { "key": "slug", "generator": "slug" },
+    { "key": "title", "generator": "sentence" },
+    { "key": "excerpt", "generator": "paragraph" },
+    { "key": "author", "generator": "name" },
+    { "key": "published_at", "generator": "date:past" }
+  ]
 }
 ```
 
 | Field | Purpose |
 |-------|---------|
-| `alias` | Reference name for `datasets.alias` access |
-| `mount_path` | URL path where collection is mounted |
+| `name` | Display name for the dataset |
+| `description` | Description of the dataset |
 | `slug_field` | Field used for item URLs |
-| `list_template` | Template for listing page (e.g., `/blog`) |
-| `item_template` | Template for item pages (e.g., `/blog/my-post`) |
-| `schema` | Auto-generates fake data using Faker |
-| `records` | Explicit mock records (merged with generated) |
+| `fields` | Array of field definitions with generators |
 
-**Example with explicit records:**
+**Data file** (`*.json`) - Records or generation instruction:
+
+Auto-generate from schema:
 ```json
 {
-  "alias": "businesses",
-  "mount_path": "/listings",
-  "slug_field": "slug",
-  "list_template": "collection",
-  "item_template": "business",
+  "generate": 10
+}
+```
+
+Or provide hand-crafted records:
+```json
+{
   "records": [
     {
-      "name": "Precision Plumbing",
       "slug": "precision-plumbing",
+      "name": "Precision Plumbing",
       "description": "Full-service plumbing company...",
       "category": "Plumbing",
       "phone": "(555) 234-5678",
-      "lat": 39.7817,
-      "lng": -89.6501,
-      "google_place_id": "ChIJd8BlQ2BZwokRAFUEcm_qrcA",
       "featured": true,
       "rating": 4.8
     }
@@ -651,24 +766,18 @@ Each JSON file in `data/datasets/` defines a dataset with its routing and conten
 }
 ```
 
-**Schema for auto-generated data:**
-```json
-{
-  "schema": {
-    "name": "company",
-    "slug": "slug",
-    "description": "paragraph",
-    "category": { "type": "enum", "values": ["Plumbing", "Electrical", "HVAC"] },
-    "phone": "phone",
-    "email": "email",
-    "rating": { "type": "float", "min": 1, "max": 5 },
-    "featured": "boolean"
-  },
-  "count": 10
-}
-```
+**Supported generator types:**
 
-Supported schema types: `company`, `name`, `slug`, `paragraph`, `sentence`, `phone`, `email`, `street_address`, `city`, `state`, `zip`, `url`, `boolean`, `date`, `enum`, `float`, `integer`
+| Category | Generators |
+|----------|------------|
+| Text | `sentence`, `paragraph`, `paragraphs:N`, `words:N`, `title` |
+| Person | `name`, `first_name`, `last_name`, `email` |
+| Company | `company`, `phone`, `address`, `city`, `state` |
+| Web | `url`, `slug` |
+| Date | `date`, `date:past`, `date:future`, `datetime` |
+| Number | `number`, `number:N-M`, `price`, `percentage` |
+| Image | `image`, `image:WxH` |
+| Other | `boolean`, `color`, `uuid` |
 
 ### Accessing Datasets in Templates
 

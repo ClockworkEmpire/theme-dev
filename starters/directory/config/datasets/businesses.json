@@ -1,10 +1,4 @@
 {
-  "mount_path": "/businesses",
-  "alias": "businesses",
-  "slug_field": "slug",
-  "list_template": "collection",
-  "item_template": "business",
-  "count": 10,
   "records": [
     {
       "name": "Precision Plumbing Co",

@@ -1,0 +1,18 @@
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo Text",
+      "info": "Leave blank to use site name"
+    },
+    {
+      "type": "textarea",
+      "id": "nav_links",
+      "label": "Navigation Links",
+      "info": "Format: Label:URL | Label:URL",
+      "default": "Home:/ | Blog:/blog | Companies:/companies"
+    }
+  ]
+}

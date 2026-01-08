@@ -52,38 +52,3 @@
     {% endif %}
   </div>
 </section>
-
-{% schema %}
-{
-  "name": "Featured Listings",
-  "settings": [
-    {
-      "type": "text",
-      "id": "title",
-      "label": "Section Title",
-      "default": "Featured Businesses"
-    },
-    {
-      "type": "range",
-      "id": "count",
-      "label": "Number to Show",
-      "min": 3,
-      "max": 12,
-      "step": 3,
-      "default": 6
-    },
-    {
-      "type": "checkbox",
-      "id": "show_view_all",
-      "label": "Show View All Link",
-      "default": true
-    },
-    {
-      "type": "url",
-      "id": "view_all_url",
-      "label": "View All URL",
-      "default": "/businesses"
-    }
-  ]
-}
-{% endschema %}

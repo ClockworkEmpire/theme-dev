@@ -1,0 +1,14 @@
+{
+  "name": "Articles",
+  "description": "Blog articles for the theme",
+  "slug_field": "slug",
+  "fields": [
+    { "key": "slug", "generator": "slug" },
+    { "key": "title", "generator": "sentence" },
+    { "key": "excerpt", "generator": "paragraph" },
+    { "key": "content", "generator": "paragraphs:3" },
+    { "key": "image", "generator": "image:800x400" },
+    { "key": "author", "generator": "name" },
+    { "key": "published_at", "generator": "date:past" }
+  ]
+}

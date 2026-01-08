@@ -1,0 +1,30 @@
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "about_text",
+      "label": "About Text",
+      "default": "Welcome to our site. We share articles and information about companies."
+    },
+    {
+      "type": "textarea",
+      "id": "footer_links",
+      "label": "Footer Links",
+      "info": "Format: Label:URL | Label:URL",
+      "default": "Home:/ | Blog:/blog | Companies:/companies"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email Address",
+      "default": "hello@example.com"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone Number",
+      "default": "(555) 123-4567"
+    }
+  ]
+}

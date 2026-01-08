@@ -1,0 +1,14 @@
+{
+  "name": "Articles",
+  "description": "Blog articles with author and publication info",
+  "slug_field": "slug",
+  "fields": [
+    { "key": "title", "generator": "sentence" },
+    { "key": "slug", "generator": "slug" },
+    { "key": "excerpt", "generator": "paragraph" },
+    { "key": "content", "generator": "paragraphs:3" },
+    { "key": "image", "generator": "image:800x400" },
+    { "key": "author", "generator": "name" },
+    { "key": "published_at", "generator": "date:past" }
+  ]
+}

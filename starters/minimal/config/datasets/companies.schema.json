@@ -1,0 +1,13 @@
+{
+  "name": "Companies",
+  "description": "Company listings for the theme",
+  "slug_field": "slug",
+  "fields": [
+    { "key": "slug", "generator": "slug" },
+    { "key": "name", "generator": "company" },
+    { "key": "description", "generator": "paragraph" },
+    { "key": "logo", "generator": "image:200x200" },
+    { "key": "website", "generator": "url" },
+    { "key": "industry", "generator": "words:2" }
+  ]
+}

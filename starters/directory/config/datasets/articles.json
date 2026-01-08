@@ -1,10 +1,4 @@
 {
-  "mount_path": "/blog",
-  "alias": "articles",
-  "slug_field": "slug",
-  "list_template": "blog",
-  "item_template": "article",
-  "count": 6,
   "records": [
     {
       "title": "How to Choose the Right Local Service Provider",

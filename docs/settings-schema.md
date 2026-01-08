@@ -94,17 +94,12 @@ All theme settings are available via `settings`:
 
 ## Section Settings
 
-### Schema Block
+### External Schema Files (Recommended)
 
-Define settings inside a section file using `{% schema %}`:
+Section schemas are defined in separate JSON files in the `config/sections/` directory. This keeps Liquid templates clean and allows proper JSON validation.
 
-```liquid
-<!-- sections/hero.liquid -->
-<section style="background: {{ section.settings.bg_color }}">
-  <h1>{{ section.settings.title }}</h1>
-</section>
-
-{% schema %}
+**config/sections/hero.json**
+```json
 {
   "name": "Hero Banner",
   "settings": [
@@ -122,8 +117,46 @@ Define settings inside a section file using `{% schema %}`:
     }
   ]
 }
+```
+
+**sections/hero.liquid** (pure Liquid, no schema block)
+```liquid
+<section style="background: {{ section.settings.bg_color }}">
+  <h1>{{ section.settings.title }}</h1>
+</section>
+```
+
+The schema file name matches the section file name (without extension).
+
+### Schema Lookup Order
+
+For a section at `sections/hero.liquid`:
+1. Check `config/sections/hero.json` (new pattern - preferred)
+2. Fall back to inline `{% schema %}` block (deprecated)
+
+### Inline Schema (Deprecated)
+
+The older pattern of embedding schemas directly in Liquid files is still supported for backwards compatibility:
+
+```liquid
+<!-- sections/hero.liquid (deprecated pattern) -->
+<section style="background: {{ section.settings.bg_color }}">
+  <h1>{{ section.settings.title }}</h1>
+</section>
+
+{% schema %}
+{
+  "name": "Hero Banner",
+  "settings": [...]
+}
 {% endschema %}
 ```
+
+**Why external schemas are better:**
+- Clean separation of concerns (Liquid vs JSON)
+- Proper syntax highlighting in editors
+- Independent JSON validation
+- Easier to manage and compare
 
 ### Accessing Section Settings
 
