@@ -31,6 +31,10 @@ my-theme/
 │   ├── pagination.liquid       # Pagination controls
 │   └── social-links.liquid     # Social media links
 │
+├── dropins/
+│   ├── promo-banner.liquid     # Default promo content (Liquid processed)
+│   └── footer-disclaimer.liquid
+│
 ├── assets/
 │   ├── theme.css               # Main stylesheet
 │   ├── theme.js                # Main JavaScript
@@ -336,6 +340,49 @@ Simple reusable partials without settings. Snippets are included with `{% hostne
   {% endif %}
 </nav>
 ```
+
+---
+
+### dropins/
+
+Theme-provided default content for drop-ins. When a site owner hasn't created a custom drop-in, the system falls back to these files.
+
+**Key characteristics:**
+- Full Liquid processing (access to `settings`, `site`, filters)
+- Overridden by user content in the database
+- Use `.liquid` extension
+
+**Resolution order for `{% dropin 'promo-banner' %}`:**
+1. User content (site-specific drop-in in database)
+2. User content (account-wide drop-in in database)
+3. Theme default (`dropins/promo-banner.liquid`)
+4. Empty string
+
+**Example: promo-banner.liquid**
+```liquid
+<div class="promo-banner" style="background: {{ settings.primary_color }}">
+  <p>{{ settings.promo_text | default: 'Check out our latest offers!' }}</p>
+  <a href="{{ settings.promo_link | default: '/about' }}" class="btn">
+    Learn More
+  </a>
+</div>
+```
+
+**Example: footer-disclaimer.liquid**
+```liquid
+<p class="disclaimer">
+  © {{ 'now' | date: '%Y' }} {{ site.name }}. All rights reserved.
+  <a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms</a>
+</p>
+```
+
+**Using drop-ins:**
+```liquid
+{% dropin 'promo-banner' %}
+{% dropin 'footer-disclaimer' %}
+```
+
+Unlike snippets, drop-ins don't receive variables - they access global objects (`settings`, `site`) directly. This makes them ideal for content that site owners might want to customize via the dashboard.
 
 ---
 
@@ -648,6 +695,7 @@ Access translations in templates:
 | templates/ | `.liquid` | `article.liquid` |
 | sections/ | `.liquid` | `hero.liquid` |
 | snippets/ | `.liquid` | `card.liquid` |
+| dropins/ | `.liquid` | `promo-banner.liquid` |
 | config/ | `.json` | `settings_schema.json` |
 | locales/ | `.json` | `en.default.json` |
 | assets/ | varies | `theme.css`, `app.js` |

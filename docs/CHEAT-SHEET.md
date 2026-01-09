@@ -22,6 +22,8 @@ theme/
 ├── snippets/
 │   ├── card.liquid           # Reusable partials (no settings)
 │   └── pagination.liquid
+├── dropins/
+│   └── promo-banner.liquid   # Default content (Liquid processed)
 ├── assets/
 │   ├── theme.css
 │   └── theme.js
@@ -127,17 +129,20 @@ Defines configurable settings for a section. Renders nothing.
 ```liquid
 {% dropin 'footer-disclaimer' %}
 {% dropin 'announcement-banner' %}
-{% dropin 'cookie-notice' %}
+{% dropin 'promo-banner' %}
 ```
-Renders user-managed HTML content from the dashboard. Returns empty string if not found.
+Renders drop-in content. Resolution order:
+1. User content (database) - plain HTML
+2. Theme default (`dropins/{name}.liquid`) - Liquid processed
+3. Empty string
 
-**With fallback:**
+**Theme default example:**
 ```liquid
-{% capture content %}{% dropin 'promo' %}{% endcapture %}
-{{ content | default: '<p>Default text</p>' }}
+<!-- dropins/promo-banner.liquid -->
+<div class="promo">{{ settings.promo_text | default: 'Special offer!' }}</div>
 ```
 
-Drop-ins are plain HTML only (no Liquid), managed by site owners, and support cascading scope (site-specific overrides account-wide).
+User-provided drop-ins (from dashboard) are plain HTML. Theme defaults support Liquid.
 
 ### Assign Global Tag
 ```liquid

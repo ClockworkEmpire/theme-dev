@@ -816,7 +816,7 @@ Specificity is calculated by:
 
 ### dropin
 
-Renders a drop-in (user-managed content block). Drop-ins are HTML/text content blocks managed by site owners through the dashboard, not stored in theme files.
+Renders a drop-in content block. Drop-ins support theme-provided defaults that site owners can override.
 
 **Basic usage:**
 ```liquid
@@ -825,26 +825,44 @@ Renders a drop-in (user-managed content block). Drop-ins are HTML/text content b
 {% dropin 'promo-banner' %}
 ```
 
-**With fallback:**
+**Resolution order:**
 
-Since `dropin` returns an empty string if not found, use `capture` with the `default` filter:
+1. **User content** - Site-specific drop-in (database)
+2. **User content** - Account-wide drop-in (database)
+3. **Theme default** - `dropins/{name}.liquid` file in theme
+4. **Empty string** - If none exist
+
+**Theme defaults:**
+
+Provide defaults in the `dropins/` folder. These support full Liquid:
+
+```liquid
+<!-- dropins/promo-banner.liquid -->
+<div class="promo" style="background: {{ settings.primary_color }}">
+  <p>{{ settings.promo_text | default: 'Check out our offers!' }}</p>
+  <a href="{{ settings.promo_link | default: '/about' }}">Learn More</a>
+</div>
+```
+
+Available in theme defaults: `settings`, `site`, all Liquid filters.
+
+**User content overrides:**
+
+When site owners create drop-ins via the dashboard, they override theme defaults. User content is plain HTML (no Liquid processing).
+
+**Inline fallback (legacy):**
+
+For fallbacks without a `dropins/` file, use `capture`:
 ```liquid
 {% capture content %}{% dropin 'contact-info' %}{% endcapture %}
 {{ content | default: 'Contact us at info@example.com' }}
 ```
 
-**Cascading scope:**
+**Cascading scope (user content):**
 
-Drop-ins support cascading lookup:
-1. First checks for a site-specific drop-in with that name
-2. Falls back to account-wide drop-in if no site-specific exists
-3. Returns empty string if neither exists
-
-This allows site owners to:
-- Create account-wide drop-ins shared across all sites
-- Override specific drop-ins for individual sites
-
-**Important:** Unlike snippets and sections, drop-ins contain plain HTML only. Liquid code inside drop-ins is NOT processed - it will be output as-is.
+User drop-ins support two levels:
+- **Account-wide** - Shared across all sites in the account
+- **Site-specific** - Overrides account-wide for that site
 
 ### json_ld
 

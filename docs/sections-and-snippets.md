@@ -729,11 +729,21 @@ Drop-ins are a third type of reusable content, distinct from sections and snippe
 
 ### What Are Drop-Ins?
 
-Drop-ins are **user-managed HTML/text blocks** stored in the database, not in theme files. Unlike snippets:
+Drop-ins are content blocks that can be customized by site owners without editing theme files. They support two sources:
 
-- They're edited via the dashboard UI, not theme code
-- They contain plain HTML only (no Liquid processing)
-- They support cascading scope (site-specific overrides account-wide)
+1. **User content** (database) - Plain HTML managed via the dashboard
+2. **Theme defaults** (`dropins/` folder) - Liquid templates provided by the theme
+
+### Resolution Order
+
+When you use `{% dropin 'promo-banner' %}`, the system checks in order:
+
+1. **User content** - Site-specific drop-in in database
+2. **User content** - Account-wide drop-in in database
+3. **Theme default** - `dropins/promo-banner.liquid` in theme
+4. **Empty string** - If none exist
+
+This means themes can provide sensible defaults that site owners can override.
 
 ### When to Use Drop-Ins
 
@@ -741,12 +751,12 @@ Drop-ins are **user-managed HTML/text blocks** stored in the database, not in th
 |-----------|------------|-----------------|---------|
 | **Sections** | Theme developer | Yes | Configurable page components (hero, header) |
 | **Snippets** | Theme developer | Yes | Reusable UI patterns (cards, icons) |
-| **Drop-Ins** | Site owner | No (plain HTML) | User-managed content (disclaimers, promos) |
+| **Drop-Ins** | Theme + Site owner | Theme defaults: Yes | Overridable content (disclaimers, promos) |
 
 **Use drop-ins for content that:**
-- Site owners need to update without editing theme files
+- Site owners may want to customize without editing theme files
 - May vary between sites in an account
-- Contains only HTML/text (no dynamic data needed)
+- Benefits from a theme-provided default
 
 ### Including Drop-Ins
 
@@ -758,20 +768,54 @@ Use the `{% dropin %}` tag:
 {% dropin 'contact-info' %}
 ```
 
-If the drop-in doesn't exist, it renders nothing (empty string).
+### Theme Defaults
 
-### Fallback Content
+Provide default content by creating `.liquid` files in the `dropins/` folder:
 
-Since drop-ins may not exist, use `capture` with the `default` filter:
+```
+theme/
+├── dropins/
+│   ├── promo-banner.liquid
+│   ├── footer-disclaimer.liquid
+│   └── announcement.liquid
+├── sections/
+├── snippets/
+└── ...
+```
+
+Theme defaults support full Liquid processing:
+
+```liquid
+<!-- dropins/promo-banner.liquid -->
+<div class="promo-banner" style="background: {{ settings.primary_color }}">
+  <p>{{ settings.promo_text | default: 'Check out our latest offers!' }}</p>
+  <a href="{{ settings.promo_link | default: '/about' }}">Learn More</a>
+</div>
+```
+
+**Available in theme defaults:**
+- `settings` - Theme settings
+- `site` - Site information (`site.name`, `site.url`, etc.)
+- All standard Liquid filters
+
+### User Content Overrides
+
+When a site owner creates a drop-in via the dashboard, it overrides the theme default. User content is plain HTML (no Liquid processing) since it's managed by non-technical users.
+
+### Fallback with Capture (Legacy)
+
+For inline fallbacks without a `dropins/` file, use `capture` with the `default` filter:
 
 ```liquid
 {% capture content %}{% dropin 'promo-banner' %}{% endcapture %}
 {{ content | default: '<p>Default promotional text</p>' }}
 ```
 
+**Note:** The `dropins/` folder approach is preferred - it keeps defaults organized and supports Liquid.
+
 ### Cascading Scope
 
-Drop-ins support two levels:
+User-provided drop-ins support two levels:
 
 1. **Account-wide** - Available to all sites in the account
 2. **Site-specific** - Overrides account-wide drop-in with same name
@@ -819,11 +863,11 @@ This lets site owners:
 
 | Aspect | Snippets | Drop-Ins |
 |--------|----------|----------|
-| Storage | Theme files | Database |
-| Editing | Theme developer | Site owner (dashboard) |
-| Liquid support | Yes | No (plain HTML only) |
-| Variables | Passed explicitly | None |
-| Scope | Theme-wide | Account/site cascading |
+| Storage | Theme files only | Theme defaults + database |
+| Editing | Theme developer | Theme developer (defaults) + Site owner (overrides) |
+| Liquid support | Yes | Theme defaults: Yes, User content: No |
+| Variables | Passed explicitly | Theme defaults: settings, site |
+| Scope | Theme-wide | Theme default + Account/site cascading |
 
 See the [Liquid Reference](liquid-reference.md#dropin) for full tag documentation.
 
