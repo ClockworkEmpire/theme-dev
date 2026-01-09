@@ -1213,6 +1213,30 @@ Output:
 <p>By {{ full_name }}</p>
 ```
 
+**assign_global** (HostNet extension)
+
+Sets a variable that's accessible in the parent layout. Use this in templates to pass data (like page titles) up to the layout.
+
+```liquid
+<!-- templates/tree-removal.liquid -->
+{% assign_global page_title = "Tree Removal - Box Tree Care" %}
+{% assign_global page_description = "Professional tree removal services..." %}
+
+<!-- Rest of template content -->
+{% section 'hero' %}
+```
+
+The layout can then reference these values:
+
+```liquid
+<!-- layout/theme.liquid -->
+<title>{{ page_title | default: site.name }}</title>
+<meta name="description" content="{{ page_description | default: settings.tagline }}">
+<meta property="og:title" content="{{ page_title | default: site.name }}">
+```
+
+**Important:** Regular `assign` variables are scoped to the current template and are NOT accessible in the layout. Use `assign_global` when you need the layout to see the value.
+
 ### Output Control
 
 **comment**

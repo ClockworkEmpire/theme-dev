@@ -2,12 +2,67 @@
  * Shared Docker utilities for hostnet CLI commands.
  * Provides consistent volume mounting and error handling.
  */
-const { spawn } = require('child_process');
+const { spawn, spawnSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
 
 const DOCKER_IMAGE = 'ghcr.io/clockworkempire/theme-dev:latest';
+
+/**
+ * Check if native Ruby with required gems is available.
+ * Returns the path to a working hostnet entry point, or null.
+ */
+function findNativeRuby() {
+  // Check if ruby is available
+  const rubyCheck = spawnSync('ruby', ['-e', 'puts RUBY_VERSION'], { encoding: 'utf8' });
+  if (rubyCheck.status !== 0) return null;
+
+  // Check if required gems are available
+  const gemCheck = spawnSync('ruby', ['-e', `
+    require 'liquid'
+    require 'webrick'
+    require 'listen'
+    puts 'ok'
+  `], { encoding: 'utf8' });
+
+  return gemCheck.status === 0;
+}
+
+/**
+ * Run a command using native Ruby instead of Docker.
+ * This avoids rootless Docker networking issues.
+ */
+function runNativeCommand(command, commandArgs = [], options = {}) {
+  const { themePath, errorContext = `run ${command}` } = options;
+
+  // Find the CLI entry point - look for it relative to this package
+  const packageRoot = path.resolve(__dirname, '..');
+  const cliPath = path.join(packageRoot, 'lib', 'theme_dev_server', 'cli.rb');
+
+  if (!fs.existsSync(cliPath)) {
+    console.error('Error: Native Ruby mode requires the full package installation.');
+    console.error('Falling back to Docker...');
+    return null;
+  }
+
+  const args = [cliPath, command];
+  if (themePath) args.push(themePath);
+  args.push(...commandArgs);
+
+  const ruby = spawn('ruby', args, { stdio: 'inherit' });
+
+  ruby.on('error', (err) => {
+    console.error('Error running Ruby:', err.message);
+    process.exit(1);
+  });
+
+  ruby.on('exit', (code) => {
+    process.exit(code || 0);
+  });
+
+  return ruby;
+}
 
 /**
  * Ensures the global config file exists as a file (not directory).

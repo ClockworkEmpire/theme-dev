@@ -189,6 +189,14 @@ Transform output with `|`:
 {% capture full_title %}{{ article.title }} | {{ site.name }}{% endcapture %}
 ```
 
+**assign_global:** (passes variable up to layout)
+```liquid
+{% assign_global page_title = "Services - My Company" %}
+{% assign_global page_description = "Professional services..." %}
+```
+
+Use `assign_global` when templates need to pass data to the layout (e.g., page titles for SEO). Regular `assign` variables are template-scoped.
+
 ### Standard Filters
 
 | Filter | Example | Output |
@@ -1047,6 +1055,7 @@ Or use helper:
 | `{% hostnet_render 'name' %}` | Render snippet |
 | `{% dropin 'name' %}` | Render user-managed HTML content |
 | `{% schema %}...{% endschema %}` | Define section settings |
+| `{% assign_global var = value %}` | Set variable accessible in layout (for page titles) |
 
 ### Custom Filters
 

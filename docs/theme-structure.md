@@ -130,6 +130,27 @@ Page templates that render the main content area. The template name often corres
 3. Dataset item: `/blog/my-post` uses `article.liquid`
 4. Fallback: `404.liquid`
 
+**SEO: Setting page titles**
+
+Every template should set `page_title` (and optionally `page_description`) using `assign_global`. This passes the value up to the layout for the `<title>` tag:
+
+```liquid
+<!-- templates/services.liquid -->
+{% assign_global page_title = "Our Services - My Company" %}
+{% assign_global page_description = "We offer professional services including..." %}
+
+{% section 'hero' %}
+{% section 'services-list' %}
+```
+
+The layout uses these with fallbacks:
+```liquid
+<title>{{ page_title | default: site.name }}</title>
+<meta name="description" content="{{ page_description | default: settings.tagline }}">
+```
+
+**Important:** Use `assign_global`, not `assign`. Regular variables are template-scoped and won't be visible in the layout.
+
 **Example: index.liquid**
 ```liquid
 <div class="container">

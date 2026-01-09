@@ -138,6 +138,13 @@ Renders user-managed HTML content from the dashboard. Returns empty string if no
 
 Drop-ins are plain HTML only (no Liquid), managed by site owners, and support cascading scope (site-specific overrides account-wide).
 
+### Assign Global Tag
+```liquid
+{% assign_global page_title = "Services - My Company" %}
+{% assign_global page_description = "Professional services..." %}
+```
+Sets a variable accessible in the parent layout. Use for SEO (page titles, descriptions). Regular `assign` variables are template-scoped and invisible to the layout.
+
 ### Routes Tag (templates only)
 ```liquid
 {% routes %}
@@ -262,6 +269,7 @@ Priority order:
 <html>
 <head>
   <title>{{ page_title | default: site.name }}</title>
+  <meta name="description" content="{{ page_description | default: settings.tagline }}">
   <link rel="stylesheet" href="{{ 'theme.css' | asset_url }}">
 </head>
 <body>
@@ -272,6 +280,26 @@ Priority order:
 </body>
 </html>
 ```
+
+### Setting Page Titles (SEO)
+
+Every template should set `page_title` using `assign_global`:
+
+```liquid
+<!-- templates/tree-removal.liquid -->
+{% assign_global page_title = "Tree Removal - My Company" %}
+{% assign_global page_description = "Professional tree removal services..." %}
+
+{% section 'hero' %}
+{% section 'services' %}
+```
+
+The layout's `<title>` tag references this with a fallback:
+```liquid
+<title>{{ page_title | default: site.name }}</title>
+```
+
+**Note:** Use `assign_global`, not `assign`. Regular `assign` variables are template-scoped and won't reach the layout.
 
 ### Reusable Card Snippet
 ```liquid
