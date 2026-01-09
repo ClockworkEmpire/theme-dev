@@ -8,6 +8,7 @@ const commands = {
   push: require('./commands/push'),
   update: require('./commands/update'),
   version: require('./commands/version'),
+  docs: require('./commands/docs'),
   help: showHelp
 };
 
@@ -55,6 +56,10 @@ Commands:
   update               Pull the latest Docker image
 
   version              Show version information
+
+  docs                 Access theme documentation
+    extract [path]     Extract docs to local directory
+    list               List available docs
 
   help                 Show this help message
 

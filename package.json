@@ -1,13 +1,14 @@
 {
   "name": "@clockworkempire/theme-dev",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Local development server for HostNet themes",
   "bin": {
     "hostnet": "./src/index.js"
   },
   "files": [
     "src/",
-    "starters/"
+    "starters/",
+    "docs/"
   ],
   "repository": {
     "type": "git",

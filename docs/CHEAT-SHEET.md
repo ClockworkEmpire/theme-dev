@@ -49,6 +49,7 @@ theme/
 | `route_params` | URL params (parameterized routes) | `{{ route_params.city }}` |
 | `content_for_layout` | Page content (layouts) | `{{ content_for_layout }}` |
 | `section` | Section context | `{{ section.settings.title }}` |
+| `section.blocks` | Block array (sections) | `{% for block in section.blocks %}` |
 
 ### Object Properties
 
@@ -368,6 +369,37 @@ The layout's `<title>` tag references this with a fallback:
 }
 {% endschema %}
 ```
+
+### Section with Blocks
+```liquid
+<!-- sections/team.liquid -->
+<div class="team-grid">
+  {% for block in section.blocks %}
+    <div class="card">
+      <h3>{{ block.settings.name }}</h3>
+      <p>{{ block.settings.role }}</p>
+    </div>
+  {% endfor %}
+</div>
+
+{% schema %}
+{
+  "name": "Team",
+  "blocks": [
+    {
+      "type": "member",
+      "name": "Team Member",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Name" },
+        { "type": "text", "id": "role", "label": "Role" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+```
+
+See [Sections, Snippets & Blocks](sections-and-snippets.md#section-blocks) for full documentation.
 
 ### Media Library Usage
 ```liquid

@@ -826,3 +826,250 @@ This lets site owners:
 | Scope | Theme-wide | Account/site cascading |
 
 See the [Liquid Reference](liquid-reference.md#dropin) for full tag documentation.
+
+---
+
+## Section Blocks
+
+Sections can contain **blocks** - repeatable data items that site owners can add, remove, and reorder. Blocks are perfect for team members, FAQ items, pricing tiers, testimonials, and similar repeating content.
+
+### Why Use Blocks?
+
+| Approach | Best For |
+|----------|----------|
+| **Blocks** | Small, section-scoped repeatable items (2-20 items) |
+| **Datasets** | Large content collections with pagination (blogs, products) |
+
+**Use blocks when:**
+- Content belongs to a specific section
+- Site owners need to customize which items appear
+- You don't need pagination or URL routing
+
+### Defining Block Types
+
+Add a `blocks` array to your section's `{% schema %}`:
+
+```liquid
+<!-- sections/team.liquid -->
+<section class="team py-16">
+  <div class="container">
+    <h2>{{ section.settings.title }}</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {% for block in section.blocks %}
+        <div class="team-card text-center">
+          {% if block.settings.photo %}
+            <img src="{{ block.settings.photo | img_url: 'medium' }}"
+                 alt="{{ block.settings.name }}"
+                 class="w-32 h-32 rounded-full mx-auto">
+          {% endif %}
+          <h3 class="mt-4 font-bold">{{ block.settings.name }}</h3>
+          <p class="text-gray-600">{{ block.settings.role }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Team",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Our Team"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "member",
+      "name": "Team Member",
+      "settings": [
+        { "type": "image_picker", "id": "photo", "label": "Photo" },
+        { "type": "text", "id": "name", "label": "Name", "default": "John Doe" },
+        { "type": "text", "id": "role", "label": "Role", "default": "Developer" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+```
+
+### The Block Object
+
+Inside `{% for block in section.blocks %}`, each block provides:
+
+| Property | Description | Example |
+|----------|-------------|---------|
+| `block.id` | Unique block identifier | `"member-a1b2c3"` |
+| `block.type` | Block type from schema | `"member"` |
+| `block.settings` | Block settings values | `block.settings.name` |
+
+### Multiple Block Types
+
+A section can define multiple block types. Site owners choose which type when adding blocks:
+
+```liquid
+<!-- sections/testimonials.liquid -->
+<section class="testimonials">
+  {% for block in section.blocks %}
+    {% case block.type %}
+      {% when 'quote' %}
+        <blockquote>
+          <p>"{{ block.settings.text }}"</p>
+          <cite>— {{ block.settings.author }}</cite>
+        </blockquote>
+
+      {% when 'video' %}
+        <div class="video-testimonial">
+          <iframe src="{{ block.settings.video_url }}"></iframe>
+          <p>{{ block.settings.caption }}</p>
+        </div>
+    {% endcase %}
+  {% endfor %}
+</section>
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "Text Quote",
+      "settings": [
+        { "type": "textarea", "id": "text", "label": "Quote" },
+        { "type": "text", "id": "author", "label": "Author" }
+      ]
+    },
+    {
+      "type": "video",
+      "name": "Video Testimonial",
+      "settings": [
+        { "type": "url", "id": "video_url", "label": "Video URL" },
+        { "type": "text", "id": "caption", "label": "Caption" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+```
+
+### Empty State Handling
+
+Always handle the case when no blocks exist:
+
+```liquid
+{% if section.blocks.size > 0 %}
+  <div class="team-grid">
+    {% for block in section.blocks %}
+      <!-- render block -->
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-muted text-center">No team members configured yet.</p>
+{% endif %}
+```
+
+### Local Development
+
+For local development, add mock block data to `data/settings.json`:
+
+```json
+{
+  "sections": {
+    "team": {
+      "settings": {
+        "title": "Meet Our Team"
+      },
+      "blocks": [
+        {
+          "type": "member",
+          "settings": {
+            "name": "Alice Chen",
+            "role": "CEO & Founder"
+          }
+        },
+        {
+          "type": "member",
+          "settings": {
+            "name": "Bob Martinez",
+            "role": "CTO"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+### Common Block Patterns
+
+#### FAQ Section
+
+```liquid
+{% for block in section.blocks %}
+  <details class="faq-item">
+    <summary>{{ block.settings.question }}</summary>
+    <p>{{ block.settings.answer }}</p>
+  </details>
+{% endfor %}
+
+{% schema %}
+{
+  "blocks": [{
+    "type": "faq_item",
+    "name": "FAQ Item",
+    "settings": [
+      { "type": "text", "id": "question", "label": "Question" },
+      { "type": "textarea", "id": "answer", "label": "Answer" }
+    ]
+  }]
+}
+{% endschema %}
+```
+
+#### Pricing Tiers
+
+```liquid
+{% for block in section.blocks %}
+  <div class="pricing-card {% if block.settings.featured %}featured{% endif %}">
+    <h3>{{ block.settings.name }}</h3>
+    <p class="price">${{ block.settings.price }}/mo</p>
+    <ul>{{ block.settings.features | newline_to_br }}</ul>
+  </div>
+{% endfor %}
+```
+
+#### Feature List
+
+```liquid
+{% for block in section.blocks %}
+  <div class="feature">
+    {% if block.settings.icon %}
+      <img src="{{ block.settings.icon | img_url: 'small' }}">
+    {% endif %}
+    <h4>{{ block.settings.title }}</h4>
+    <p>{{ block.settings.description }}</p>
+  </div>
+{% endfor %}
+```
+
+### Block Settings Types
+
+Block settings support the same types as section settings:
+
+| Type | Description |
+|------|-------------|
+| `text` | Single line input |
+| `textarea` | Multi-line input |
+| `richtext` | Rich text editor |
+| `image_picker` | Image selector |
+| `url` | URL input |
+| `checkbox` | Boolean toggle |
+| `range` | Numeric slider |
+| `select` | Dropdown options |
+| `color` | Color picker |
+
+See [Settings Schema](settings-schema.md) for full documentation.

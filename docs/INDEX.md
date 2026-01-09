@@ -74,7 +74,7 @@ See [Local Development](local-development.md) for detailed command documentation
 |----------|-------------|
 | [Theme Structure](theme-structure.md) | Directory layout and file organization |
 | [Liquid Reference](liquid-reference.md) | Complete templating language reference |
-| [Sections, Snippets & Drop-Ins](sections-and-snippets.md) | Building reusable components |
+| [Sections, Snippets & Blocks](sections-and-snippets.md) | Building reusable components |
 | [Settings Schema](settings-schema.md) | Configurable theme options |
 | [Datasets and Routing](datasets-and-routing.md) | Dynamic content and URL patterns |
 | [Assets and Styling](assets-and-styling.md) | CSS, JavaScript, images, fonts |
