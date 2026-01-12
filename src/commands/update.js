@@ -2,7 +2,7 @@ const { spawn } = require('child_process');
 const { DOCKER_IMAGE } = require('../docker');
 
 module.exports = function() {
-  console.log('Pulling latest HostNet theme dev server...');
+  console.log('Pulling latest Site Swarm theme dev server...');
   console.log();
 
   const docker = spawn('docker', ['pull', DOCKER_IMAGE], { stdio: 'inherit' });

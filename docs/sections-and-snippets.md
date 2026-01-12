@@ -6,7 +6,7 @@ Build modular, reusable components for your theme.
 
 ## Overview
 
-HostNet themes use two types of reusable components:
+Site Swarm themes use two types of reusable components:
 
 | Type | Settings | Scope | Use Case |
 |------|----------|-------|----------|
@@ -140,15 +140,15 @@ Snippets are simple partials without settings. They receive data via variables p
 
 ### Including Snippets
 
-Use `{% hostnet_render %}` to include snippets:
+Use `{% swarm_render %}` to include snippets:
 
 ```liquid
-{% hostnet_render 'article-card', article: post %}
+{% swarm_render 'article-card', article: post %}
 ```
 
-**Why `hostnet_render`?**
+**Why `swarm_render`?**
 
-HostNet uses database-backed templates, not files. The `hostnet_render` tag is a custom implementation that looks up snippets from the database. The name distinguishes it from Liquid's built-in file-based `render` tag.
+Site Swarm uses database-backed templates, not files. The `swarm_render` tag is a custom implementation that looks up snippets from the database. The name distinguishes it from Liquid's built-in file-based `render` tag. (The legacy `hostnet_render` tag still works for backward compatibility.)
 
 ### Passing Variables
 
@@ -156,13 +156,13 @@ Pass any variables the snippet needs:
 
 ```liquid
 <!-- Single variable -->
-{% hostnet_render 'article-card', article: post %}
+{% swarm_render 'article-card', article: post %}
 
 <!-- Multiple variables -->
-{% hostnet_render 'product-card', product: item, show_price: true, featured: false %}
+{% swarm_render 'product-card', product: item, show_price: true, featured: false %}
 
 <!-- Complex data -->
-{% hostnet_render 'stats', count: collection.size, label: 'Articles' %}
+{% swarm_render 'stats', count: collection.size, label: 'Articles' %}
 ```
 
 ### Variable Scope
@@ -175,8 +175,8 @@ Variables from the parent template are NOT automatically available:
 
 ```liquid
 {% assign highlight = true %}
-{% hostnet_render 'card' %}  <!-- 'highlight' is NOT available -->
-{% hostnet_render 'card', highlight: highlight %}  <!-- Now it is -->
+{% swarm_render 'card' %}  <!-- 'highlight' is NOT available -->
+{% swarm_render 'card', highlight: highlight %}  <!-- Now it is -->
 ```
 
 ### Collection Iteration
@@ -184,14 +184,14 @@ Variables from the parent template are NOT automatically available:
 Render a snippet for each item in a collection:
 
 ```liquid
-{% hostnet_render 'article-card' for articles as article %}
+{% swarm_render 'article-card' for articles as article %}
 ```
 
 This is equivalent to:
 
 ```liquid
 {% for article in articles %}
-  {% hostnet_render 'article-card', article: article %}
+  {% swarm_render 'article-card', article: article %}
 {% endfor %}
 ```
 
@@ -207,7 +207,7 @@ Cards are the most common reusable pattern. Design them to be flexible:
 
 ```liquid
 <!-- snippets/card.liquid -->
-<!-- Usage: {% hostnet_render 'card', item: record, show_image: true %} -->
+<!-- Usage: {% swarm_render 'card', item: record, show_image: true %} -->
 
 <article class="card bg-white rounded-lg shadow-sm overflow-hidden">
   {% if show_image and item.image %}
@@ -292,7 +292,7 @@ Combine cards with grid layouts:
 <!-- In a template -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
   {% for article in datasets.articles limit: 6 %}
-    {% hostnet_render 'article-card', article: article %}
+    {% swarm_render 'article-card', article: article %}
   {% else %}
     <p class="col-span-full text-center text-gray-500 py-12">
       No articles found.
@@ -360,17 +360,17 @@ A reusable pagination snippet:
 <div class="social-links flex gap-4">
   {% if settings.twitter_url %}
     <a href="{{ settings.twitter_url }}" aria-label="Twitter">
-      {% hostnet_render 'icon', name: 'twitter' %}
+      {% swarm_render 'icon', name: 'twitter' %}
     </a>
   {% endif %}
   {% if settings.facebook_url %}
     <a href="{{ settings.facebook_url }}" aria-label="Facebook">
-      {% hostnet_render 'icon', name: 'facebook' %}
+      {% swarm_render 'icon', name: 'facebook' %}
     </a>
   {% endif %}
   {% if settings.instagram_url %}
     <a href="{{ settings.instagram_url }}" aria-label="Instagram">
-      {% hostnet_render 'icon', name: 'instagram' %}
+      {% swarm_render 'icon', name: 'instagram' %}
     </a>
   {% endif %}
 </div>
@@ -498,7 +498,7 @@ A reusable pagination snippet:
 
     <div class="grid grid-cols-1 md:grid-cols-{{ section.settings.columns }} gap-6">
       {% for article in datasets.articles limit: section.settings.limit %}
-        {% hostnet_render 'article-card', article: article %}
+        {% swarm_render 'article-card', article: article %}
       {% else %}
         <p class="col-span-full text-center text-gray-500">No articles yet.</p>
       {% endfor %}
@@ -645,24 +645,24 @@ Each snippet should do one thing well:
 
 ```liquid
 <!-- Good: focused, reusable -->
-{% hostnet_render 'article-card', article: post %}
-{% hostnet_render 'pagination' %}
-{% hostnet_render 'breadcrumb', items: crumbs %}
+{% swarm_render 'article-card', article: post %}
+{% swarm_render 'pagination' %}
+{% swarm_render 'breadcrumb', items: crumbs %}
 
 <!-- Avoid: too many responsibilities -->
-{% hostnet_render 'article-list-with-sidebar-and-pagination' %}
+{% swarm_render 'article-list-with-sidebar-and-pagination' %}
 ```
 
 ### 2. Use Meaningful Names
 
 ```liquid
 <!-- Good: clear purpose -->
-{% hostnet_render 'product-card', product: item %}
-{% hostnet_render 'author-bio', author: post.author %}
+{% swarm_render 'product-card', product: item %}
+{% swarm_render 'author-bio', author: post.author %}
 
 <!-- Avoid: vague names -->
-{% hostnet_render 'card', data: item %}
-{% hostnet_render 'component', info: author %}
+{% swarm_render 'card', data: item %}
+{% swarm_render 'component', info: author %}
 ```
 
 ### 3. Document Expected Variables
@@ -672,7 +672,7 @@ Add comments showing expected variables:
 ```liquid
 {% comment %}
   Product Card
-  Usage: {% hostnet_render 'product-card', product: item %}
+  Usage: {% swarm_render 'product-card', product: item %}
 
   Expected variables:
     - product.name (required)
@@ -708,11 +708,11 @@ Build complex layouts from simple components:
 ```liquid
 <!-- Good: compose simple snippets -->
 <article class="article-full">
-  {% hostnet_render 'breadcrumb', items: breadcrumb %}
-  {% hostnet_render 'article-header', article: article %}
-  {% hostnet_render 'article-content', content: article.content %}
-  {% hostnet_render 'author-bio', author: article.author %}
-  {% hostnet_render 'related-articles', articles: related %}
+  {% swarm_render 'breadcrumb', items: breadcrumb %}
+  {% swarm_render 'article-header', article: article %}
+  {% swarm_render 'article-content', content: article.content %}
+  {% swarm_render 'author-bio', author: article.author %}
+  {% swarm_render 'related-articles', articles: related %}
 </article>
 
 <!-- Avoid: one giant template -->

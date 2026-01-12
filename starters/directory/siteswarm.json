@@ -1,8 +1,10 @@
 {
   "name": "Local Directory",
   "version": "1.0.0",
+  "category": "directory",
+  "subcategory": "listings",
   "description": "Business directory theme with listings, reviews, and blog functionality",
-  "author": "HostNet",
+  "author": "Site Swarm",
 
   "datasets": {
     "businesses": {

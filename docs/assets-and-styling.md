@@ -487,8 +487,8 @@ Let site owners choose fonts:
 
 Usage:
 ```liquid
-{% hostnet_render 'icon', name: 'menu' %}
-{% hostnet_render 'icon', name: 'arrow-right' %}
+{% swarm_render 'icon', name: 'menu' %}
+{% swarm_render 'icon', name: 'arrow-right' %}
 ```
 
 ### SVG Files

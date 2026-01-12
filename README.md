@@ -1,6 +1,6 @@
-# HostNet Theme Dev
+# Site Swarm Theme Dev
 
-Local development server for building and previewing HostNet themes.
+Local development server for building and previewing Site Swarm themes.
 
 ## Requirements
 
@@ -16,42 +16,42 @@ npm install -g github:clockworkempire/theme-dev
 
 ```bash
 # Create a new theme
-hostnet new my-theme
+swarm new my-theme
 
 # Start the dev server (offline mode)
 cd my-theme
-hostnet dev
+swarm dev
 ```
 
 Open http://localhost:4000 to view your theme.
 
-### Tunnel Mode (Connect to HostNet)
+### Tunnel Mode (Connect to Site Swarm)
 
 Use the full Theme Editor UI while editing files locally:
 
 ```bash
 # Authenticate once
-hostnet auth
+swarm auth
 
-# Connect to HostNet
-hostnet connect ./my-theme
+# Connect to Site Swarm
+swarm connect ./my-theme
 ```
 
-This opens the Theme Editor at HostNet with your local files.
+This opens the Theme Editor at Site Swarm with your local files.
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `hostnet new <name>` | Create a new theme from blank scaffold |
-| `hostnet new <name> --example` | Create from full example theme |
-| `hostnet dev [path]` | Start local dev server (offline mode) |
-| `hostnet dev --port 3000` | Use custom port |
-| `hostnet connect [path]` | Connect to HostNet Theme Editor (tunnel mode) |
-| `hostnet auth` | Authenticate with HostNet (save API key) |
-| `hostnet update` | Pull latest version |
-| `hostnet version` | Show version info |
-| `hostnet help` | Show help |
+| `swarm new <name>` | Create a new theme from blank scaffold |
+| `swarm new <name> --example` | Create from full example theme |
+| `swarm dev [path]` | Start local dev server (offline mode) |
+| `swarm dev --port 3000` | Use custom port |
+| `swarm connect [path]` | Connect to Site Swarm Theme Editor (tunnel mode) |
+| `swarm auth` | Authenticate with Site Swarm (save API key) |
+| `swarm update` | Pull latest version |
+| `swarm version` | Show version info |
+| `swarm help` | Show help |
 
 ## Documentation
 

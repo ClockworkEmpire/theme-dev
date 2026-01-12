@@ -17,7 +17,7 @@ module.exports = function(args) {
     process.exit(1);
   }
 
-  console.log('Starting HostNet theme dev server...');
+  console.log('Starting Site Swarm theme dev server...');
   console.log(`Theme: ${themePath}`);
   console.log(`URL: http://localhost:${port}`);
   console.log();
@@ -39,11 +39,11 @@ module.exports = function(args) {
     if (err.code === 'ENOENT') {
       console.error('Error: Docker not found.');
       console.error();
-      console.error('The hostnet CLI requires Docker to run the development server.');
+      console.error('The swarm CLI requires Docker to run the development server.');
       console.error('Install Docker: https://docs.docker.com/get-docker/');
       console.error();
       console.error('Alternatively, install the Ruby gem for native execution:');
-      console.error('  gem install hostnet-theme-dev');
+      console.error('  gem install siteswarm-theme-dev');
     } else {
       console.error('Error starting Docker:', err.message);
     }

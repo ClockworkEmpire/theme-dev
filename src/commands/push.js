@@ -22,13 +22,13 @@ module.exports = function(args) {
   const dirName = path.basename(resolvedPath);
   const derivedThemeName = dirName.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
-  console.log('Pushing theme to HostNet...');
+  console.log('Pushing theme to Site Swarm...');
   console.log(`Theme: ${resolvedPath}`);
   console.log();
 
   runDockerCommand('push', passArgs, {
     themePath: resolvedPath,
     errorContext: 'push themes',
-    env: { HOSTNET_THEME_NAME_FALLBACK: derivedThemeName }
+    env: { SITESWARM_THEME_NAME_FALLBACK: derivedThemeName }
   });
 };

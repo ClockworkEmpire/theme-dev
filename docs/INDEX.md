@@ -1,6 +1,6 @@
 # Theme Development
 
-Build custom themes for HostNet sites.
+Build custom themes for Site Swarm sites.
 
 ---
 
@@ -11,9 +11,9 @@ Build custom themes for HostNet sites.
 npm install -g github:clockworkempire/theme-dev
 
 # Create and run a new theme
-hostnet new my-theme
+swarm new my-theme
 cd my-theme
-hostnet dev
+swarm dev
 
 # Open http://localhost:4000
 ```
@@ -31,7 +31,7 @@ hostnet dev
 | Method | Command | Notes |
 |--------|---------|-------|
 | **npm** | `npm install -g github:clockworkempire/theme-dev` | Requires Docker |
-| **Ruby gem** | `gem install hostnet-theme-dev` | Native Ruby, no Docker |
+| **Ruby gem** | `gem install siteswarm-theme-dev` | Native Ruby, no Docker |
 | **Docker** | `docker pull ghcr.io/clockworkempire/theme-dev` | Direct container usage |
 
 See [Local Development](local-development.md) for detailed installation and usage.
@@ -42,18 +42,18 @@ See [Local Development](local-development.md) for detailed installation and usag
 
 ```bash
 # Local development
-hostnet new <name>           # Create a new theme (blank scaffold)
-hostnet new <name> --example # Create from full example theme
-hostnet dev [path]           # Start dev server with live reload
+swarm new <name>           # Create a new theme (blank scaffold)
+swarm new <name> --example # Create from full example theme
+swarm dev [path]           # Start dev server with live reload
 
 # Server integration
-hostnet connect [path]       # Connect to HostNet for browser-based editing
-hostnet push [path]          # Upload theme to HostNet server
-hostnet env                  # Manage environments (server URLs, API keys)
+swarm connect [path]       # Connect to Site Swarm for browser-based editing
+swarm push [path]          # Upload theme to Site Swarm server
+swarm env                  # Manage environments (server URLs, API keys)
 
 # Utility
-hostnet update               # Pull latest Docker image
-hostnet help                 # Show help
+swarm update               # Pull latest Docker image
+swarm help                 # Show help
 ```
 
 See [Local Development](local-development.md) for detailed command documentation.
@@ -87,7 +87,7 @@ See [Local Development](local-development.md) for detailed command documentation
 | [Cheat Sheet](CHEAT-SHEET.md) | Condensed reference card |
 | [Full Guide](THEME-DEVELOPMENT-GUIDE.md) | Complete guide in one document |
 
-### For HostNet Developers
+### For Site Swarm Developers
 
 | Document | Description |
 |----------|-------------|
@@ -102,7 +102,7 @@ Two starter templates are available:
 ### Blank (default)
 
 ```bash
-hostnet new my-theme
+swarm new my-theme
 ```
 
 Minimal scaffold with placeholder templates. Good for starting from scratch.
@@ -110,7 +110,7 @@ Minimal scaffold with placeholder templates. Good for starting from scratch.
 ### Minimal Example
 
 ```bash
-hostnet new my-theme --example
+swarm new my-theme --example
 ```
 
 Full working theme with:
@@ -170,7 +170,7 @@ Loops:
 
 **Snippets** receive data (cards, buttons):
 ```liquid
-{% hostnet_render 'article-card', article: post %}
+{% swarm_render 'article-card', article: post %}
 ```
 
 **Drop-ins** are user-managed HTML blocks (disclaimers, promos):
@@ -183,7 +183,7 @@ Loops:
 Access datasets anywhere:
 ```liquid
 {% for product in datasets.products limit: 4 %}
-  {% hostnet_render 'product-card', product: product %}
+  {% swarm_render 'product-card', product: product %}
 {% endfor %}
 ```
 
@@ -196,7 +196,7 @@ Generate URLs:
 
 ## Prerequisites
 
-To build HostNet themes, you should be familiar with:
+To build Site Swarm themes, you should be familiar with:
 
 - HTML and CSS
 - Basic templating concepts (variables, loops, conditionals)

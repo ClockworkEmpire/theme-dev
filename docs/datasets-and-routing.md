@@ -6,9 +6,9 @@ Work with dynamic content and understand how URLs map to templates.
 
 ## Overview
 
-HostNet sites connect to **datasets** - collections of structured content like articles, products, or team members. Datasets are:
+Site Swarm sites connect to **datasets** - collections of structured content like articles, products, or team members. Datasets are:
 
-- Defined by site owners in the HostNet dashboard
+- Defined by site owners in the Site Swarm dashboard
 - Mounted to URL paths (e.g., `/blog`, `/products`)
 - Accessible in templates via the `datasets` object
 
@@ -20,7 +20,7 @@ Your theme doesn't define what data exists - it renders whatever datasets the si
 
 ### Routing Priority
 
-When a request comes in, HostNet resolves URLs in this order:
+When a request comes in, Site Swarm resolves URLs in this order:
 
 1. **Exact template match** - `/about` → `templates/about.liquid`
 2. **Parameterized route patterns** - `/companies/seattle/wa/acme` → template with matching `{% routes %}` block
@@ -136,7 +136,7 @@ Example: For URL `/companies/seattle/wa/acme`:
 {% for business in datasets.businesses %}
   {% if business.city == city %}
     {% if category == blank or business.category == category %}
-      {% hostnet_render 'business-card', business: business %}
+      {% swarm_render 'business-card', business: business %}
     {% endif %}
   {% endif %}
 {% endfor %}
@@ -161,7 +161,7 @@ Example: For URL `/companies/seattle/wa/acme`:
   {% for product in datasets.products %}
     {% if product.category == category %}
       {% if subcategory == blank or product.subcategory == subcategory %}
-        {% hostnet_render 'product-card', product: product %}
+        {% swarm_render 'product-card', product: product %}
       {% endif %}
     {% endif %}
   {% endfor %}
@@ -260,14 +260,14 @@ Collection pages display lists of dataset records. Use `templates/collection.liq
 
   <div class="grid">
     {% for item in collection %}
-      {% hostnet_render 'card', item: item %}
+      {% swarm_render 'card', item: item %}
     {% else %}
       <p>No items found.</p>
     {% endfor %}
   </div>
 
   {% if pagination.total_pages > 1 %}
-    {% hostnet_render 'pagination' %}
+    {% swarm_render 'pagination' %}
   {% endif %}
 </div>
 ```
@@ -504,7 +504,7 @@ Use in links:
   <section class="articles">
     <h2>Latest Articles</h2>
     {% for article in datasets.articles limit: 3 %}
-      {% hostnet_render 'article-card', article: article %}
+      {% swarm_render 'article-card', article: article %}
     {% endfor %}
   </section>
 {% endif %}
@@ -521,21 +521,21 @@ Access any mounted dataset from any template:
 <section class="featured-articles">
   <h2>Latest Articles</h2>
   {% for article in datasets.articles limit: 3 %}
-    {% hostnet_render 'article-card', article: article %}
+    {% swarm_render 'article-card', article: article %}
   {% endfor %}
 </section>
 
 <section class="featured-products">
   <h2>Popular Products</h2>
   {% for product in datasets.products limit: 4 %}
-    {% hostnet_render 'product-card', product: product %}
+    {% swarm_render 'product-card', product: product %}
   {% endfor %}
 </section>
 
 <section class="team">
   <h2>Our Team</h2>
   {% for member in datasets.team %}
-    {% hostnet_render 'team-card', member: member %}
+    {% swarm_render 'team-card', member: member %}
   {% endfor %}
 </section>
 ```
@@ -558,7 +558,7 @@ Use different card snippets based on the dataset type:
       {% when 'team' %}
         {% hostnet_render 'team-card', member: item %}
       {% else %}
-        {% hostnet_render 'generic-card', item: item %}
+        {% swarm_render 'generic-card', item: item %}
     {% endcase %}
   {% endfor %}
 </div>
@@ -569,7 +569,7 @@ Or use a naming convention:
 ```liquid
 <!-- If snippets are named: article-card, product-card, team-card -->
 {% assign card_name = mount.alias | remove_last: 's' | append: '-card' %}
-{% hostnet_render card_name, item: item %}
+{% swarm_render card_name, item: item %}
 ```
 
 ---
@@ -591,7 +591,7 @@ Or use a naming convention:
       </div>
       <div class="grid grid-cols-3 gap-6">
         {% for article in datasets.articles limit: 3 %}
-          {% hostnet_render 'article-card', article: article %}
+          {% swarm_render 'article-card', article: article %}
         {% endfor %}
       </div>
     </section>
@@ -605,7 +605,7 @@ Or use a naming convention:
       </div>
       <div class="grid grid-cols-4 gap-6">
         {% for product in datasets.products limit: 4 %}
-          {% hostnet_render 'product-card', product: product %}
+          {% swarm_render 'product-card', product: product %}
         {% endfor %}
       </div>
     </section>
@@ -636,12 +636,12 @@ Or use a naming convention:
         {% elsif mount.alias == 'products' %}
           {% hostnet_render 'product-card', product: item %}
         {% else %}
-          {% hostnet_render 'generic-card', item: item %}
+          {% swarm_render 'generic-card', item: item %}
         {% endif %}
       {% endfor %}
     </div>
 
-    {% hostnet_render 'pagination' %}
+    {% swarm_render 'pagination' %}
   {% else %}
     <div class="text-center py-16 text-gray-500">
       <p>No {{ mount.alias }} found.</p>
@@ -757,7 +757,7 @@ The same `collection.liquid` can serve multiple datasets:
 <!-- Works for /articles, /products, /team, etc. -->
 <h1>{{ mount.alias | capitalize }}</h1>
 {% for item in collection %}
-  {% hostnet_render 'card', item: item %}
+  {% swarm_render 'card', item: item %}
 {% endfor %}
 ```
 

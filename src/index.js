@@ -25,9 +25,9 @@ if (commands[command]) {
 
 function showHelp() {
   console.log(`
-HostNet Theme Development CLI
+Site Swarm Theme Development CLI
 
-Usage: hostnet <command> [options]
+Usage: swarm <command> [options]
 
 Commands:
   new <name>           Create a new theme
@@ -36,9 +36,9 @@ Commands:
   dev [path]           Start local development server (offline mode)
     --port <port>      Port to listen on (default: 4000)
 
-  connect [path]       Connect to HostNet Theme Editor (tunnel mode)
+  connect [path]       Connect to Site Swarm Theme Editor (tunnel mode)
     --env <name>       Environment to use (default: current)
-    --server-url <url> HostNet server URL
+    --server-url <url> Site Swarm server URL
 
   env                  Manage environments (production, staging, local)
     list               List all environments
@@ -47,11 +47,12 @@ Commands:
     add <name>         Add a new environment interactively
     remove <name>      Remove an environment
 
-  push [path]          Push theme to HostNet server
+  push [path]          Push theme to Site Swarm server
     --env <name>       Environment to use (default: current)
     --account <id>     Account ID (overrides environment)
     --theme-id <id>    Theme ID to update (creates new if omitted)
     --theme-name <n>   Theme name for new themes
+    --create           Create a new theme (required if no theme-id)
 
   update               Pull the latest Docker image
 
@@ -64,7 +65,7 @@ Commands:
   help                 Show this help message
 
 Configuration:
-  Create ~/.hostnet.yml or .hostnet.yml in your project:
+  Create ~/.siteswarm.yml or .siteswarm.yml in your project:
 
     default_environment: development
     environments:
@@ -74,16 +75,16 @@ Configuration:
         account_id: acct_xxx
       production:
         api_key: your_prod_key
-        server_url: https://hostnet.io
+        server_url: https://siteswarm.co
         account_id: acct_yyy
 
 Examples:
-  hostnet new my-theme
-  hostnet dev ./my-theme
-  hostnet connect ./my-theme
-  hostnet push ./my-theme
-  hostnet env use production
-  hostnet push --env staging ./my-theme
+  swarm new my-theme
+  swarm dev ./my-theme
+  swarm connect ./my-theme
+  swarm push ./my-theme
+  swarm env use production
+  swarm push --env staging ./my-theme
 
 Documentation: https://github.com/clockworkempire/theme-dev
 `);

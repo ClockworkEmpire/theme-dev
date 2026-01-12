@@ -1,8 +1,10 @@
 {
   "name": "Minimal",
   "version": "1.0.0",
+  "category": "other",
+  "subcategory": "starter",
   "description": "A minimal starter theme with articles and company listings",
-  "author": "HostNet",
+  "author": "Site Swarm",
 
   "datasets": {
     "articles": {

@@ -7,7 +7,7 @@
         "id": "site_description",
         "label": "Site Description",
         "info": "Used in meta description tag",
-        "default": "A website built with HostNet"
+        "default": "A website built with Site Swarm"
       }
     ]
   },

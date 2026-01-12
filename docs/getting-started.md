@@ -1,6 +1,6 @@
 # Getting Started
 
-Build and deploy your first HostNet theme.
+Build and deploy your first Site Swarm theme.
 
 ---
 
@@ -8,13 +8,13 @@ Build and deploy your first HostNet theme.
 
 - Basic knowledge of HTML and CSS
 - Familiarity with templating concepts (variables, loops, conditionals)
-- A HostNet account with at least one site
+- A Site Swarm account with at least one site
 
 ---
 
 ## Theme Overview
 
-A HostNet theme is a collection of:
+A Site Swarm theme is a collection of:
 
 - **Liquid templates** - HTML with dynamic content placeholders
 - **Sections** - Reusable components with configurable settings
@@ -22,7 +22,7 @@ A HostNet theme is a collection of:
 - **Assets** - CSS, JavaScript, images, and fonts
 - **Config** - Settings schema and default values
 
-When you upload a theme, HostNet processes these files and makes them available to your site.
+When you upload a theme, Site Swarm processes these files and makes them available to your site.
 
 ---
 
@@ -155,7 +155,7 @@ Create `templates/index.liquid`:
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {% for article in datasets.articles limit: 3 %}
-          {% hostnet_render 'article-card', article: article %}
+          {% swarm_render 'article-card', article: article %}
         {% endfor %}
       </div>
     </section>
@@ -225,7 +225,7 @@ For dataset list pages (like `/articles`), create `templates/collection.liquid`:
   </div>
 
   {% if pagination.total_pages > 1 %}
-    {% hostnet_render 'pagination' %}
+    {% swarm_render 'pagination' %}
   {% endif %}
 </div>
 ```
@@ -355,7 +355,7 @@ Create `config/settings_schema.json`:
         "type": "text",
         "id": "site_description",
         "label": "Site Description",
-        "default": "A website built with HostNet"
+        "default": "A website built with Site Swarm"
       }
     ]
   }
@@ -366,7 +366,7 @@ Create `config/settings_data.json`:
 
 ```json
 {
-  "site_description": "A website built with HostNet"
+  "site_description": "A website built with Site Swarm"
 }
 ```
 
@@ -397,7 +397,7 @@ my-theme.zip
     └── settings_data.json
 ```
 
-Upload the ZIP through the HostNet dashboard:
+Upload the ZIP through the Site Swarm dashboard:
 1. Go to your site's Theme settings
 2. Click "Upload Theme"
 3. Select your ZIP file

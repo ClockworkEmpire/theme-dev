@@ -1,8 +1,10 @@
 {
   "name": "Blank",
   "version": "1.0.0",
+  "category": "other",
+  "subcategory": "starter",
   "description": "A blank canvas theme with minimal structure for building from scratch",
-  "author": "HostNet",
+  "author": "Site Swarm",
 
   "datasets": {}
 }

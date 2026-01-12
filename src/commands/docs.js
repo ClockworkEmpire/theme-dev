@@ -21,12 +21,12 @@ module.exports = function(args) {
 };
 
 function extractDocs(targetDir) {
-  const target = targetDir || './hostnet-docs';
+  const target = targetDir || './siteswarm-docs';
   const docsSource = path.join(__dirname, '../../docs');
 
   if (!fs.existsSync(docsSource)) {
     console.error('Error: Documentation not found in package.');
-    console.error('Try: hostnet update');
+    console.error('Try: swarm update');
     process.exit(1);
   }
 
@@ -47,7 +47,7 @@ function extractDocs(targetDir) {
 function listDocs() {
   const docsSource = path.join(__dirname, '../../docs');
   if (!fs.existsSync(docsSource)) {
-    console.error('Error: Documentation not found. Try: hostnet update');
+    console.error('Error: Documentation not found. Try: swarm update');
     process.exit(1);
   }
 
@@ -81,18 +81,18 @@ function copyDirSync(src, dest) {
 
 function showDocsHelp() {
   console.log(`
-HostNet Theme Documentation
+Site Swarm Theme Documentation
 
-Usage: hostnet docs <command>
+Usage: swarm docs <command>
 
 Commands:
-  extract [path]    Copy docs to local directory (default: ./hostnet-docs)
+  extract [path]    Copy docs to local directory (default: ./siteswarm-docs)
   list              List available documentation
   path              Show bundled docs location
 
 Examples:
-  hostnet docs extract           # Extract to ./hostnet-docs
-  hostnet docs extract ./docs    # Extract to custom path
-  hostnet docs list              # Show available docs
+  swarm docs extract           # Extract to ./siteswarm-docs
+  swarm docs extract ./docs    # Extract to custom path
+  swarm docs list              # Show available docs
 `);
 }

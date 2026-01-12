@@ -6,7 +6,7 @@ Define customizable options for your theme and sections.
 
 ## Overview
 
-HostNet themes support two levels of settings:
+Site Swarm themes support two levels of settings:
 
 1. **Theme Settings** - Global options defined in `config/settings_schema.json`
 2. **Section Settings** - Component-specific options defined in `{% schema %}` blocks

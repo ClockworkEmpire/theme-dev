@@ -1,10 +1,10 @@
 # Liquid Reference
 
-Complete reference for Liquid templating in HostNet themes.
+Complete reference for Liquid templating in Site Swarm themes.
 
 ## Overview
 
-HostNet uses [Liquid](https://shopify.github.io/liquid/), a template language created by Shopify. Templates are text files with `.liquid` extension containing a mix of static content and dynamic Liquid code.
+Site Swarm uses [Liquid](https://shopify.github.io/liquid/), a template language created by Shopify. Templates are text files with `.liquid` extension containing a mix of static content and dynamic Liquid code.
 
 Liquid has three main components:
 - **Objects** - Output data with `{{ }}`
@@ -161,7 +161,7 @@ Aliases are set when uploading or editing media files in the dashboard.
 
 **Lookup priority:**
 
-When accessing `media.something`, HostNet looks for files in this order:
+When accessing `media.something`, Site Swarm looks for files in this order:
 1. Alias match: file with `alias = "something"`
 2. Exact filename: file named `something`
 3. Filename with extension: `something.png`, `something.jpg`, etc.
@@ -283,7 +283,7 @@ Access to all mounted datasets by their alias. Each dataset is a collection of r
 {% endfor %}
 
 {% for product in datasets.products %}
-  {% hostnet_render 'product-card', product: product %}
+  {% swarm_render 'product-card', product: product %}
 {% endfor %}
 ```
 
@@ -509,7 +509,7 @@ Available when viewing `/tags/:tag` URLs. Contains the current tag being filtere
 ```liquid
 <h1>Posts tagged "{{ current_tag }}"</h1>
 {% for post in posts %}
-  {% hostnet_render 'post-card', post: post %}
+  {% swarm_render 'post-card', post: post %}
 {% endfor %}
 ```
 
@@ -519,7 +519,7 @@ Available on dataset list pages (e.g., `/blog`). Contains the paginated array of
 
 ```liquid
 {% for article in collection %}
-  {% hostnet_render 'article-card', article: article %}
+  {% swarm_render 'article-card', article: article %}
 {% else %}
   <p>No articles found.</p>
 {% endfor %}
@@ -641,7 +641,7 @@ Available inside section templates. Contains section metadata and settings.
 
 ## Custom Tags
 
-HostNet provides custom Liquid tags for theme functionality.
+Site Swarm provides custom Liquid tags for theme functionality.
 
 ### section
 
@@ -661,39 +661,39 @@ The section tag:
 4. Makes `section.settings` available in the template
 5. Renders the section content
 
-### hostnet_render
+### swarm_render
 
 Renders a snippet from the `snippets/` directory with isolated variable scope.
 
 **Basic usage:**
 ```liquid
-{% hostnet_render 'icon' %}
-{% hostnet_render 'social-links' %}
+{% swarm_render 'icon' %}
+{% swarm_render 'social-links' %}
 ```
 
 **With variables:**
 ```liquid
-{% hostnet_render 'article-card', article: post %}
-{% hostnet_render 'product-card', product: item, show_price: true %}
-{% hostnet_render 'button', text: 'Buy Now', url: product.url, style: 'primary' %}
+{% swarm_render 'article-card', article: post %}
+{% swarm_render 'product-card', product: item, show_price: true %}
+{% swarm_render 'button', text: 'Buy Now', url: product.url, style: 'primary' %}
 ```
 
 **Collection iteration:**
 ```liquid
-{% hostnet_render 'article-card' for articles as article %}
-{% hostnet_render 'product-card' for featured_products as product %}
+{% swarm_render 'article-card' for articles as article %}
+{% swarm_render 'product-card' for featured_products as product %}
 ```
 
 This is equivalent to:
 ```liquid
 {% for article in articles %}
-  {% hostnet_render 'article-card', article: article %}
+  {% swarm_render 'article-card', article: article %}
 {% endfor %}
 ```
 
-**Why `hostnet_render` instead of `render`?**
+**Why `swarm_render` instead of `render`?**
 
-HostNet uses a custom database-backed render implementation. The `hostnet_render` name distinguishes it from Liquid's built-in file-based `render` tag and makes the behavior explicit.
+Site Swarm uses a custom database-backed render implementation. The `swarm_render` name distinguishes it from Liquid's built-in file-based `render` tag and makes the behavior explicit. (The legacy `hostnet_render` tag still works for backward compatibility.)
 
 **Variable isolation:**
 
@@ -704,8 +704,8 @@ Snippets have isolated scope. They only receive:
 Variables from the parent template are NOT automatically available:
 ```liquid
 {% assign featured = true %}
-{% hostnet_render 'card' %}  <!-- 'featured' is NOT available in card.liquid -->
-{% hostnet_render 'card', featured: featured %}  <!-- Now it's available -->
+{% swarm_render 'card' %}  <!-- 'featured' is NOT available in card.liquid -->
+{% swarm_render 'card', featured: featured %}  <!-- Now it's available -->
 ```
 
 ### schema
@@ -797,7 +797,7 @@ Category pages:
 
 {% for product in datasets.products %}
   {% if product.category == category %}
-    {% hostnet_render 'product-card', product: product %}
+    {% swarm_render 'product-card', product: product %}
   {% endif %}
 {% endfor %}
 ```
@@ -937,7 +937,7 @@ The tag automatically includes author information when available, using E-E-A-T 
 
 ## Custom Filters
 
-HostNet provides custom filters for common theme operations.
+Site Swarm provides custom filters for common theme operations.
 
 ### asset_url
 
@@ -1168,7 +1168,7 @@ Output:
 **for with else** (empty collection)
 ```liquid
 {% for article in collection %}
-  {% hostnet_render 'article-card', article: article %}
+  {% swarm_render 'article-card', article: article %}
 {% else %}
   <p>No articles found.</p>
 {% endfor %}
@@ -1231,7 +1231,7 @@ Output:
 <p>By {{ full_name }}</p>
 ```
 
-**assign_global** (HostNet extension)
+**assign_global** (Site Swarm extension)
 
 Sets a variable that's accessible in the parent layout. Use this in templates to pass data (like page titles) up to the layout.
 

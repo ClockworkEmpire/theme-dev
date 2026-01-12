@@ -1,6 +1,6 @@
 # Local Theme Development
 
-The HostNet theme dev server lets you build and preview themes locally without connecting to the HostNet platform. It renders your Liquid templates with mock data and provides live reload for rapid iteration.
+The Site Swarm theme dev server lets you build and preview themes locally without connecting to the Site Swarm platform. It renders your Liquid templates with mock data and provides live reload for rapid iteration.
 
 ---
 
@@ -9,14 +9,14 @@ The HostNet theme dev server lets you build and preview themes locally without c
 ```bash
 # Install (choose one)
 npm install -g github:clockworkempire/theme-dev   # npm (uses Docker)
-gem install hostnet-theme-dev                      # Ruby gem (native)
+gem install siteswarm-theme-dev                    # Ruby gem (native)
 
 # Create a new theme
-hostnet new my-theme
+swarm new my-theme
 
 # Start the dev server
 cd my-theme
-hostnet dev
+swarm dev
 
 # Open http://localhost:4000
 ```
@@ -38,7 +38,7 @@ npm install -g github:clockworkempire/theme-dev
 Native Ruby execution, no Docker required.
 
 ```bash
-gem install hostnet-theme-dev
+gem install siteswarm-theme-dev
 ```
 
 ### Docker (Direct)
@@ -49,7 +49,7 @@ Run without installing anything:
 docker run -v $(pwd):/theme -p 4000:4000 ghcr.io/clockworkempire/theme-dev
 ```
 
-### For HostNet Developers
+### For Site Swarm Developers
 
 Run directly from the source tree with monorepo shortcuts:
 
@@ -69,13 +69,13 @@ See [Monorepo Workflow](#for-hostnet-developers-monorepo-workflow) below for the
 
 ## CLI Commands
 
-### `hostnet new`
+### `swarm new`
 
 Create a new theme from a starter template.
 
 ```bash
-hostnet new my-theme              # Blank scaffold
-hostnet new my-theme --example    # Full example with sections and mock data
+swarm new my-theme              # Blank scaffold
+swarm new my-theme --example   # Full example with sections and mock data
 ```
 
 The blank scaffold includes:
@@ -86,60 +86,60 @@ The blank scaffold includes:
 
 The `--example` flag copies the full minimal-theme example with working sections, snippets, and mock datasets.
 
-### `hostnet dev`
+### `swarm dev`
 
 Start the development server with live reload.
 
 ```bash
-hostnet dev                      # Serve current directory
-hostnet dev ./my-theme           # Serve specific path
-hostnet dev --port 3000          # Custom port
-hostnet dev --open               # Auto-open browser
-hostnet dev --host 0.0.0.0       # Bind to all interfaces
+swarm dev                      # Serve current directory
+swarm dev ./my-theme           # Serve specific path
+swarm dev --port 3000          # Custom port
+swarm dev --open               # Auto-open browser
+swarm dev --host 0.0.0.0       # Bind to all interfaces
 ```
 
-### `hostnet update`
+### `swarm update`
 
 Pull the latest Docker image (npm users).
 
 ```bash
-hostnet update
+swarm update
 ```
 
-Ruby gem users should run `gem update hostnet-theme-dev` instead.
+Ruby gem users should run `gem update siteswarm-theme-dev` instead.
 
-### `hostnet version`
+### `swarm version`
 
 Show version information.
 
 ```bash
-hostnet version
+swarm version
 ```
 
-### `hostnet help`
+### `swarm help`
 
 Show help for all commands or a specific command.
 
 ```bash
-hostnet help
-hostnet help new
-hostnet help dev
+swarm help
+swarm help new
+swarm help dev
 ```
 
-### `hostnet connect`
+### `swarm connect`
 
-Connect to the HostNet server for remote editing via the browser-based Theme Editor. This creates a tunnel between your local files and the HostNet platform.
+Connect to the Site Swarm server for remote editing via the browser-based Theme Editor. This creates a tunnel between your local files and the Site Swarm platform.
 
 ```bash
-hostnet connect                        # Connect using current environment
-hostnet connect ./my-theme             # Connect from specific path
-hostnet connect --env staging          # Use staging environment
-hostnet connect --open                 # Auto-open browser to editor
-hostnet connect --keepalive 60         # Custom keepalive interval (seconds)
+swarm connect                        # Connect using current environment
+swarm connect ./my-theme             # Connect from specific path
+swarm connect --env staging          # Use staging environment
+swarm connect --open                 # Auto-open browser to editor
+swarm connect --keepalive 60         # Custom keepalive interval (seconds)
 ```
 
 When connected:
-- Your local files are accessible through the HostNet Theme Editor
+- Your local files are accessible through the Site Swarm Theme Editor
 - Changes made in the browser are written to your local filesystem
 - A convenience redirect runs at `http://localhost:4000` pointing to the editor
 - Keepalive pings are sent every 30 seconds (configurable) to maintain the connection
@@ -148,37 +148,37 @@ When connected:
 - API key configured for the environment
 - Account ID configured for the environment
 
-### `hostnet push`
+### `swarm push`
 
-Upload your theme to the HostNet server.
+Upload your theme to the Site Swarm server.
 
 ```bash
-hostnet push                           # Push current directory
-hostnet push ./my-theme                # Push specific path
-hostnet push --env production          # Push to production environment
-hostnet push --create                  # Create a new theme
-hostnet push --theme-id abc123         # Update existing theme
-hostnet push --theme-name "My Theme"   # Set theme name (for new themes)
+swarm push                           # Push current directory
+swarm push ./my-theme                # Push specific path
+swarm push --env production          # Push to production environment
+swarm push --create                  # Create a new theme
+swarm push --theme-id abc123         # Update existing theme
+swarm push --theme-name "My Theme"   # Set theme name (for new themes)
 ```
 
 **Modes:**
 - **Create**: Use `--create` when pushing a new theme (no `theme_id` in config)
 - **Update**: Automatically used when `theme_id` exists in environment config
 
-### `hostnet env`
+### `swarm env`
 
-Manage environments for connecting to different HostNet servers or accounts. Environments work like git remotes - each stores its own API key, server URL, account ID, and theme ID.
+Manage environments for connecting to different Site Swarm servers or accounts. Environments work like git remotes - each stores its own API key, server URL, account ID, and theme ID.
 
 ```bash
-hostnet env                            # List all environments
-hostnet env list                       # Same as above
-hostnet env show production            # Show production details
-hostnet env use staging                # Switch to staging environment
-hostnet env add local                  # Add new "local" environment
-hostnet env remove staging             # Remove staging environment
+swarm env                            # List all environments
+swarm env list                       # Same as above
+swarm env show production            # Show production details
+swarm env use staging                # Switch to staging environment
+swarm env add local                  # Add new "local" environment
+swarm env remove staging             # Remove staging environment
 ```
 
-**Environment configuration** is stored in `.hostnet.yml` in your theme directory:
+**Environment configuration** is stored in `.siteswarm.yml` in your theme directory:
 
 ```yaml
 current_environment: development
@@ -193,12 +193,12 @@ environments:
     theme_id: theme_xyz789
 
   production:
-    server_url: https://hostnet.io
+    server_url: https://siteswarm.io
     account_id: acct_def456
     theme_id: theme_uvw012
 ```
 
-**API keys** are stored separately in `~/.hostnet.yml` (not committed to git):
+**API keys** are stored separately in `~/.siteswarm.yml` (not committed to git):
 
 ```yaml
 environments:
@@ -211,9 +211,9 @@ environments:
 **Using environments with commands:**
 
 ```bash
-hostnet connect --env staging
-hostnet push --env production
-hostnet dev --env local
+swarm connect --env staging
+swarm push --env production
+swarm dev --env local
 ```
 
 ---
@@ -376,7 +376,7 @@ Explicit records are appended after generated ones. If an explicit record has th
 
 ## URL Routing
 
-The dev server mimics HostNet's production routing:
+The dev server mimics Site Swarm's production routing:
 
 | URL | Template | Context |
 |-----|----------|---------|
@@ -453,7 +453,7 @@ Check the error page for details. The dev server shows full error messages with 
 ### Port already in use
 
 ```bash
-hostnet dev --port 3001
+swarm dev --port 3001
 ```
 
 ### Changes not reloading
@@ -468,7 +468,7 @@ The npm package requires Docker to run the dev server. Install Docker from https
 
 Alternatively, install the Ruby gem for native execution:
 ```bash
-gem install hostnet-theme-dev
+gem install siteswarm-theme-dev
 ```
 
 ---

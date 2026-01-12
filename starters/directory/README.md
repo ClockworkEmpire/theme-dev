@@ -1,6 +1,6 @@
 # Directory Starter Theme
 
-A production-ready business directory theme for HostNet. Features local business listings, blog/articles, contact pages, and a complete skinning system.
+A production-ready business directory theme for Site Swarm. Features local business listings, blog/articles, contact pages, and a complete skinning system.
 
 ## Quick Start
 
@@ -329,7 +329,7 @@ Template and data caches are cleared on file changes. If you need to force a rel
 
 ## Production Notes
 
-When deploying to HostNet production:
+When deploying to Site Swarm production:
 
 1. **Skin selection**: Site owners set skin via site settings, not URL params
 2. **Data source**: Datasets come from the database, not JSON files
@@ -338,4 +338,4 @@ When deploying to HostNet production:
 
 ## License
 
-This theme is part of HostNet and follows the project's licensing terms.
+This theme is part of Site Swarm and follows the project's licensing terms.

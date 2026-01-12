@@ -1,6 +1,6 @@
 # Theme Structure
 
-A HostNet theme is a collection of Liquid templates, assets, and configuration files organized in a specific directory structure.
+A Site Swarm theme is a collection of Liquid templates, assets, and configuration files organized in a specific directory structure.
 
 ---
 
@@ -8,6 +8,8 @@ A HostNet theme is a collection of Liquid templates, assets, and configuration f
 
 ```
 my-theme/
+├── siteswarm.json              # Theme manifest (name, version, category)
+│
 ├── layout/
 │   └── theme.liquid            # Required - base HTML wrapper
 │
@@ -77,6 +79,84 @@ Only one file is required:
 | `layout/theme.liquid` | Base HTML document that wraps all pages |
 
 All other files are optional but recommended for a functional theme.
+
+---
+
+## Theme Manifest (siteswarm.json)
+
+The `siteswarm.json` file is the theme manifest. It declares metadata about your theme including name, version, category, and dataset requirements. Place it at the root of your theme directory. (Note: `hostnet.json` is still supported for backward compatibility.)
+
+### Manifest Format
+
+```json
+{
+  "name": "My Theme",
+  "version": "1.0.0",
+  "category": "business",
+  "subcategory": "agency",
+  "description": "A professional business theme for agencies",
+  "author": "Your Name",
+  "datasets": {
+    "articles": {
+      "description": "Blog articles",
+      "required": false,
+      "mount": {
+        "path": "/blog",
+        "list_template": "collection",
+        "item_template": "article"
+      },
+      "fields": [
+        {"key": "title", "type": "string", "required": true},
+        {"key": "slug", "type": "string", "required": true},
+        {"key": "content", "type": "text"}
+      ]
+    }
+  }
+}
+```
+
+### Manifest Fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `name` | Yes | Theme display name |
+| `version` | Yes | Semantic version (e.g., "1.0.0") |
+| `description` | No | Brief description of the theme |
+| `author` | No | Theme author name |
+| `category` | No | Theme category for filtering (see below) |
+| `subcategory` | No | Subcategory within the category |
+| `datasets` | No | Dataset requirements and schemas |
+
+### Categories
+
+Categories help users discover themes. When you upload a theme with a category in the manifest, it's automatically applied.
+
+| Category | Subcategories |
+|----------|---------------|
+| `business` | corporate, consulting, agency, startup, saas, marketing |
+| `portfolio` | creative, photography, design, art, architecture |
+| `blog` | personal, magazine, news, editorial, lifestyle |
+| `directory` | listings, classifieds, jobs, real_estate, directories |
+| `ecommerce` | shop, fashion, food_drink, marketplace, product |
+| `landing_page` | product_launch, app, lead_generation, coming_soon |
+| `events` | conference, wedding, music, sports, community |
+| `nonprofit` | charity, church, environmental, political |
+| `education` | school, course, university, training |
+| `personal` | resume, vcard, social, hobby |
+| `other` | miscellaneous, multipurpose, starter, experimental |
+
+**Example:**
+```json
+{
+  "name": "Directory Pro",
+  "version": "1.0.0",
+  "category": "directory",
+  "subcategory": "listings",
+  "description": "Business directory with search and filtering"
+}
+```
+
+Categories are optional. Themes without a category can still be uploaded and used.
 
 ---
 
@@ -164,7 +244,7 @@ The layout uses these with fallbacks:
     <h2>Latest Articles</h2>
     <div class="grid">
       {% for article in datasets.articles limit: 3 %}
-        {% hostnet_render 'article-card', article: article %}
+        {% swarm_render 'article-card', article: article %}
       {% endfor %}
     </div>
   </section>
@@ -178,14 +258,14 @@ The layout uses these with fallbacks:
 
   <div class="grid">
     {% for item in collection %}
-      {% hostnet_render 'article-card', article: item %}
+      {% swarm_render 'article-card', article: item %}
     {% else %}
       <p>No items found.</p>
     {% endfor %}
   </div>
 
   {% if pagination.total_pages > 1 %}
-    {% hostnet_render 'pagination' %}
+    {% swarm_render 'pagination' %}
   {% endif %}
 </div>
 ```
@@ -312,8 +392,8 @@ Simple reusable partials without settings. Snippets are included with `{% hostne
 
 **Using the snippet:**
 ```liquid
-{% hostnet_render 'article-card', article: post %}
-{% hostnet_render 'article-card' for collection as article %}
+{% swarm_render 'article-card', article: post %}
+{% swarm_render 'article-card' for collection as article %}
 ```
 
 **Example: pagination.liquid**
@@ -747,7 +827,7 @@ my-theme.zip
 
 When developing themes locally with the Theme Dev Server, sample data is defined in `config/datasets/` and runtime data in `data/`.
 
-> **Note:** These directories are only used during development. In production, data comes from the HostNet database.
+> **Note:** These directories are only used during development. In production, data comes from the Site Swarm database.
 
 ### Directory Structure
 
@@ -853,7 +933,7 @@ Or provide hand-crafted records:
 **Direct access (recommended for specific datasets):**
 ```liquid
 {% for item in datasets.articles %}
-  {% hostnet_render 'article-card', item: item %}
+  {% swarm_render 'article-card', item: item %}
 {% endfor %}
 ```
 
@@ -861,7 +941,7 @@ Or provide hand-crafted records:
 ```liquid
 {% comment %} In collection.liquid when visiting /blog {% endcomment %}
 {% for item in collection %}
-  {% hostnet_render 'article-card', item: item %}
+  {% swarm_render 'article-card', item: item %}
 {% endfor %}
 ```
 
@@ -883,12 +963,12 @@ This produces URLs like `/blog/my-post` based on the dataset's `mount_path` and 
 
 ### Importing Sample Data to Production
 
-When you upload a theme with `data/datasets/*.json` files, HostNet captures these sample datasets and makes them available for import. This allows theme designers to provide realistic demo content that site owners can import with one click.
+When you upload a theme with `data/datasets/*.json` files, Site Swarm captures these sample datasets and makes them available for import. This allows theme designers to provide realistic demo content that site owners can import with one click.
 
 **How it works:**
 
 1. Include sample data JSON files in `data/datasets/` (same format as dev server)
-2. Upload the theme ZIP to HostNet
+2. Upload the theme ZIP to Site Swarm
 3. On the theme's detail page, a "Sample Datasets" card appears
 4. Click "Import" to create a real dataset with all the sample records
 
@@ -911,4 +991,4 @@ data/datasets/businesses.json  # 10 sample business listings
 # Creates: Dataset named "Businesses" with 10 records
 ```
 
-The imported dataset uses the field schema from your `hostnet.json` manifest combined with the records from the sample data file.
+The imported dataset uses the field schema from your `siteswarm.json` manifest (or `hostnet.json` for backward compatibility) combined with the records from the sample data file.

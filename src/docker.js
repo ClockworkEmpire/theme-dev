@@ -1,5 +1,5 @@
 /**
- * Shared Docker utilities for hostnet CLI commands.
+ * Shared Docker utilities for swarm CLI commands.
  * Provides consistent volume mounting and error handling.
  */
 const { spawn, spawnSync } = require('child_process');
@@ -11,7 +11,7 @@ const DOCKER_IMAGE = 'ghcr.io/clockworkempire/theme-dev:latest';
 
 /**
  * Check if native Ruby with required gems is available.
- * Returns the path to a working hostnet entry point, or null.
+ * Returns the path to a working swarm entry point, or null.
  */
 function findNativeRuby() {
   // Check if ruby is available
@@ -70,7 +70,7 @@ function runNativeCommand(command, commandArgs = [], options = {}) {
  * @returns {string} Path to the global config file
  */
 function ensureGlobalConfigFile() {
-  const configPath = path.join(os.homedir(), '.hostnet.yml');
+  const configPath = path.join(os.homedir(), '.siteswarm.yml');
 
   if (!fs.existsSync(configPath)) {
     fs.writeFileSync(configPath, '', { mode: 0o600 });
@@ -114,9 +114,9 @@ function buildDockerArgs(options = {}) {
   }
 
   // Always mount the global config file
-  args.push('-v', `${globalConfigPath}:/root/.hostnet.yml`);
+  args.push('-v', `${globalConfigPath}:/root/.siteswarm.yml`);
 
-  // Always mount the current working directory for local .hostnet.yml
+  // Always mount the current working directory for local .siteswarm.yml
   args.push('-v', `${cwd}:/workdir`);
   args.push('-w', '/workdir');
 
@@ -138,15 +138,15 @@ function buildDockerArgs(options = {}) {
     }
   }
 
-  // Pass through standard HOSTNET env vars if set
-  const hostnetEnvVars = [
-    'HOSTNET_API_KEY',
-    'HOSTNET_API_TOKEN',
-    'HOSTNET_API_URL',
-    'HOSTNET_ACCOUNT_ID',
-    'HOSTNET_SERVER_URL'
+  // Pass through standard SITESWARM env vars if set
+  const siteswarmEnvVars = [
+    'SITESWARM_API_KEY',
+    'SITESWARM_API_TOKEN',
+    'SITESWARM_API_URL',
+    'SITESWARM_ACCOUNT_ID',
+    'SITESWARM_SERVER_URL'
   ];
-  for (const envVar of hostnetEnvVars) {
+  for (const envVar of siteswarmEnvVars) {
     if (process.env[envVar]) {
       args.push('-e', `${envVar}=${process.env[envVar]}`);
     }
@@ -158,7 +158,7 @@ function buildDockerArgs(options = {}) {
 /**
  * Run a Docker command with proper error handling.
  *
- * @param {string} command - The hostnet CLI command to run (e.g., 'push', 'connect')
+ * @param {string} command - The swarm CLI command to run (e.g., 'push', 'connect')
  * @param {string[]} commandArgs - Arguments to pass to the command
  * @param {Object} options - Docker configuration options (see buildDockerArgs)
  * @param {string} [options.errorContext] - Context for error messages (e.g., 'run the tunnel')
@@ -185,11 +185,11 @@ function runDockerCommand(command, commandArgs = [], options = {}) {
     if (err.code === 'ENOENT') {
       console.error('Error: Docker not found.');
       console.error();
-      console.error(`The hostnet CLI requires Docker to ${errorContext}.`);
+      console.error(`The swarm CLI requires Docker to ${errorContext}.`);
       console.error('Install Docker: https://docs.docker.com/get-docker/');
       console.error();
       console.error('Alternatively, install the Ruby gem for native execution:');
-      console.error('  gem install hostnet-theme-dev');
+      console.error('  gem install siteswarm-theme-dev');
     } else {
       console.error('Error starting Docker:', err.message);
     }

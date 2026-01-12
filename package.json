@@ -1,9 +1,9 @@
 {
   "name": "@clockworkempire/theme-dev",
-  "version": "0.5.1",
-  "description": "Local development server for HostNet themes",
+  "version": "0.5.4",
+  "description": "Local development server for Site Swarm themes",
   "bin": {
-    "hostnet": "./src/index.js"
+    "swarm": "./src/index.js"
   },
   "files": [
     "src/",
@@ -15,7 +15,7 @@
     "url": "https://github.com/clockworkempire/theme-dev.git"
   },
   "keywords": [
-    "hostnet",
+    "siteswarm",
     "themes",
     "liquid",
     "development",

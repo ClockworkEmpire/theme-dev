@@ -1,6 +1,6 @@
-# HostNet Theme Development Guide
+# Site Swarm Theme Development Guide
 
-Complete reference for building HostNet themes. This document is self-contained and covers all aspects of theme development.
+Complete reference for building Site Swarm themes. This document is self-contained and covers all aspects of theme development.
 
 ---
 
@@ -22,7 +22,7 @@ Complete reference for building HostNet themes. This document is self-contained 
 
 ## Overview
 
-A HostNet theme is a collection of Liquid templates, reusable components, and static assets that define how a website looks and functions.
+A Site Swarm theme is a collection of Liquid templates, reusable components, and static assets that define how a website looks and functions.
 
 **Key concepts:**
 - **Liquid** - Template language with `{{ output }}` and `{% logic %}`
@@ -38,6 +38,8 @@ A HostNet theme is a collection of Liquid templates, reusable components, and st
 
 ```
 theme/
+├── siteswarm.json              # Theme manifest (name, version, category)
+│
 ├── layout/
 │   └── theme.liquid            # Required - base HTML wrapper
 │
@@ -79,6 +81,25 @@ theme/
 | snippets/ | Simple partials | No |
 | assets/ | Static files | No |
 | config/ | Configuration | N/A |
+
+### Theme Manifest
+
+The `siteswarm.json` manifest declares theme metadata (note: `hostnet.json` is still supported for backward compatibility):
+
+```json
+{
+  "name": "My Theme",
+  "version": "1.0.0",
+  "category": "business",
+  "subcategory": "agency",
+  "description": "Theme description",
+  "author": "Your Name"
+}
+```
+
+Categories help users discover themes. Available categories: `business`, `portfolio`, `blog`, `directory`, `ecommerce`, `landing_page`, `events`, `nonprofit`, `education`, `personal`, `other`.
+
+See [Theme Structure - Theme Manifest](theme-structure.md#theme-manifest-siteswarmjson) for full manifest documentation.
 
 ---
 
@@ -349,27 +370,27 @@ Renders a section from `sections/` with its settings.
 {% section 'footer' %}
 ```
 
-### hostnet_render
+### swarm_render
 
 Renders a snippet from `snippets/` with isolated scope.
 
 **Basic:**
 ```liquid
-{% hostnet_render 'icon' %}
+{% swarm_render 'icon' %}
 ```
 
 **With variables:**
 ```liquid
-{% hostnet_render 'article-card', article: post %}
-{% hostnet_render 'button', text: 'Click', url: '/about' %}
+{% swarm_render 'article-card', article: post %}
+{% swarm_render 'button', text: 'Click', url: '/about' %}
 ```
 
 **Collection iteration:**
 ```liquid
-{% hostnet_render 'article-card' for articles as article %}
+{% swarm_render 'article-card' for articles as article %}
 ```
 
-**Note:** `hostnet_render` uses database-backed template lookup. The name distinguishes it from Liquid's built-in file-based `render` tag.
+**Note:** `swarm_render` uses database-backed template lookup. The name distinguishes it from Liquid's built-in file-based `render` tag. (The legacy `hostnet_render` tag still works for backward compatibility.)
 
 ### schema
 
@@ -566,8 +587,8 @@ Simple reusable partials without settings.
 
 **Usage:**
 ```liquid
-{% hostnet_render 'article-card', article: post %}
-{% hostnet_render 'article-card' for collection as article %}
+{% swarm_render 'article-card', article: post %}
+{% swarm_render 'article-card' for collection as article %}
 ```
 
 ### When to Use Each
@@ -818,7 +839,7 @@ Or use helper:
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       {% for article in datasets.articles limit: 3 %}
-        {% hostnet_render 'article-card', article: article %}
+        {% swarm_render 'article-card', article: article %}
       {% endfor %}
     </div>
   </section>
@@ -835,14 +856,14 @@ Or use helper:
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     {% for item in collection %}
-      {% hostnet_render 'article-card', article: item %}
+      {% swarm_render 'article-card', article: item %}
     {% else %}
       <p class="col-span-3 text-gray-500 text-center py-12">No items found.</p>
     {% endfor %}
   </div>
 
   {% if pagination.total_pages > 1 %}
-    {% hostnet_render 'pagination' %}
+    {% swarm_render 'pagination' %}
   {% endif %}
 </div>
 ```
@@ -990,7 +1011,7 @@ Or use helper:
         "type": "text",
         "id": "site_description",
         "label": "Site Description",
-        "default": "A website built with HostNet"
+        "default": "A website built with Site Swarm"
       }
     ]
   },
@@ -1052,7 +1073,7 @@ Or use helper:
 | Tag | Purpose |
 |-----|---------|
 | `{% section 'name' %}` | Render section with settings |
-| `{% hostnet_render 'name' %}` | Render snippet |
+| `{% swarm_render 'name' %}` | Render snippet |
 | `{% dropin 'name' %}` | Render user-managed HTML content |
 | `{% schema %}...{% endschema %}` | Define section settings |
 | `{% assign_global var = value %}` | Set variable accessible in layout (for page titles) |

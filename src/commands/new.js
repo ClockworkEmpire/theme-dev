@@ -7,7 +7,7 @@ module.exports = function(args) {
 
   if (!name) {
     console.error('Error: Please provide a theme name');
-    console.error('Usage: hostnet new <name> [--example]');
+    console.error('Usage: swarm new <name> [--example]');
     process.exit(1);
   }
 
@@ -33,7 +33,7 @@ module.exports = function(args) {
   console.log();
   console.log('Next steps:');
   console.log(`  cd ${name}`);
-  console.log('  hostnet dev');
+  console.log('  swarm dev');
 };
 
 function copyDir(src, dest) {

@@ -1,4 +1,4 @@
-# HostNet Theme Cheat Sheet
+# Site Swarm Theme Cheat Sheet
 
 Quick reference for theme development. For full documentation, see [THEME-DEVELOPMENT-GUIDE.md](THEME-DEVELOPMENT-GUIDE.md).
 
@@ -8,6 +8,7 @@ Quick reference for theme development. For full documentation, see [THEME-DEVELO
 
 ```
 theme/
+├── siteswarm.json            # Theme manifest (name, version, category)
 ├── layout/
 │   └── theme.liquid          # Required - base HTML wrapper
 ├── templates/
@@ -33,6 +34,38 @@ theme/
 ```
 
 **Required file:** `layout/theme.liquid`
+
+---
+
+## Theme Manifest (siteswarm.json)
+
+```json
+{
+  "name": "My Theme",
+  "version": "1.0.0",
+  "category": "business",
+  "subcategory": "agency",
+  "description": "Theme description",
+  "author": "Your Name",
+  "datasets": { }
+}
+```
+
+### Categories
+
+| Category | Subcategories |
+|----------|---------------|
+| `business` | corporate, consulting, agency, startup, saas, marketing |
+| `portfolio` | creative, photography, design, art, architecture |
+| `blog` | personal, magazine, news, editorial, lifestyle |
+| `directory` | listings, classifieds, jobs, real_estate, directories |
+| `ecommerce` | shop, fashion, food_drink, marketplace, product |
+| `landing_page` | product_launch, app, lead_generation, coming_soon |
+| `events` | conference, wedding, music, sports, community |
+| `nonprofit` | charity, church, environmental, political |
+| `education` | school, course, university, training |
+| `personal` | resume, vcard, social, hobby |
+| `other` | miscellaneous, multipurpose, starter, experimental |
 
 ---
 
@@ -105,12 +138,12 @@ Renders a section from `sections/` with its settings applied.
 
 ### Render Tag
 ```liquid
-{% hostnet_render 'card' %}
-{% hostnet_render 'card', item: article %}
-{% hostnet_render 'card', item: article, show_image: true %}
-{% hostnet_render 'card' for articles as article %}
+{% swarm_render 'card' %}
+{% swarm_render 'card', item: article %}
+{% swarm_render 'card', item: article, show_image: true %}
+{% swarm_render 'card' for articles as article %}
 ```
-Renders a snippet from `snippets/` with isolated variable scope.
+Renders a snippet from `snippets/` with isolated variable scope. (The legacy `hostnet_render` tag still works for backward compatibility.)
 
 ### Schema Tag (sections only)
 ```liquid
@@ -175,7 +208,7 @@ Defines parameterized URL patterns. Dynamic segments start with `:` and capture 
 <h1>{{ category | capitalize }} Products</h1>
 {% for product in datasets.products %}
   {% if product.category == category %}
-    {% hostnet_render 'product-card', product: product %}
+    {% swarm_render 'product-card', product: product %}
   {% endif %}
 {% endfor %}
 ```
@@ -323,14 +356,14 @@ The layout's `<title>` tag references this with a fallback:
 ```liquid
 <div class="grid">
   {% for article in collection %}
-    {% hostnet_render 'article-card', article: article %}
+    {% swarm_render 'article-card', article: article %}
   {% else %}
     <p>No articles found.</p>
   {% endfor %}
 </div>
 
 {% if pagination.total_pages > 1 %}
-  {% hostnet_render 'pagination' %}
+  {% swarm_render 'pagination' %}
 {% endif %}
 ```
 
@@ -435,12 +468,12 @@ See [Sections, Snippets & Blocks](sections-and-snippets.md#section-blocks) for f
 <!-- Access mounted datasets anywhere -->
 <h2>Latest Posts</h2>
 {% for post in datasets.posts limit: 3 %}
-  {% hostnet_render 'post-card', post: post %}
+  {% swarm_render 'post-card', post: post %}
 {% endfor %}
 
 <h2>Featured Products</h2>
 {% for product in datasets.products limit: 4 %}
-  {% hostnet_render 'product-card', product: product %}
+  {% swarm_render 'product-card', product: product %}
 {% endfor %}
 ```
 
@@ -453,7 +486,7 @@ See [Sections, Snippets & Blocks](sections-and-snippets.md#section-blocks) for f
 {% if collection.size > 0 %}
   <div class="grid">
     {% for item in collection %}
-      {% hostnet_render 'card', item: item %}
+      {% swarm_render 'card', item: item %}
     {% endfor %}
   </div>
 {% else %}
