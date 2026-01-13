@@ -216,7 +216,7 @@ For dataset list pages (like `/articles`), create `templates/collection.liquid`:
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     {% for item in collection %}
-      {% hostnet_render 'article-card', article: item %}
+      {% swarm_render 'article-card', article: item %}
     {% else %}
       <p class="col-span-3 text-gray-500 text-center py-12">
         No items found.

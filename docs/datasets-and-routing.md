@@ -552,11 +552,11 @@ Use different card snippets based on the dataset type:
   {% for item in collection %}
     {% case mount.alias %}
       {% when 'articles' %}
-        {% hostnet_render 'article-card', article: item %}
+        {% swarm_render 'article-card', article: item %}
       {% when 'products' %}
-        {% hostnet_render 'product-card', product: item %}
+        {% swarm_render 'product-card', product: item %}
       {% when 'team' %}
-        {% hostnet_render 'team-card', member: item %}
+        {% swarm_render 'team-card', member: item %}
       {% else %}
         {% swarm_render 'generic-card', item: item %}
     {% endcase %}
@@ -632,9 +632,9 @@ Or use a naming convention:
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       {% for item in collection %}
         {% if mount.alias == 'articles' %}
-          {% hostnet_render 'article-card', article: item %}
+          {% swarm_render 'article-card', article: item %}
         {% elsif mount.alias == 'products' %}
-          {% hostnet_render 'product-card', product: item %}
+          {% swarm_render 'product-card', product: item %}
         {% else %}
           {% swarm_render 'generic-card', item: item %}
         {% endif %}
@@ -689,7 +689,7 @@ Or use a naming convention:
       <div class="grid grid-cols-3 gap-6">
         {% for related in datasets.articles limit: 3 %}
           {% unless related.slug == article.slug %}
-            {% hostnet_render 'article-card', article: related %}
+            {% swarm_render 'article-card', article: related %}
           {% endunless %}
         {% endfor %}
       </div>

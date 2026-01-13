@@ -355,7 +355,7 @@ Reusable page sections with configurable settings. Sections are included with `{
 
 ### snippets/
 
-Simple reusable partials without settings. Snippets are included with `{% hostnet_render 'name' %}` and receive variables explicitly passed to them.
+Simple reusable partials without settings. Snippets are included with `{% swarm_render 'name' %}` and receive variables explicitly passed to them.
 
 **Key characteristics:**
 - No settings schema
