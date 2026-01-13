@@ -240,7 +240,7 @@ Use the `item_url` filter to generate URLs:
 <a href="{{ item | item_url }}">{{ item.name }}</a>
 ```
 
-This uses the `_mount_path` injected into each record.
+This generates root-level URLs like `/my-business-slug`.
 
 ## Semantic CSS Classes
 

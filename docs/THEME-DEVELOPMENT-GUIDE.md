@@ -328,15 +328,14 @@ On dataset list pages only. Pagination metadata.
 {{ pagination.next_url }}      # Next page URL or nil
 ```
 
-### mount
+### dataset
 
-On dataset pages only. Mount configuration.
+On dataset item pages only. Dataset configuration for the matched record.
 
 ```liquid
-{{ mount.alias }}          # Dataset alias (e.g., "articles")
-{{ mount.mount_path }}     # URL path (e.g., "/blog")
-{{ mount.slug_field }}     # Field used for URLs
-{{ mount.items_per_page }} # Records per page
+{{ dataset.alias }}          # Dataset alias (e.g., "services")
+{{ dataset.slug_field }}     # Field used for URLs (e.g., "slug")
+{{ dataset.item_template }}  # Template name (e.g., "service")
 ```
 
 ### content_for_layout
@@ -689,66 +688,465 @@ Defined in `{% schema %}` blocks:
 
 ## Datasets and Routing
 
-### URL Resolution Order
+Site Swarm uses **fallthrough slug resolution** for dataset URLs, enabling SEO-friendly root-level URLs for all content types.
 
-1. **Template match:** `/about` → `templates/about.liquid`
-2. **Dataset list:** `/blog` → `templates/collection.liquid`
-3. **Dataset item:** `/blog/my-post` → `templates/article.liquid`
-4. **404:** `templates/404.liquid`
+### URL Resolution Algorithm
 
-### Accessing Datasets
+When a request comes in, URLs are resolved in this order:
+
+1. **Exact template match:** `/about` → `templates/about.liquid`
+2. **Parameterized routes:** Templates with `{% routes %}` blocks (e.g., `/services/:slug`)
+3. **Fallthrough slug resolution:** Check each dataset alphabetically by alias for matching slug
+4. **Hyphenated path conversion:** `/about/team` → `templates/about-team.liquid`
+5. **404 fallback:** `templates/404.liquid`
+
+### Fallthrough Slug Resolution
+
+This is the key feature enabling root-level URLs for multiple dataset types. When a URL like `/tree-removal` is requested:
+
+1. System checks each dataset **alphabetically by alias**
+2. For each dataset, looks for a record where the slug field matches "tree-removal"
+3. First match wins, renders using that dataset's item template
+
+**Example scenario:**
+- Dataset "locations" (alias: `locations`) - records like `austin-tx`, `leander-tx`
+- Dataset "services" (alias: `services`) - records like `tree-removal`, `stump-grinding`
+
+A request to `/tree-removal`:
+1. Check `locations` first (alphabetically before `services`) - no match
+2. Check `services` - **MATCH!** → Renders with `service.liquid` template
+
+A request to `/austin-tx`:
+1. Check `locations` - **MATCH!** → Renders with `location.liquid` template
+
+**Why alphabetical?** Provides predictable, consistent behavior. If you need explicit control over which dataset handles a slug, use parameterized routes.
+
+### Root-Level URLs (Default)
+
+By default, all dataset items have root-level URLs:
 
 ```liquid
-<!-- On any page -->
-{% for article in datasets.articles limit: 3 %}
-  {{ article.title }}
+{% for service in datasets.services %}
+  <a href="{{ service | item_url }}">{{ service.title }}</a>
+  <!-- Output: /tree-removal, /stump-grinding, etc. -->
 {% endfor %}
 
-<!-- On collection pages -->
-{% for item in collection %}
-  {{ item.title }}
+{% for location in datasets.locations %}
+  <a href="{{ location | item_url }}">{{ location.name }}</a>
+  <!-- Output: /austin-tx, /leander-tx, etc. -->
 {% endfor %}
 ```
 
-### Dataset Records
+The `item_url` filter always generates root-level URLs based on the record's slug.
 
-Records have dynamic fields defined by site owner:
+### Nested URLs with Parameterized Routes
 
+For URLs like `/services/tree-removal` or `/locations/austin-tx`, use parameterized routes:
+
+**templates/services.liquid** (collection page):
 ```liquid
-{{ article.title }}
-{{ article.slug }}
-{{ article.excerpt }}
-{{ article.content }}
-{{ article.image | img_url: 'large' }}
-{{ article.published_at | date: '%B %d, %Y' }}
-{{ article.author }}
-{{ article.category }}
+<!-- Collection page at /services -->
+<h1>Our Services</h1>
+{% for service in datasets.services %}
+  <a href="/services/{{ service.slug }}">{{ service.title }}</a>
+{% endfor %}
 ```
 
-### Generating URLs
+**templates/service-detail.liquid** (item page with parameterized route):
+```liquid
+{% routes %}
+/services/:slug
+{% endroutes %}
+
+{% assign service = datasets.services | where: "slug", slug | first %}
+
+{% if service %}
+  <h1>{{ service.title }}</h1>
+  <div>{{ service.content }}</div>
+{% else %}
+  <p>Service not found</p>
+{% endif %}
+```
+
+**How it works:**
+1. Request: `/services/tree-removal`
+2. Router finds template with matching `{% routes %}` pattern
+3. Extracts `slug = "tree-removal"` from URL
+4. Template uses `slug` variable to look up record
+
+### Multiple Parameterized Routes
+
+A template can define multiple route patterns:
 
 ```liquid
-{{ article | item_url }}
-# Output: /blog/my-article-slug
+{% routes %}
+/services/:slug
+/our-services/:slug
+{% endroutes %}
 
-<a href="{{ article | item_url }}">Read more</a>
+{% assign service = datasets.services | where: "slug", slug | first %}
+<!-- Both /services/tree-removal and /our-services/tree-removal work -->
 ```
+
+### Multi-Segment Routes
+
+Routes can have multiple parameters:
+
+```liquid
+{% routes %}
+/locations/:city/:slug
+{% endroutes %}
+
+{% assign business = datasets.businesses | where: "city", city | where: "slug", slug | first %}
+
+<h1>{{ business.name }} in {{ business.city | capitalize }}</h1>
+```
+
+This handles URLs like `/locations/austin/joes-plumbing`.
+
+### Accessing Route Parameters
+
+In parameterized templates, extracted parameters are available as variables:
+
+```liquid
+{% routes %}
+/blog/:year/:month/:slug
+{% endroutes %}
+
+<!-- Variables available: year, month, slug -->
+Year: {{ year }}
+Month: {{ month }}
+Slug: {{ slug }}
+
+{% assign post = datasets.posts | where: "slug", slug | first %}
+```
+
+Parameters are also available in `route_params` object:
+
+```liquid
+{{ route_params.year }}
+{{ route_params.month }}
+{{ route_params.slug }}
+```
+
+### Dataset Configuration
+
+Datasets are configured in `siteswarm.json`:
+
+```json
+{
+  "name": "Tree Service Theme",
+  "version": "1.0.0",
+  "datasets": {
+    "services": {
+      "name": "Services",
+      "slug_field": "slug",
+      "item_template": "service",
+      "description": "Tree care services offered"
+    },
+    "locations": {
+      "name": "Service Areas",
+      "slug_field": "slug",
+      "item_template": "location",
+      "description": "Cities and areas we serve"
+    },
+    "testimonials": {
+      "name": "Testimonials",
+      "slug_field": "slug",
+      "item_template": "testimonial"
+    }
+  }
+}
+```
+
+**Dataset properties:**
+| Property | Purpose |
+|----------|---------|
+| `name` | Human-readable name shown in dashboard |
+| `slug_field` | Field used for URL slugs (default: "slug") |
+| `item_template` | Template for individual items (default: "article") |
+| `description` | Help text for site owners |
+
+### Mock Data for Development
+
+During local development, create mock data in `data/datasets/`:
+
+**data/datasets/services.json:**
+```json
+{
+  "alias": "services",
+  "name": "Services",
+  "slug_field": "slug",
+  "item_template": "service",
+  "records": [
+    {
+      "slug": "tree-removal",
+      "title": "Tree Removal",
+      "description": "Professional tree removal services",
+      "price": "$500+"
+    },
+    {
+      "slug": "stump-grinding",
+      "title": "Stump Grinding",
+      "description": "Complete stump removal",
+      "price": "$150+"
+    }
+  ]
+}
+```
+
+**data/datasets/locations.json:**
+```json
+{
+  "alias": "locations",
+  "name": "Service Areas",
+  "slug_field": "slug",
+  "item_template": "location",
+  "records": [
+    {
+      "slug": "austin-tx",
+      "name": "Austin",
+      "state": "TX",
+      "description": "Serving the greater Austin area"
+    },
+    {
+      "slug": "leander-tx",
+      "name": "Leander",
+      "state": "TX",
+      "description": "Full service in Leander"
+    }
+  ]
+}
+```
+
+### Accessing Datasets in Templates
+
+**Loop through all records:**
+```liquid
+{% for service in datasets.services %}
+  <h2>{{ service.title }}</h2>
+{% endfor %}
+```
+
+**Limit and offset:**
+```liquid
+{% for service in datasets.services limit: 3 %}
+{% for service in datasets.services offset: 3 limit: 3 %}
+```
+
+**Filter records:**
+```liquid
+{% assign featured = datasets.services | where: "featured", true %}
+{% for service in featured %}
+  {{ service.title }}
+{% endfor %}
+```
+
+**Sort records:**
+```liquid
+{% assign by_price = datasets.services | sort: "price" %}
+{% assign by_name = datasets.services | sort: "title" %}
+{% assign newest = datasets.posts | sort: "published_at" | reverse %}
+```
+
+**Get specific record:**
+```liquid
+{% assign service = datasets.services | where: "slug", "tree-removal" | first %}
+{{ service.title }}
+```
+
+**Count records:**
+```liquid
+{{ datasets.services.size }} services available
+```
+
+### Dataset Context on Item Pages
+
+When rendering a dataset item page, the `dataset` object provides metadata:
+
+```liquid
+<!-- templates/service.liquid -->
+<nav class="breadcrumb">
+  <a href="/">Home</a> /
+  <a href="/services">{{ dataset.alias | capitalize }}</a> /
+  <span>{{ service.title }}</span>
+</nav>
+
+<!-- dataset properties -->
+{{ dataset.alias }}         <!-- "services" -->
+{{ dataset.slug_field }}    <!-- "slug" -->
+{{ dataset.item_template }} <!-- "service" -->
+```
+
+### Collection Pages (Template-Driven)
+
+Collection pages are created as regular templates. There are no automatic collection URLs.
+
+**templates/services.liquid:**
+```liquid
+<h1>Our Services</h1>
+<div class="grid grid-cols-3 gap-6">
+  {% for service in datasets.services %}
+    <div class="card">
+      <h2>{{ service.title }}</h2>
+      <p>{{ service.description }}</p>
+      <a href="{{ service | item_url }}">Learn More</a>
+    </div>
+  {% endfor %}
+</div>
+```
+
+This renders at `/services` (template match).
 
 ### Pagination
 
+For paginated collections, use template-driven pagination:
+
 ```liquid
-{% if pagination.total_pages > 1 %}
-  <nav class="pagination">
-    {% if pagination.prev_url %}
-      <a href="{{ pagination.prev_url }}">← Previous</a>
-    {% endif %}
-    <span>Page {{ pagination.current_page }} of {{ pagination.total_pages }}</span>
-    {% if pagination.next_url %}
-      <a href="{{ pagination.next_url }}">Next →</a>
-    {% endif %}
-  </nav>
-{% endif %}
+<!-- templates/blog.liquid -->
+{% assign per_page = 10 %}
+{% assign page = request.params.page | default: 1 | plus: 0 %}
+{% assign offset = page | minus: 1 | times: per_page %}
+{% assign total = datasets.posts.size %}
+{% assign total_pages = total | divided_by: per_page | ceil %}
+
+<h1>Blog</h1>
+
+{% for post in datasets.posts limit: per_page offset: offset %}
+  {% swarm_render 'post-card', post: post %}
+{% endfor %}
+
+<nav class="pagination">
+  {% if page > 1 %}
+    <a href="/blog?page={{ page | minus: 1 }}">← Previous</a>
+  {% endif %}
+
+  <span>Page {{ page }} of {{ total_pages }}</span>
+
+  {% if page < total_pages %}
+    <a href="/blog?page={{ page | plus: 1 }}">Next →</a>
+  {% endif %}
+</nav>
 ```
+
+### Complete Multi-Dataset Example
+
+Here's a complete example for a tree service business with services, locations, and testimonials:
+
+**siteswarm.json:**
+```json
+{
+  "name": "Tree Service Pro",
+  "version": "1.0.0",
+  "datasets": {
+    "locations": {
+      "name": "Service Areas",
+      "slug_field": "slug",
+      "item_template": "location"
+    },
+    "services": {
+      "name": "Services",
+      "slug_field": "slug",
+      "item_template": "service"
+    },
+    "testimonials": {
+      "name": "Testimonials",
+      "slug_field": "slug",
+      "item_template": "testimonial"
+    }
+  }
+}
+```
+
+**templates/index.liquid (Homepage):**
+```liquid
+{% section 'hero' %}
+
+<section class="services">
+  <h2>Our Services</h2>
+  <div class="grid">
+    {% for service in datasets.services limit: 6 %}
+      <a href="{{ service | item_url }}" class="card">
+        <h3>{{ service.title }}</h3>
+        <p>{{ service.description | truncate: 100 }}</p>
+      </a>
+    {% endfor %}
+  </div>
+  <a href="/services">View All Services</a>
+</section>
+
+<section class="locations">
+  <h2>Areas We Serve</h2>
+  <ul>
+    {% for location in datasets.locations %}
+      <li><a href="{{ location | item_url }}">{{ location.name }}, {{ location.state }}</a></li>
+    {% endfor %}
+  </ul>
+</section>
+```
+
+**templates/services.liquid (Collection page):**
+```liquid
+<h1>Our Services</h1>
+{% for service in datasets.services %}
+  <div class="service-card">
+    <h2><a href="{{ service | item_url }}">{{ service.title }}</a></h2>
+    <p>{{ service.description }}</p>
+    {% if service.price %}
+      <span class="price">Starting at {{ service.price }}</span>
+    {% endif %}
+  </div>
+{% endfor %}
+```
+
+**templates/service.liquid (Item page via fallthrough):**
+```liquid
+<article>
+  <h1>{{ service.title }}</h1>
+  {% if service.image %}
+    <img src="{{ service.image | img_url: 'large' }}" alt="">
+  {% endif %}
+  <div class="content">{{ service.content }}</div>
+
+  <aside class="related-locations">
+    <h3>Available In:</h3>
+    {% for location in datasets.locations %}
+      <a href="{{ location | item_url }}">{{ location.name }}</a>
+    {% endfor %}
+  </aside>
+</article>
+```
+
+**templates/location.liquid (Item page via fallthrough):**
+```liquid
+<article>
+  <h1>{{ location.name }}, {{ location.state }}</h1>
+  <div class="content">{{ location.description }}</div>
+
+  <section class="services-in-area">
+    <h2>Services in {{ location.name }}</h2>
+    {% for service in datasets.services %}
+      <a href="{{ service | item_url }}">{{ service.title }}</a>
+    {% endfor %}
+  </section>
+</article>
+```
+
+**URL structure:**
+- `/` → Homepage
+- `/services` → Services collection (template match)
+- `/tree-removal` → Service item (fallthrough: services)
+- `/stump-grinding` → Service item (fallthrough: services)
+- `/austin-tx` → Location item (fallthrough: locations)
+- `/leander-tx` → Location item (fallthrough: locations)
+
+### Best Practices
+
+1. **Use descriptive slugs:** `tree-removal` not `service-1`
+2. **Avoid slug collisions:** Don't use the same slug in multiple datasets
+3. **Create collection templates:** Make `/services`, `/locations` pages as templates
+4. **Consider SEO:** Root-level URLs are great for SEO
+5. **Use parameterized routes for hierarchy:** When you need `/category/item` structure
 
 ---
 
@@ -847,55 +1245,55 @@ Or use helper:
 </div>
 ```
 
-### Collection Page
+### Collection Page (Services Listing)
 
 ```liquid
-<!-- templates/collection.liquid -->
+<!-- templates/services.liquid -->
 <div class="container mx-auto px-4 py-12">
-  <h1 class="text-3xl font-bold mb-8">{{ mount.alias | capitalize }}</h1>
+  <h1 class="text-3xl font-bold mb-8">Our Services</h1>
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    {% for item in collection %}
-      {% swarm_render 'article-card', article: item %}
+    {% for service in datasets.services %}
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-bold">{{ service.title }}</h2>
+        <p class="text-gray-600 mt-2">{{ service.description | truncate: 100 }}</p>
+        <a href="{{ service | item_url }}" class="text-blue-600 mt-4 inline-block">
+          Learn more →
+        </a>
+      </div>
     {% else %}
-      <p class="col-span-3 text-gray-500 text-center py-12">No items found.</p>
+      <p class="col-span-3 text-gray-500 text-center py-12">No services found.</p>
     {% endfor %}
   </div>
-
-  {% if pagination.total_pages > 1 %}
-    {% swarm_render 'pagination' %}
-  {% endif %}
 </div>
 ```
 
 ### Item Page
 
 ```liquid
-<!-- templates/article.liquid -->
+<!-- templates/service.liquid -->
 <article class="container mx-auto px-4 py-12 max-w-3xl">
   <nav class="text-sm text-gray-500 mb-6">
     <a href="/">Home</a> /
-    <a href="{{ mount.mount_path }}">{{ mount.alias | capitalize }}</a> /
-    <span>{{ article.title }}</span>
+    <a href="/services">Services</a> /
+    <span>{{ service.title }}</span>
   </nav>
 
   <header class="mb-8">
-    <h1 class="text-4xl font-bold">{{ article.title }}</h1>
-    {% if article.published_at %}
-      <time class="text-gray-500 mt-2 block">
-        {{ article.published_at | date: '%B %d, %Y' }}
-      </time>
+    <h1 class="text-4xl font-bold">{{ service.title }}</h1>
+    {% if service.price %}
+      <p class="text-2xl text-green-600 mt-2">{{ service.price }}</p>
     {% endif %}
   </header>
 
-  {% if article.image %}
-    <img src="{{ article.image | img_url: 'large' }}" alt="" class="w-full rounded-lg mb-8">
+  {% if service.image %}
+    <img src="{{ service.image | img_url: 'large' }}" alt="" class="w-full rounded-lg mb-8">
   {% endif %}
 
-  <div class="prose prose-lg">{{ article.content }}</div>
+  <div class="prose prose-lg">{{ service.content }}</div>
 
-  <a href="{{ mount.mount_path }}" class="inline-block mt-8 text-blue-600">
-    ← Back to {{ mount.alias }}
+  <a href="/services" class="inline-block mt-8 text-blue-600">
+    ← Back to Services
   </a>
 </article>
 ```
@@ -1061,10 +1459,9 @@ Or use helper:
 | `site` | Site info (name, url, subdomain) |
 | `settings` | Theme settings |
 | `request` | Current request (path, host) |
-| `datasets` | Mounted datasets by alias |
-| `collection` | Records on list pages |
-| `pagination` | Page navigation info |
-| `mount` | Dataset mount config |
+| `datasets` | All datasets by alias |
+| `dataset` | Dataset config (on item pages) |
+| `route_params` | URL parameters (parameterized routes) |
 | `content_for_layout` | Page content (layouts) |
 | `section` | Section info (sections) |
 
@@ -1076,6 +1473,7 @@ Or use helper:
 | `{% swarm_render 'name' %}` | Render snippet |
 | `{% dropin 'name' %}` | Render user-managed HTML content |
 | `{% schema %}...{% endschema %}` | Define section settings |
+| `{% routes %}...{% endroutes %}` | Define parameterized URL routes |
 | `{% assign_global var = value %}` | Set variable accessible in layout (for page titles) |
 
 ### Custom Filters
@@ -1084,7 +1482,7 @@ Or use helper:
 |--------|---------|
 | `asset_url` | `{{ 'theme.css' \| asset_url }}` |
 | `img_url` | `{{ image \| img_url: 'medium' }}` |
-| `item_url` | `{{ article \| item_url }}` |
+| `item_url` | `{{ article \| item_url }}` → `/my-slug` |
 | `link_to` | `{{ 'Text' \| link_to: '/url' }}` |
 | `date` | `{{ date \| date: '%B %d, %Y' }}` |
 | `truncate_words` | `{{ text \| truncate_words: 20 }}` |
@@ -1116,9 +1514,12 @@ Or use helper:
 | `select` | Dropdown |
 | `color` | Color picker |
 
-### URL Routing
+### URL Routing (Fallthrough Resolution)
 
-1. Template match: `/about` → `templates/about.liquid`
-2. Dataset list: `/blog` → `templates/collection.liquid`
-3. Dataset item: `/blog/my-post` → `templates/article.liquid`
-4. 404: `templates/404.liquid`
+1. **Template match:** `/about` → `templates/about.liquid`
+2. **Parameterized routes:** `/services/:slug` → template with `{% routes %}`
+3. **Fallthrough slug:** `/my-slug` → first dataset with matching record
+4. **Hyphenated path:** `/about/team` → `templates/about-team.liquid`
+5. **404 fallback:** `templates/404.liquid`
+
+**Fallthrough order:** Datasets checked alphabetically by alias (e.g., `locations` before `services`)

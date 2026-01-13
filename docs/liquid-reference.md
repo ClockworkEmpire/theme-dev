@@ -552,26 +552,27 @@ Available on dataset list pages. Contains pagination metadata.
 {% endif %}
 ```
 
-### mount
+### dataset
 
-Available on dataset list and item pages. Contains information about the dataset mount configuration.
+Available on dataset item pages. Contains information about the matched dataset.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `mount.alias` | String | Dataset alias (e.g., `articles`) |
-| `mount.mount_path` | String | URL mount path (e.g., `/blog`) |
-| `mount.slug_field` | String | Field used for URL slugs |
-| `mount.items_per_page` | Integer | Records per page |
+| `dataset.alias` | String | Dataset alias (e.g., `services`) |
+| `dataset.slug_field` | String | Field used for URL slugs (e.g., `slug`) |
+| `dataset.item_template` | String | Template name (e.g., `service`) |
 
 ```liquid
 <nav aria-label="breadcrumb">
   <a href="/">Home</a> /
-  <a href="{{ mount.mount_path }}">{{ mount.alias | capitalize }}</a>
-  {% if article %}
-    / {{ article.title }}
+  <a href="/services">Services</a>
+  {% if service %}
+    / {{ service.title }}
   {% endif %}
 </nav>
 ```
+
+**Note:** URL routing uses fallthrough slug resolution. URLs like `/tree-removal` are resolved by checking each dataset alphabetically by alias for a matching slug.
 
 ### route_params
 
