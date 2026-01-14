@@ -6,6 +6,7 @@ const commands = {
   connect: require('./commands/connect'),
   env: require('./commands/env'),
   push: require('./commands/push'),
+  lint: require('./commands/lint'),
   update: require('./commands/update'),
   version: require('./commands/version'),
   docs: require('./commands/docs'),
@@ -54,6 +55,10 @@ Commands:
     --theme-name <n>   Theme name for new themes
     --create           Create a new theme (required if no theme-id)
 
+  lint [path]          Check theme for issues and unused settings
+    --fix              Auto-fix issues (add missing schema, remove unused settings)
+    --json             Output results as JSON
+
   update               Pull the latest Docker image
 
   version              Show version information
@@ -82,6 +87,8 @@ Examples:
   swarm new my-theme
   swarm dev ./my-theme
   swarm connect ./my-theme
+  swarm lint ./my-theme
+  swarm lint --fix ./my-theme
   swarm push ./my-theme
   swarm env use production
   swarm push --env staging ./my-theme
