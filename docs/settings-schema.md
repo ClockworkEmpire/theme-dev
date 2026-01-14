@@ -177,6 +177,115 @@ Section settings are available via `section.settings`:
 
 ---
 
+## Snippet Settings
+
+Snippets can also have configurable settings using sidecar schemas.
+
+### External Schema Files
+
+**config/snippets/article-card.json**
+```json
+{
+  "name": "Article Card",
+  "description": "Displays an article preview with image and excerpt",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show Image",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "excerpt_words",
+      "label": "Excerpt Word Limit",
+      "default": 20,
+      "min": 10,
+      "max": 50,
+      "step": 5
+    }
+  ]
+}
+```
+
+### Accessing Snippet Settings
+
+Snippet settings are available via `snippet.settings`:
+
+```liquid
+{% comment %} snippets/article-card.liquid {% endcomment %}
+{% if snippet.settings.show_image and article.image %}
+  <img src="{{ article.image | img_url: 'medium' }}" alt="{{ article.title }}">
+{% endif %}
+
+<p>{{ article.excerpt | truncate_words: snippet.settings.excerpt_words }}</p>
+```
+
+---
+
+## Template Settings
+
+Templates can define their own configurable settings.
+
+### External Schema Files
+
+**config/templates/collection.json**
+```json
+{
+  "name": "Collection",
+  "description": "Displays a list of dataset records",
+  "settings": [
+    {
+      "type": "range",
+      "id": "items_per_page",
+      "label": "Items Per Page",
+      "default": 12,
+      "min": 6,
+      "max": 24,
+      "step": 6
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Grid Layout",
+      "default": "grid-3",
+      "options": [
+        { "value": "grid-2", "label": "2 Columns" },
+        { "value": "grid-3", "label": "3 Columns" },
+        { "value": "list", "label": "List View" }
+      ]
+    }
+  ]
+}
+```
+
+### Accessing Template Settings
+
+Template settings are available via `template.settings`:
+
+```liquid
+{% comment %} templates/collection.liquid {% endcomment %}
+<div class="{{ template.settings.layout }}">
+  {% for item in collection limit: template.settings.items_per_page %}
+    {% render 'card', item: item %}
+  {% endfor %}
+</div>
+```
+
+---
+
+## Schema Lookup Summary
+
+| File Type | Schema Location | Access Variable |
+|-----------|-----------------|-----------------|
+| `sections/hero.liquid` | `config/sections/hero.json` | `section.settings` |
+| `snippets/card.liquid` | `config/snippets/card.json` | `snippet.settings` |
+| `templates/article.liquid` | `config/templates/article.json` | `template.settings` |
+
+All types support inline `{% schema %}` blocks as a fallback, but external JSON files are recommended.
+
+---
+
 ## Setting Types
 
 ### text

@@ -1,0 +1,45 @@
+{
+  "name": "Business Detail",
+  "description": "Displays full details for a single business listing",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_map",
+      "label": "Show Map",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews",
+      "label": "Show Reviews Section",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hours",
+      "label": "Show Business Hours",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_related",
+      "label": "Show Related Businesses",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "related_count",
+      "label": "Related Businesses Count",
+      "default": 4,
+      "min": 2,
+      "max": 8,
+      "step": 2
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Contact Button Text",
+      "default": "Contact Business"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "Article",
+  "description": "Displays a single article with full content",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_featured_image",
+      "label": "Show Featured Image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show Author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show Publish Date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_related",
+      "label": "Show Related Articles",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "related_count",
+      "label": "Related Articles Count",
+      "default": 3,
+      "min": 2,
+      "max": 6,
+      "step": 1
+    }
+  ]
+}

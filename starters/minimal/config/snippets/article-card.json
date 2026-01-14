@@ -1,0 +1,33 @@
+{
+  "name": "Article Card",
+  "description": "Displays an article preview with image, title, and excerpt",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show Image",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show Date",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "excerpt_words",
+      "label": "Excerpt Word Limit",
+      "default": 20,
+      "min": 10,
+      "max": 50,
+      "step": 5
+    },
+    {
+      "type": "text",
+      "id": "read_more_text",
+      "label": "Read More Text",
+      "default": "Read more →"
+    }
+  ]
+}
