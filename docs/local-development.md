@@ -271,7 +271,7 @@ This populates the `site` object in templates:
 
 ### Theme Settings
 
-**data/settings.json**
+**config/settings_data.json**
 ```json
 {
   "primary_color": "#3b82f6",
@@ -280,10 +280,12 @@ This populates the `site` object in templates:
 }
 ```
 
-Overrides defaults from `config/settings_data.json`. Access via:
+This is the single source of truth for theme settings. Access via:
 ```liquid
 {{ settings.primary_color }}
 ```
+
+> **Note:** `data/settings.json` is no longer supported. All settings should be defined in `config/settings_data.json`, which is also what Rails imports when the theme is uploaded.
 
 ### Datasets (Schema-Based)
 
@@ -423,7 +425,7 @@ A small JavaScript snippet is injected into every page that listens for reload e
 | Data source | Mock JSON files | Database |
 | Asset URLs | `/assets/file.css` | ActiveStorage URLs |
 | Image variants | Not processed | Resized by ActiveStorage |
-| Settings | `data/settings.json` | Site-specific settings |
+| Settings | `config/settings_data.json` | Site-specific settings |
 | Caching | None | Full caching |
 | HTTPS | No | Yes (via domains) |
 

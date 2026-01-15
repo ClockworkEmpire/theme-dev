@@ -1018,7 +1018,7 @@ Always handle the case when no blocks exist:
 
 ### Local Development
 
-For local development, add mock block data to `data/settings.json`:
+For local development, add mock block data to `config/settings_data.json`:
 
 ```json
 {
