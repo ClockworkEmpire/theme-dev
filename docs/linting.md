@@ -150,11 +150,33 @@ If you change a default value in your Liquid markup, the linter updates the sche
 | **Boolean false** | `\| default: false` | `"default": false`, type: `checkbox` |
 | **Integer** | `\| default: 5` | `"default": 5`, type: `range` |
 | **Float** | `\| default: 1.5` | `"default": 1.5` |
-| **Variable reference** | `\| default: site.name` | `"default": "[site.name]"` |
+| **Settings reference** | `\| default: settings.site_name` | `"default": "", "default_from": "settings.site_name"` |
+| **Other variable** | `\| default: site.name` | `"default": "[site.name]"` |
 
 ### Variable References
 
-When a default references another variable (like `site.name` or `item.title`), the linter preserves it as a bracketed placeholder:
+When a default references another variable, the linter handles it based on the reference type:
+
+**Global Settings References (`settings.*`)** use the `default_from` schema syntax:
+
+```liquid
+{{ section.settings.title | default: settings.site_name }}
+```
+
+Schema result:
+```json
+{
+  "type": "text",
+  "id": "title",
+  "label": "Title",
+  "default": "",
+  "default_from": "settings.site_name"
+}
+```
+
+The `default_from` syntax enables inheritance tracking in editor mode. When rendered, the editor shows which settings are inherited vs custom, allowing users to see the source of default values.
+
+**Other Variable References** (like `site.name` or `item.title`) use a bracketed placeholder:
 
 ```liquid
 {{ section.settings.page_title | default: site.name }}
