@@ -45,6 +45,8 @@ See [Local Development](local-development.md) for detailed installation and usag
 swarm new <name>           # Create a new theme (blank scaffold)
 swarm new <name> --example # Create from full example theme
 swarm dev [path]           # Start dev server with live reload
+swarm lint [path]          # Validate theme structure and schemas
+swarm lint --fix [path]    # Auto-fix issues and scaffold missing schemas
 
 # Server integration
 swarm connect [path]       # Connect to Site Swarm for browser-based editing
@@ -79,6 +81,7 @@ See [Local Development](local-development.md) for detailed command documentation
 | [Datasets and Routing](datasets-and-routing.md) | Dynamic content and URL patterns |
 | [Assets and Styling](assets-and-styling.md) | CSS, JavaScript, images, fonts |
 | [Local Development](local-development.md) | Dev server, CLI commands, mock data |
+| [Linting](linting.md) | Theme validation, auto-fix, default extraction |
 
 ### Quick Reference
 
