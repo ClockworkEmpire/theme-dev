@@ -18,10 +18,10 @@ theme/
 │   ├── article.liquid        # Dataset item pages
 │   └── 404.liquid            # Not found page
 ├── sections/
-│   ├── header.liquid         # Reusable sections with settings
+│   ├── header.liquid         # Reusable sections (schema in config/)
 │   └── footer.liquid
 ├── snippets/
-│   ├── card.liquid           # Reusable partials (no settings)
+│   ├── card.liquid           # Reusable partials
 │   └── pagination.liquid
 ├── dropins/
 │   └── promo-banner.liquid   # Default content (Liquid processed)
@@ -30,7 +30,10 @@ theme/
 │   └── theme.js
 └── config/
     ├── settings_schema.json  # Theme settings definition
-    └── settings_data.json    # Default values
+    ├── settings_data.json    # Default values
+    └── sections/             # Section schemas (sidecar pattern)
+        ├── header.json
+        └── footer.json
 ```
 
 **Required file:** `layout/theme.liquid`
@@ -384,8 +387,11 @@ The layout's `<title>` tag references this with a fallback:
 ```
 
 ### Section with Settings
+
+Sections use **sidecar schemas** - a separate JSON file in `config/sections/` instead of inline `{% schema %}` blocks.
+
+**sections/hero.liquid** (pure Liquid, no schema block)
 ```liquid
-<!-- sections/hero.liquid -->
 <section class="hero" style="background: {{ section.settings.bg_color }}">
   <h1>{{ section.settings.title }}</h1>
   <p>{{ section.settings.subtitle }}</p>
@@ -393,8 +399,10 @@ The layout's `<title>` tag references this with a fallback:
     <a href="{{ section.settings.button_url }}">{{ section.settings.button_text }}</a>
   {% endif %}
 </section>
+```
 
-{% schema %}
+**config/sections/hero.json** (schema definition)
+```json
 {
   "name": "Hero",
   "settings": [
@@ -405,12 +413,14 @@ The layout's `<title>` tag references this with a fallback:
     { "type": "color", "id": "bg_color", "label": "Background Color", "default": "#3b82f6" }
   ]
 }
-{% endschema %}
 ```
 
+> **Note:** Inline `{% schema %}` blocks are deprecated. Always use sidecar JSON files.
+
 ### Section with Blocks
+
+**sections/team.liquid**
 ```liquid
-<!-- sections/team.liquid -->
 <div class="team-grid">
   {% for block in section.blocks %}
     <div class="card">
@@ -419,8 +429,10 @@ The layout's `<title>` tag references this with a fallback:
     </div>
   {% endfor %}
 </div>
+```
 
-{% schema %}
+**config/sections/team.json**
+```json
 {
   "name": "Team",
   "blocks": [
@@ -434,10 +446,43 @@ The layout's `<title>` tag references this with a fallback:
     }
   ]
 }
-{% endschema %}
 ```
 
 See [Sections, Snippets & Blocks](sections-and-snippets.md#section-blocks) for full documentation.
+
+### Block Data in settings_data.json
+
+Sections with blocks need corresponding data in `config/settings_data.json`:
+
+```json
+{
+  "sections": {
+    "team": {
+      "settings": {
+        "title": "Our Team"
+      },
+      "blocks": [
+        {
+          "type": "member",
+          "settings": {
+            "name": "Alice Chen",
+            "role": "CEO"
+          }
+        },
+        {
+          "type": "member",
+          "settings": {
+            "name": "Bob Martinez",
+            "role": "CTO"
+          }
+        }
+      ]
+    }
+  }
+}
+```
+
+**Important:** Settings field names (like `name`, `role`) must exactly match the `id` values in your schema.
 
 ### Media Library Usage
 ```liquid

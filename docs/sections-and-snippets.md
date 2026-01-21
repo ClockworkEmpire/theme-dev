@@ -25,17 +25,20 @@ Sections are reusable page components with configurable settings.
 
 ### Basic Section Structure
 
-```liquid
-<!-- sections/hero.liquid -->
+Sections use **sidecar schemas** - a separate JSON file in `config/sections/` instead of inline `{% schema %}` blocks.
 
+**sections/hero.liquid** (pure Liquid template)
+```liquid
 <section class="hero bg-blue-600 text-white py-20">
   <div class="container mx-auto px-4 text-center">
     <h1 class="text-5xl font-bold">{{ section.settings.title }}</h1>
     <p class="text-xl mt-4">{{ section.settings.subtitle }}</p>
   </div>
 </section>
+```
 
-{% schema %}
+**config/sections/hero.json** (schema definition)
+```json
 {
   "name": "Hero Banner",
   "settings": [
@@ -52,7 +55,6 @@ Sections are reusable page components with configurable settings.
     }
   ]
 }
-{% endschema %}
 ```
 
 ### Including Sections
@@ -67,7 +69,7 @@ Use the `{% section %}` tag in templates or layouts:
 
 The tag:
 1. Loads `sections/header.liquid`
-2. Parses the `{% schema %}` block
+2. Loads schema from `config/sections/header.json`
 3. Merges default settings with site customizations
 4. Makes `section.settings` available
 5. Renders the HTML
@@ -90,12 +92,12 @@ Inside a section, you have access to:
 </section>
 ```
 
-### Schema Block
+### Section Schema (Sidecar Pattern)
 
-The `{% schema %}` block defines the section's metadata and settings:
+Section schemas are defined in separate JSON files in `config/sections/`. The file name matches the section name.
 
-```liquid
-{% schema %}
+**config/sections/hero.json**
+```json
 {
   "name": "Section Display Name",
   "settings": [
@@ -108,10 +110,15 @@ The `{% schema %}` block defines the section's metadata and settings:
     }
   ]
 }
-{% endschema %}
 ```
 
-**Important:** The schema block renders nothing - it's metadata only. Place it at the end of your section file.
+**Why sidecar schemas?**
+- Clean separation of concerns (Liquid vs JSON)
+- Proper JSON syntax highlighting in editors
+- Independent validation
+- Easier to manage and compare
+
+> **Deprecated:** Inline `{% schema %}` blocks are still supported for backwards compatibility but should not be used in new themes.
 
 See [Settings Schema](settings-schema.md) for complete setting type documentation.
 
@@ -1117,3 +1124,49 @@ Block settings support the same types as section settings:
 | `color` | Color picker |
 
 See [Settings Schema](settings-schema.md) for full documentation.
+
+### Troubleshooting Blocks
+
+#### Blocks Not Rendering (Empty section.blocks)
+
+**Check your settings_data.json structure:**
+```json
+{
+  "sections": {           // ← Must be under "sections" key
+    "testimonials": {     // ← Must match section name
+      "blocks": [...]     // ← Array of block objects
+    }
+  }
+}
+```
+
+Common mistakes:
+- Missing `"sections"` wrapper
+- Section name doesn't match the section file name
+- Blocks at root level instead of nested
+
+#### "Section Error: Error rendering section"
+
+Causes:
+1. **Invalid JSON in schema** - Check `{% schema %}` block for syntax errors
+2. **Section file not found** - Verify `sections/{name}.liquid` exists
+3. **Missing required settings** - Some settings may be required
+
+Debug by checking:
+```bash
+swarm lint    # Validate theme structure
+```
+
+#### Settings Not Applying to Blocks
+
+Field names in settings_data.json must exactly match schema `id` values:
+
+```json
+// Schema defines: { "id": "name", "type": "text" }
+
+// CORRECT
+{ "settings": { "name": "Alice" } }
+
+// WRONG - field name doesn't match
+{ "settings": { "author_name": "Alice" } }
+```
