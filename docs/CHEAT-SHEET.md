@@ -17,6 +17,9 @@ theme/
 │   ├── collection.liquid     # Dataset list pages
 │   ├── article.liquid        # Dataset item pages
 │   └── 404.liquid            # Not found page
+├── page_templates/
+│   ├── about.liquid          # Static pages with per-page settings
+│   └── service.liquid
 ├── sections/
 │   ├── header.liquid         # Reusable sections (schema in config/)
 │   └── footer.liquid
@@ -296,10 +299,39 @@ Images are auto-optimized on upload (85% quality, max 2400px). Use `original` to
 Priority order:
 
 1. **Template match:** `/about` → `templates/about.liquid`
-2. **Parameterized routes:** `/companies/seattle/wa/acme` → template with matching `{% routes %}`
-3. **Dataset list:** `/blog` → `templates/collection.liquid`
-4. **Dataset item:** `/blog/my-post` → `templates/article.liquid`
+2. **Page by slug:** `/plumbing` → Page record → `page_templates/service.liquid`
+3. **Parameterized routes:** `/companies/seattle/wa/acme` → template with matching `{% routes %}`
+4. **Fallthrough slug:** `/my-slug` → first dataset with matching record
 5. **404:** `templates/404.liquid`
+
+---
+
+## Page Templates
+
+For static pages with per-page settings (about, contact, services).
+
+| Directory | Purpose |
+|-----------|---------|
+| `page_templates/` | Static pages with schema-based settings |
+| `templates/` | Dataset rendering (articles, products) |
+
+```liquid
+{# page_templates/service.liquid #}
+<h1>{{ settings.headline }}</h1>
+
+{% schema %}
+{
+  "name": "Service Page",
+  "settings": [
+    { "id": "headline", "type": "text", "label": "Headline" }
+  ]
+}
+{% endschema %}
+```
+
+One template → many Pages (each with different slug/settings).
+
+See [page-templates.md](page-templates.md) for full documentation.
 
 ---
 

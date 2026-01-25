@@ -13,10 +13,11 @@ Complete reference for building Site Swarm themes. This document is self-contain
 5. [Custom Tags](#custom-tags)
 6. [Custom Filters](#custom-filters)
 7. [Sections and Snippets](#sections-and-snippets)
-8. [Settings System](#settings-system)
-9. [Datasets and Routing](#datasets-and-routing)
-10. [Assets](#assets)
-11. [Complete Examples](#complete-examples)
+8. [Page Templates](#page-templates)
+9. [Settings System](#settings-system)
+10. [Datasets and Routing](#datasets-and-routing)
+11. [Assets](#assets)
+12. [Complete Examples](#complete-examples)
 
 ---
 
@@ -49,6 +50,11 @@ theme/
 │   ├── collection.liquid       # Dataset list pages
 │   ├── article.liquid          # Dataset item pages
 │   └── 404.liquid              # Not found page
+│
+├── page_templates/
+│   ├── about.liquid            # Static pages with per-page settings
+│   ├── contact.liquid
+│   └── service.liquid
 │
 ├── sections/
 │   ├── header.liquid           # Configurable components
@@ -597,6 +603,50 @@ Simple reusable partials without settings.
 | Site owners should customize content | Content comes from passed variables |
 | Component has configurable options | Component is purely presentational |
 | Examples: Header, Footer, Hero | Examples: Cards, Buttons, Icons |
+
+---
+
+## Page Templates
+
+Page templates are for static pages (about, contact, services) that need per-page settings, distinct from `templates/` which render dataset records.
+
+### Directory Structure
+
+| Directory | Purpose | Settings Storage |
+|-----------|---------|------------------|
+| `page_templates/` | Static pages | Per-page (in Page record) |
+| `templates/` | Dataset rendering | Global (site settings) |
+
+### Creating a Page Template
+
+```liquid
+{# page_templates/service.liquid #}
+<h1>{{ settings.headline }}</h1>
+<div class="prose">{{ settings.body }}</div>
+
+{% schema %}
+{
+  "name": "Service Page",
+  "settings": [
+    { "id": "headline", "type": "text", "label": "Headline" },
+    { "id": "body", "type": "richtext", "label": "Body Content" }
+  ]
+}
+{% endschema %}
+```
+
+### Page ↔ PageTemplate Relationship
+
+One page_template can have many Pages with different slugs and settings:
+
+```
+page_templates/service.liquid
+    ├── Page: "Plumbing" (slug: plumbing)    → /plumbing
+    ├── Page: "Electrical" (slug: electrical) → /electrical
+    └── Page: "HVAC" (slug: hvac)            → /hvac
+```
+
+See [Page Templates](page-templates.md) for full documentation.
 
 ---
 

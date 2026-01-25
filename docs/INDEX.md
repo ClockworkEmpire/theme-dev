@@ -82,6 +82,7 @@ See [Local Development](local-development.md) for detailed command documentation
 | [Assets and Styling](assets-and-styling.md) | CSS, JavaScript, images, fonts |
 | [Local Development](local-development.md) | Dev server, CLI commands, mock data |
 | [Linting](linting.md) | Theme validation, auto-fix, default extraction |
+| [Page Templates](page-templates.md) | Static pages with per-page settings |
 
 ### Quick Reference
 
