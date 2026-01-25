@@ -60,8 +60,16 @@ my-theme/
 │       ├── articles.json          # Sample records or {"generate": N}
 │       └── businesses.schema.json
 │
-├── data/                       # Dev server runtime data (not for production)
-│   └── site.json               # Site info and skin selection
+├── data/                       # Dev server data (sample content for production)
+│   ├── site.json               # Site info and skin selection (dev only)
+│   ├── datasets/               # Sample datasets for import
+│   │   └── businesses.json
+│   └── content/                # Sample first-class content
+│       ├── authors.json        # Author records
+│       ├── tags.json           # Tag records
+│       ├── posts.json          # Post records (reference authors, tags)
+│       ├── pages.json          # Page records (reference authors)
+│       └── drop-ins.json       # Drop-in content blocks
 │
 └── locales/
     ├── en.default.json         # English translations (default)
@@ -728,6 +736,66 @@ Or with explicit records:
 
 When `generate` is used, records are auto-generated from the schema using Faker.
 
+#### Field Types Reference
+
+When defining fields in your dataset schema (in `siteswarm.json` or `config/datasets/*.schema.json`), use these valid field types:
+
+| Type | Description | Example Values |
+|------|-------------|----------------|
+| `string` | Short text (up to ~255 chars) | Names, titles, slugs, emails |
+| `text` | Long-form text/HTML | Content, descriptions, bios |
+| `integer` | Whole numbers | Counts, positions, IDs |
+| `decimal` | Numbers with decimals | Prices, ratings, coordinates |
+| `boolean` | True/false values | Featured, active, published |
+| `datetime` | Date and time | Published at, created at |
+| `date` | Date only (no time) | Birth date, event date |
+| `array` | List of values | Tags, categories, features |
+| `json` | Structured JSON object | Configuration, metadata |
+| `attachment` | Single file upload | Image, logo, PDF |
+| `attachments` | Multiple file uploads | Gallery, documents |
+
+**Example field definitions:**
+```json
+{
+  "datasets": {
+    "products": {
+      "fields": [
+        {"key": "name", "type": "string", "required": true},
+        {"key": "slug", "type": "string", "required": true},
+        {"key": "description", "type": "text"},
+        {"key": "price", "type": "decimal"},
+        {"key": "quantity", "type": "integer"},
+        {"key": "featured", "type": "boolean"},
+        {"key": "published_at", "type": "datetime"},
+        {"key": "tags", "type": "array"},
+        {"key": "specifications", "type": "json"},
+        {"key": "image", "type": "attachment"},
+        {"key": "gallery", "type": "attachments"}
+      ]
+    }
+  }
+}
+```
+
+#### Common Type Mistakes
+
+The linter will catch invalid types and suggest corrections. Common mistakes:
+
+| Invalid Type | Correction | Why |
+|--------------|------------|-----|
+| `number` | `decimal` | Use `decimal` for floats or `integer` for whole numbers |
+| `float`, `double` | `decimal` | Rails uses `decimal` for precision |
+| `int`, `bigint` | `integer` | Standard Ruby/Rails naming |
+| `bool` | `boolean` | Full word required |
+| `long_text`, `richtext`, `html`, `markdown` | `text` | All long content uses `text` |
+| `image`, `file` | `attachment` | Single uploads use `attachment` |
+| `images`, `files` | `attachments` | Multiple uploads use `attachments` |
+| `object`, `hash`, `map`, `dict` | `json` | Structured data uses `json` |
+| `timestamp`, `time` | `datetime` | Use `datetime` for time values |
+| `list` | `array` | Ruby/Rails uses `array` |
+
+**Auto-fix:** Run `swarm lint --fix` to automatically correct invalid types in your schema.
+
 ---
 
 ### locales/
@@ -992,3 +1060,54 @@ data/datasets/businesses.json  # 10 sample business listings
 ```
 
 The imported dataset uses the field schema from your `siteswarm.json` manifest (or `hostnet.json` for backward compatibility) combined with the records from the sample data file.
+
+### Sample Content (data/content/)
+
+Beyond custom datasets, themes can provide sample content for first-class Rails models: **authors**, **tags**, **posts**, **pages**, and **drop-ins**.
+
+```
+data/
+└── content/
+    ├── authors.json      # E-E-A-T author information
+    ├── tags.json         # Post categorization
+    ├── posts.json        # Blog posts (reference authors, tags)
+    ├── pages.json        # Static pages (reference authors)
+    └── drop-ins.json     # Reusable content blocks
+```
+
+**Key differences from datasets:**
+- First-class models with specific fields (not flexible schema)
+- Cross-references: posts can reference authors and tags
+- Import order matters (authors → tags → posts → pages → drop-ins)
+
+**Example authors.json:**
+```json
+{
+  "records": [
+    {
+      "slug": "jane-smith",
+      "name": "Jane Smith",
+      "bio": "Senior editor with 10+ years experience.",
+      "job_title": "Senior Editor"
+    }
+  ]
+}
+```
+
+**Example posts.json:**
+```json
+{
+  "records": [
+    {
+      "slug": "getting-started",
+      "title": "Getting Started",
+      "excerpt": "Learn how to get started...",
+      "author_slug": "jane-smith",
+      "tag_list": "tutorials, technology",
+      "published_at": "2024-01-15T10:00:00Z"
+    }
+  ]
+}
+```
+
+See [Sample Content](./sample-content.md) for complete documentation on file formats and usage.

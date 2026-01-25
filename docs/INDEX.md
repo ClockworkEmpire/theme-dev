@@ -83,6 +83,7 @@ See [Local Development](local-development.md) for detailed command documentation
 | [Local Development](local-development.md) | Dev server, CLI commands, mock data |
 | [Linting](linting.md) | Theme validation, auto-fix, default extraction |
 | [Page Templates](page-templates.md) | Static pages with per-page settings |
+| [Sample Content](sample-content.md) | Authors, tags, posts, pages, drop-ins for themes |
 
 ### Quick Reference
 

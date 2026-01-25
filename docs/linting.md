@@ -32,6 +32,7 @@ The linter scans your entire theme and validates:
 | **Templates** | Schema exists in `config/templates/`, settings declared |
 | **Global Settings** | All `settings.*` references have schema entries |
 | **Assets** | Referenced assets exist in `assets/` folder |
+| **Sample Content** | Valid structure in `data/content/`, required fields, valid references |
 
 ---
 
@@ -137,6 +138,56 @@ If you change a default value in your Liquid markup, the linter updates the sche
 {{ section.settings.title | default: 'Welcome' }}
 <!-- After lint --fix: schema default is now 'Welcome' -->
 ```
+
+### 5. Fix Invalid Field Types
+
+Dataset field types must use valid Rails types. The linter detects invalid types and can auto-correct them:
+
+**Common mistakes and corrections:**
+
+| Invalid Type | Corrected To |
+|--------------|--------------|
+| `number` | `decimal` |
+| `float`, `double` | `decimal` |
+| `int`, `bigint` | `integer` |
+| `bool` | `boolean` |
+| `image`, `file` | `attachment` |
+| `images`, `files` | `attachments` |
+| `object`, `hash`, `dict` | `json` |
+| `timestamp` | `datetime` |
+| `list` | `array` |
+
+**Example:**
+
+Your `siteswarm.json`:
+```json
+{
+  "datasets": {
+    "products": {
+      "fields": [
+        {"key": "price", "type": "number"},
+        {"key": "config", "type": "object"}
+      ]
+    }
+  }
+}
+```
+
+Running `swarm lint`:
+```
+Issues found:
+  - Field 'price' has invalid type 'number'. Suggested fix: 'decimal'
+  - Field 'config' has invalid type 'object'. Suggested fix: 'json'
+```
+
+Running `swarm lint --fix`:
+```
+Fixes applied:
+  - Fixed field 'price' in 'products': 'number' → 'decimal'
+  - Fixed field 'config' in 'products': 'object' → 'json'
+```
+
+See [Theme Structure: Field Types Reference](./theme-structure.md#field-types-reference) for the complete list of valid types.
 
 ---
 
@@ -333,8 +384,66 @@ The linter won't overwrite manually configured types.
 
 ---
 
+## Sample Content Validation
+
+The linter validates sample content files in `data/content/`:
+
+### Required Fields
+
+| Content Type | Required Fields |
+|--------------|-----------------|
+| Authors | `name` |
+| Tags | `name` |
+| Posts | `title`, `slug` |
+| Pages | `title`, `slug` |
+| Drop-ins | `name`, `content` |
+
+### Reference Validation
+
+The linter warns about invalid cross-references:
+
+**Posts referencing unknown authors:**
+```
+Warning: Post 'my-post' references unknown author 'unknown-author'
+```
+
+**Invalid schema types:**
+```
+Warning: Post 'my-post' has invalid schema_type 'CustomPost'. Valid: Article, BlogPosting, NewsArticle, TechArticle
+Warning: Page 'about' has invalid schema_type 'CustomPage'. Valid: WebPage, AboutPage, ContactPage, FAQPage
+```
+
+**Invalid drop-in name format:**
+```
+Issue: Drop-in 'Footer Disclaimer' has invalid name format. Use lowercase alphanumeric with hyphens.
+```
+
+### Example Output
+
+```
+Linting theme at /path/to/theme...
+
+Sample content stats:
+  - Authors: 2
+  - Tags: 5
+  - Posts: 8
+  - Pages: 3
+  - Drop-ins: 2
+
+Issues found:
+  - Page at index 0 is missing required field 'slug'
+
+Warnings:
+  - Post 'advanced-tips' references unknown author 'guest-author'
+```
+
+See [Sample Content](./sample-content.md) for file format documentation.
+
+---
+
 ## See Also
 
 - [Schema Reference](./schemas.md) - Full schema file format
 - [Settings Types](./settings-types.md) - All available setting types
 - [Theme Structure](./theme-structure.md) - Directory layout
+- [Sample Content](./sample-content.md) - First-class content for themes
