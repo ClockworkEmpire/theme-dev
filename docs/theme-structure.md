@@ -53,8 +53,12 @@ my-theme/
 │   │   ├── header.json
 │   │   ├── footer.json
 │   │   └── hero.json
+│   ├── templates/              # Template schema definitions (optional)
+│   │   └── location.json
 │   ├── snippets/               # Snippet schema definitions (optional)
 │   │   └── card.json
+│   ├── page_templates/         # Page template schema definitions (optional)
+│   │   └── article.json
 │   └── datasets/               # Sample data for local development
 │       ├── articles.schema.json   # Generator schema
 │       ├── articles.json          # Sample records or {"generate": N}
@@ -366,7 +370,7 @@ Reusable page sections with configurable settings. Sections are included with `{
 Simple reusable partials without settings. Snippets are included with `{% swarm_render 'name' %}` and receive variables explicitly passed to them.
 
 **Key characteristics:**
-- No settings schema
+- Can have schemas via `config/snippets/NAME.json`, accessed as `snippet.settings`
 - Receive variables explicitly via render tag
 - Isolated variable scope
 - Best for repeated UI patterns
@@ -673,9 +677,51 @@ Section schemas define configurable settings for section components. Each JSON f
 
 The schema file name matches the section file: `config/sections/hero.json` → `sections/hero.liquid`.
 
+#### Template Schemas (config/templates/)
+
+Template schemas define settings scoped to a specific template. Unlike global settings (which live in `settings_schema.json`), template settings are only relevant when rendering that template. They are accessed via `template.settings` in the Liquid context.
+
+**config/templates/location.json**
+```json
+{
+  "name": "Location Page",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Image",
+      "default_from": "settings.hero_image"
+    },
+    {
+      "type": "text",
+      "id": "experts_title",
+      "label": "Experts Section Title",
+      "default": "Our Experts"
+    }
+  ]
+}
+```
+
+The schema file name matches the template file: `config/templates/location.json` → `templates/location.liquid`.
+
+**Template usage:**
+```liquid
+<!-- templates/location.liquid -->
+<img src="{{ template.settings.hero_image | img_url }}">
+<h2>{{ template.settings.experts_title }}</h2>
+```
+
+**When to use template settings vs global settings:**
+- Use `settings.*` for values needed across multiple templates (brand name, phone, logo)
+- Use `template.settings.*` for values specific to one template (location hero image, experts section title)
+
+#### Page Template Schemas (config/page_templates/)
+
+Page template schemas work like template schemas but for dataset-mounted page templates (e.g., article detail pages). The schema file name matches the page template file: `config/page_templates/article.json` → `templates/article.liquid`.
+
 #### Snippet Schemas (config/snippets/)
 
-Snippets can also have schemas for configurable defaults. While snippets primarily receive data through variables, schemas allow defining default settings.
+Snippets can have schemas for configurable settings accessed via `snippet.settings`. While snippets primarily receive data through variables, schemas allow defining default settings that can be customized per-site.
 
 ```json
 {
@@ -690,6 +736,17 @@ Snippets can also have schemas for configurable defaults. While snippets primari
   ]
 }
 ```
+
+#### Settings Scope Overview
+
+Settings in Site Swarm have four scopes, from broadest to most specific:
+
+| Scope | Access in Liquid | Schema Location | Description |
+|-------|-----------------|-----------------|-------------|
+| **Global** | `settings.*` | `config/settings_schema.json` | Site-wide settings (brand, contact info, colors) |
+| **Template** | `template.settings.*` | `config/templates/NAME.json` | Settings for a specific template |
+| **Section** | `section.settings.*` | `config/sections/NAME.json` or `{% schema %}` | Settings for a section component |
+| **Snippet** | `snippet.settings.*` | `config/snippets/NAME.json` | Settings for a reusable snippet |
 
 #### Dataset Schemas (config/datasets/)
 
