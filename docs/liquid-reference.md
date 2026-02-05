@@ -1019,6 +1019,24 @@ Theme assets are used as a fallback when no media library file or dataset attach
 5. Dataset attachments - resolved via context
 6. Theme assets - fallback lookup in `assets/` directory
 
+### Choosing Between `asset_url` and `img_url`
+
+These two filters serve different purposes. Using the wrong one is a common source of broken images.
+
+| Use Case | Correct Filter | Example |
+|----------|---------------|---------|
+| Theme CSS/JS files | `asset_url` | `{{ 'theme.css' \| asset_url }}` |
+| Theme fonts | `asset_url` | `{{ 'Inter.woff2' \| asset_url }}` |
+| Static images baked into the theme | `asset_url` | `{{ 'logo.svg' \| asset_url }}` |
+| Dataset record images (articles, products, services) | `img_url` | `{{ article.image \| img_url: 'medium' }}` |
+| Media library uploads | `img_url` | `{{ "hero.jpg" \| img_url: 'large' }}` |
+| Settings image picker values | `img_url` | `{{ settings.logo \| img_url }}` |
+| External image URLs | `img_url` | `{{ "https://cdn.com/photo.jpg" \| img_url }}` |
+
+**Rule of thumb:** `asset_url` is for files that ship with your theme (`assets/` directory). `img_url` is for any image that comes from user content — dataset fields, media uploads, or settings.
+
+> **Common mistake:** Using `asset_url` on a dataset image field like `{{ service.image | asset_url }}`. This will fail because `asset_url` looks for a file in the theme's `assets/` directory, not in the site's uploaded content. Use `{{ service.image | img_url }}` instead.
+
 ### item_url
 
 Generates the URL for a dataset record using its mount path and slug.
@@ -1092,6 +1110,28 @@ Converts a string to a URL-friendly slug.
 {{ 'Hello World!' | slugify }}        <!-- hello-world -->
 {{ article.title | slugify }}         <!-- my-article-title -->
 ```
+
+### parse_liquid
+
+Parses and renders a string containing Liquid syntax within the current template context. Useful for rendering dynamic content stored in dataset fields or settings that itself contains Liquid variables.
+
+```liquid
+{{ record.body | parse_liquid }}
+```
+
+If `record.body` contains `"Call us at {{ settings.phone }}"`, the output is:
+```
+Call us at 555-1234
+```
+
+Works with any Liquid syntax including filters:
+
+```liquid
+{{ record.intro | parse_liquid }}
+{%- comment -%} If intro = "Welcome, {{ customer.name | upcase }}!" → "Welcome, ALICE!" {%- endcomment -%}
+```
+
+Returns an empty string for nil/blank input. Syntax errors are shown as inline error messages in development mode.
 
 ### stylesheet_tag
 

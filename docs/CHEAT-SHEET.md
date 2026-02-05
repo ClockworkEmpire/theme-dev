@@ -222,8 +222,8 @@ Defines parameterized URL patterns. Dynamic segments start with `:` and capture 
 
 | Filter | Input | Output |
 |--------|-------|--------|
-| `asset_url` | `{{ 'theme.css' \| asset_url }}` | `/assets/theme.css` |
-| `img_url` | `{{ image \| img_url: 'medium' }}` | Sized image URL |
+| `asset_url` | `{{ 'theme.css' \| asset_url }}` | Theme asset URL (CSS, JS, fonts, static images) |
+| `img_url` | `{{ article.image \| img_url: 'medium' }}` | User content image URL (datasets, media, settings) |
 | `item_url` | `{{ article \| item_url }}` | `/blog/my-article` |
 | `link_to` | `{{ 'About' \| link_to: '/about' }}` | `<a href="/about">About</a>` |
 | `date` | `{{ date \| date: '%B %d, %Y' }}` | `January 15, 2025` |
@@ -231,6 +231,12 @@ Defines parameterized URL patterns. Dynamic segments start with `:` and capture 
 | `slugify` | `{{ 'Hello World!' \| slugify }}` | `hello-world` |
 | `stylesheet_tag` | `{{ url \| stylesheet_tag }}` | `<link rel="stylesheet">` |
 | `script_tag` | `{{ url \| script_tag }}` | `<script src="...">` |
+
+### Quick Rule: `asset_url` vs `img_url`
+
+- **`asset_url`** = files in your theme's `assets/` folder (CSS, JS, fonts, static images)
+- **`img_url`** = user content (dataset fields, media library, settings)
+- Never use `asset_url` on dataset image fields like `article.image` or `service.image`
 
 ### Theme Asset Variants
 
