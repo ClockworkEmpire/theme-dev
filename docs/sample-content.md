@@ -321,9 +321,22 @@ The theme dev server loads sample content and makes it available in templates:
 
 **Computed fields added by dev server:**
 - Posts: `url` (/blog/{slug}), `author` (resolved), `tags` (resolved array)
-- Pages: `url` (/{slug}), `author` (resolved)
+- Pages: `url` (/{slug}), `author` (resolved), `id`, `content`, `position`, `schema_type`, `created_at`, `updated_at`
 - Authors: `display_name` (name + job title)
 - Tags: `url` (/tags/{slug})
+
+### Page Routing
+
+Pages in `pages.json` are also routable by slug. Visiting `/about` renders the page record through its assigned `page_template`:
+
+```json
+{"slug": "about", "title": "About Us", "page_template": "page"}
+```
+
+- `/about` → renders `page_templates/page.liquid` with the page record as `{{ page }}`
+- Page record settings are merged with the page_template's schema defaults
+
+This means multiple pages (about, contact, faqs) can share a single `page_templates/page.liquid` template — the most common pattern. See [Page Templates](page-templates.md) for full details.
 
 ---
 

@@ -384,9 +384,21 @@ The dev server mimics Site Swarm's production routing:
 |-----|----------|---------|
 | `/` | `templates/index.liquid` | Standard context |
 | `/about` | `templates/about.liquid` | Standard context |
+| `/about` | `page_templates/about.liquid` (if no template match) | `page` |
+| `/about` | `page_templates/page.liquid` (if page record maps to it) | `page` |
 | `/blog` | `templates/collection.liquid` | `collection`, `mount`, `pagination` |
 | `/blog/my-post` | `templates/article.liquid` | `article`, `mount` |
 | `/anything-else` | `templates/404.liquid` | Standard context |
+
+### Resolution Order
+
+1. **Exact template match** — `/about` → `templates/about.liquid`
+2. **Implicit page_template file** — `/about` → `page_templates/about.liquid`
+3. **Parameterized routes** — `/companies/acme` → template with `{% routes %}`
+4. **Dataset slug match** — `/my-slug` → dataset record with matching slug
+5. **Page record from pages.json** — `/about` → page record's assigned `page_template`
+6. **Path conversion** — `/about/team` → `templates/about-team.liquid`
+7. **404 fallback**
 
 ### Dataset Routing
 
@@ -403,6 +415,25 @@ Datasets are routed based on their `mount_path`:
 
 - `/blog` → renders `collection.liquid` with all articles
 - `/blog/my-slug` → renders `article.liquid` with the matching record
+
+### Page Routing
+
+Pages defined in `data/content/pages.json` are routed to their assigned page templates:
+
+```json
+// data/content/pages.json
+{
+  "records": [
+    {"title": "About Us", "slug": "about", "page_template": "page"},
+    {"title": "Contact", "slug": "contact", "page_template": "page"}
+  ]
+}
+```
+
+- `/about` → renders `page_templates/page.liquid` with the "About Us" page record
+- `/contact` → renders `page_templates/page.liquid` with the "Contact" page record
+
+This is the most common pattern: multiple pages sharing a single page_template. See [Page Templates](page-templates.md) for details.
 
 ---
 

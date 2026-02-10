@@ -23,10 +23,14 @@ Your theme doesn't define what data exists - it renders whatever datasets the si
 When a request comes in, Site Swarm resolves URLs in this order:
 
 1. **Exact template match** - `/about` → `templates/about.liquid`
-2. **Parameterized route patterns** - `/companies/seattle/wa/acme` → template with matching `{% routes %}` block
-3. **Dataset list page** - `/blog` → `templates/collection.liquid`
-4. **Dataset item page** - `/blog/my-post` → `templates/article.liquid`
-5. **404 page** - `templates/404.liquid`
+2. **Implicit page_template file** - `/about` → `page_templates/about.liquid` (if no exact template)
+3. **Parameterized route patterns** - `/companies/seattle/wa/acme` → template with matching `{% routes %}` block
+4. **Dataset slug match** - `/my-slug` → dataset record with matching slug (fallthrough)
+5. **Page record from pages.json** - `/about` → page record's assigned page_template (single-segment paths only)
+6. **Path conversion** - `/about/team` → `templates/about-team.liquid`
+7. **404 page** - `templates/404.liquid`
+
+> **Note:** In the dev server, page records from `data/content/pages.json` are resolved at step 5. Dataset slug matches (step 4) take precedence over page records. See [Page Templates](page-templates.md) for details on page routing.
 
 ### Template Matching
 

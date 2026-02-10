@@ -248,22 +248,59 @@ The local theme dev server (`bin/theme-dev`) fully supports page templates:
 bin/theme-dev dev /path/to/theme
 ```
 
-- Routes `/about` to `page_templates/about.liquid`
+- Routes pages from `data/content/pages.json` to their assigned page templates
+- Routes implicit page_template files when no page record exists
 - Extracts schemas from inline `{% schema %}` blocks
-- Provides mock settings from schema defaults
+- Merges schema defaults with page record settings (record overrides defaults)
 - Hot reloads on file changes
+
+### Page Routing from pages.json
+
+When you define pages in `data/content/pages.json`, the dev server routes them to their assigned page templates — just like production:
+
+```json
+{
+  "records": [
+    {"title": "About Us", "slug": "about", "page_template": "page"},
+    {"title": "Contact", "slug": "contact", "page_template": "page"},
+    {"title": "FAQs", "slug": "faqs", "page_template": "page"}
+  ]
+}
+```
+
+All three pages share `page_templates/page.liquid`. Visiting `/about`, `/contact`, or `/faqs` renders the same template with each page's own data.
+
+If a page has no `page_template` field, the dev server falls back to `templates/page.liquid` (then `templates/article.liquid`).
+
+### Implicit File Routing (No pages.json)
+
+If no matching page record exists in pages.json, the dev server still routes to page_template files directly:
+
+- `/services` → `page_templates/services.liquid` (if the file exists)
+
+In this case, mock page data is generated from the template name and schema defaults.
+
+### Settings Merge
+
+When routing a page record to a page_template with a `{% schema %}` block, settings are merged:
+
+1. Schema defaults provide the base values
+2. Page record `settings` override matching keys
+3. Unset fields keep their schema defaults
 
 ### Mock Page Data
 
-When serving page templates, the dev server creates mock page data:
+The `{{ page }}` object is available in page templates:
 
 ```liquid
-{{ page.id }}           → "page_dev_about"
-{{ page.title }}        → "About" (derived from template name)
+{{ page.id }}           → "page_about" (from record) or "page_dev_about" (mock)
+{{ page.title }}        → "About Us" (from record) or "About" (from template name)
 {{ page.slug }}         → "about"
 {{ page.url }}          → "/about"
-{{ page.page_template }} → "about"
-{{ page.settings }}     → { ... } (from schema defaults)
+{{ page.page_template }} → "page" (from record) or "about" (from template name)
+{{ page.content }}      → "" (from record or default)
+{{ page.schema_type }}  → "WebPage" (from record or default)
+{{ page.settings }}     → { ... } (merged: schema defaults + record settings)
 ```
 
 ## Migration from templates/
