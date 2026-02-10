@@ -53,10 +53,10 @@ page_templates/service.liquid     # The structure/layout
 
 ### 1. Define the Template with Schema
 
-Page templates use inline `{% schema %}` blocks to define their editable settings:
+Page templates use **sidecar schemas** - a separate JSON file in `config/page_templates/` that defines their editable settings. This keeps Liquid templates clean and allows proper JSON validation.
 
+**page_templates/about.liquid** (pure Liquid, no schema block)
 ```liquid
-{# page_templates/about.liquid #}
 <div class="about-page">
   <h1>{{ settings.headline }}</h1>
 
@@ -72,8 +72,10 @@ Page templates use inline `{% schema %}` blocks to define their editable setting
     {% section 'team-members' %}
   {% endif %}
 </div>
+```
 
-{% schema %}
+**config/page_templates/about.json** (schema definition)
+```json
 {
   "name": "About Page",
   "settings": [
@@ -106,8 +108,9 @@ Page templates use inline `{% schema %}` blocks to define their editable setting
     }
   ]
 }
-{% endschema %}
 ```
+
+The schema file name matches the page template file name (without extension).
 
 ### 2. Create Pages Using the Template
 
@@ -123,7 +126,7 @@ Each Page stores its own settings values, so you can create multiple pages from 
 
 ## Schema Format
 
-The `{% schema %}` block defines editable settings for the page template.
+The sidecar JSON file in `config/page_templates/` defines editable settings for the page template. Inline `{% schema %}` blocks are also supported as a fallback but sidecar files are recommended.
 
 ### Supported Setting Types
 
@@ -227,15 +230,14 @@ Page templates handle sitemaps differently from dataset templates:
 
 ### Excluding a Template from Sitemap
 
-For dataset templates (`templates/`) that shouldn't appear in sitemaps, add `sitemap: false` to the schema:
+For dataset templates (`templates/`) that shouldn't appear in sitemaps, add `sitemap: false` to the sidecar schema:
 
-```liquid
-{% schema %}
+**config/templates/article.json**
+```json
 {
   "name": "Article Template",
   "sitemap": false
 }
-{% endschema %}
 ```
 
 This is useful for templates that are only used as `item_template` for datasets (the dataset records themselves are included in the sitemap).
@@ -250,7 +252,7 @@ bin/theme-dev dev /path/to/theme
 
 - Routes pages from `data/content/pages.json` to their assigned page templates
 - Routes implicit page_template files when no page record exists
-- Extracts schemas from inline `{% schema %}` blocks
+- Loads schemas from sidecar JSON files in `config/page_templates/` (or inline `{% schema %}` as fallback)
 - Merges schema defaults with page record settings (record overrides defaults)
 - Hot reloads on file changes
 
@@ -282,7 +284,7 @@ In this case, mock page data is generated from the template name and schema defa
 
 ### Settings Merge
 
-When routing a page record to a page_template with a `{% schema %}` block, settings are merged:
+When routing a page record to a page_template with a schema (sidecar JSON or inline), settings are merged:
 
 1. Schema defaults provide the base values
 2. Page record `settings` override matching keys
@@ -315,14 +317,16 @@ If you have static pages in `templates/`:
 <p>Welcome to our company...</p>
 ```
 
-### After (in page_templates/)
+### After (in page_templates/ with sidecar schema)
 
+**page_templates/about.liquid** (pure Liquid)
 ```liquid
-{# page_templates/about.liquid #}
 <h1>{{ settings.headline }}</h1>
 <div class="prose">{{ settings.body }}</div>
+```
 
-{% schema %}
+**config/page_templates/about.json** (schema definition)
+```json
 {
   "name": "About Page",
   "settings": [
@@ -330,7 +334,6 @@ If you have static pages in `templates/`:
     { "id": "body", "type": "richtext", "label": "Body Content" }
   ]
 }
-{% endschema %}
 ```
 
 **Benefits of migrating:**

@@ -711,10 +711,12 @@ Variables from the parent template are NOT automatically available:
 
 ### schema
 
-Defines configurable settings for a section. Only valid in section files. Renders nothing - it's metadata only.
+**Deprecated** - use sidecar JSON files in `config/sections/` instead. Inline `{% schema %}` blocks are still supported for backward compatibility.
 
-```liquid
-{% schema %}
+Defines configurable settings for a section. Renders nothing - it's metadata only.
+
+**Recommended: Sidecar JSON** (`config/sections/hero.json`)
+```json
 {
   "name": "Hero Banner",
   "settings": [
@@ -736,10 +738,9 @@ Defines configurable settings for a section. Only valid in section files. Render
     }
   ]
 }
-{% endschema %}
 ```
 
-Place the schema block at the end of your section file. See [Settings Schema](settings-schema.md) for full schema documentation.
+See [Settings Schema](settings-schema.md) for full schema documentation.
 
 ### routes
 

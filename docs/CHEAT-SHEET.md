@@ -148,7 +148,7 @@ Renders a section from `sections/` with its settings applied.
 ```
 Renders a snippet from `snippets/` with isolated variable scope. (The legacy `hostnet_render` tag still works for backward compatibility.)
 
-### Schema Tag (sections only)
+### Schema Tag (deprecated - use sidecar JSON)
 ```liquid
 {% schema %}
 {
@@ -159,7 +159,7 @@ Renders a snippet from `snippets/` with isolated variable scope. (The legacy `ho
 }
 {% endschema %}
 ```
-Defines configurable settings for a section. Renders nothing.
+Defines configurable settings inline. **Deprecated** - use sidecar JSON files in `config/sections/` instead. Still supported for backward compatibility.
 
 ### Drop-In Tag
 ```liquid

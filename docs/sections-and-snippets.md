@@ -10,7 +10,7 @@ Site Swarm themes use two types of reusable components:
 
 | Type | Settings | Scope | Use Case |
 |------|----------|-------|----------|
-| **Sections** | Yes (via schema) | Site-wide config | Header, footer, hero banners |
+| **Sections** | Yes (via sidecar JSON) | Site-wide config | Header, footer, hero banners |
 | **Snippets** | No | Passed variables only | Cards, buttons, icons |
 
 **Rule of thumb:**
@@ -409,8 +409,8 @@ A reusable pagination snippet:
 
 ### Configurable Hero
 
+**sections/hero.liquid** (pure Liquid)
 ```liquid
-<!-- sections/hero.liquid -->
 <section
   class="hero py-20"
   style="background-color: {{ section.settings.bg_color }}; color: {{ section.settings.text_color }};"
@@ -440,8 +440,10 @@ A reusable pagination snippet:
     {% endif %}
   </div>
 </section>
+```
 
-{% schema %}
+**config/sections/hero.json**
+```json
 {
   "name": "Hero",
   "settings": [
@@ -485,13 +487,12 @@ A reusable pagination snippet:
     }
   ]
 }
-{% endschema %}
 ```
 
 ### Featured Content Section
 
+**sections/featured-articles.liquid** (pure Liquid)
 ```liquid
-<!-- sections/featured-articles.liquid -->
 <section class="py-16">
   <div class="container mx-auto px-4">
     <div class="flex items-center justify-between mb-8">
@@ -512,8 +513,10 @@ A reusable pagination snippet:
     </div>
   </div>
 </section>
+```
 
-{% schema %}
+**config/sections/featured-articles.json**
+```json
 {
   "name": "Featured Articles",
   "settings": [
@@ -555,13 +558,12 @@ A reusable pagination snippet:
     }
   ]
 }
-{% endschema %}
 ```
 
 ### Navigation Header
 
+**sections/header.liquid** (pure Liquid)
 ```liquid
-<!-- sections/header.liquid -->
 <header class="bg-white shadow-sm sticky top-0 z-50">
   <div class="container mx-auto px-4">
     <div class="flex items-center justify-between h-16">
@@ -604,8 +606,10 @@ A reusable pagination snippet:
     </div>
   </div>
 </header>
+```
 
-{% schema %}
+**config/sections/header.json**
+```json
 {
   "name": "Header",
   "settings": [
@@ -639,7 +643,6 @@ A reusable pagination snippet:
     }
   ]
 }
-{% endschema %}
 ```
 
 ---
@@ -882,7 +885,7 @@ See the [Liquid Reference](liquid-reference.md#dropin) for full tag documentatio
 
 ## Section Blocks
 
-Sections can contain **blocks** - repeatable data items that site owners can add, remove, and reorder. Blocks are perfect for team members, FAQ items, pricing tiers, testimonials, and similar repeating content.
+Sections can contain **blocks** - repeatable data items that site owners can add, remove, and reorder. Blocks are defined in the section's sidecar schema file. Blocks are perfect for team members, FAQ items, pricing tiers, testimonials, and similar repeating content.
 
 ### Why Use Blocks?
 
@@ -898,10 +901,10 @@ Sections can contain **blocks** - repeatable data items that site owners can add
 
 ### Defining Block Types
 
-Add a `blocks` array to your section's `{% schema %}`:
+Add a `blocks` array to your section's sidecar schema file:
 
+**sections/team.liquid** (pure Liquid)
 ```liquid
-<!-- sections/team.liquid -->
 <section class="team py-16">
   <div class="container">
     <h2>{{ section.settings.title }}</h2>
@@ -921,8 +924,10 @@ Add a `blocks` array to your section's `{% schema %}`:
     </div>
   </div>
 </section>
+```
 
-{% schema %}
+**config/sections/team.json**
+```json
 {
   "name": "Team",
   "settings": [
@@ -945,7 +950,6 @@ Add a `blocks` array to your section's `{% schema %}`:
     }
   ]
 }
-{% endschema %}
 ```
 
 ### The Block Object
@@ -962,8 +966,8 @@ Inside `{% for block in section.blocks %}`, each block provides:
 
 A section can define multiple block types. Site owners choose which type when adding blocks:
 
+**sections/testimonials.liquid** (pure Liquid)
 ```liquid
-<!-- sections/testimonials.liquid -->
 <section class="testimonials">
   {% for block in section.blocks %}
     {% case block.type %}
@@ -981,8 +985,10 @@ A section can define multiple block types. Site owners choose which type when ad
     {% endcase %}
   {% endfor %}
 </section>
+```
 
-{% schema %}
+**config/sections/testimonials.json**
+```json
 {
   "name": "Testimonials",
   "blocks": [
@@ -1004,7 +1010,6 @@ A section can define multiple block types. Site owners choose which type when ad
     }
   ]
 }
-{% endschema %}
 ```
 
 ### Empty State Handling
@@ -1059,6 +1064,7 @@ For local development, add mock block data to `config/settings_data.json`:
 
 #### FAQ Section
 
+**sections/faq.liquid** (pure Liquid)
 ```liquid
 {% for block in section.blocks %}
   <details class="faq-item">
@@ -1066,8 +1072,10 @@ For local development, add mock block data to `config/settings_data.json`:
     <p>{{ block.settings.answer }}</p>
   </details>
 {% endfor %}
+```
 
-{% schema %}
+**config/sections/faq.json**
+```json
 {
   "blocks": [{
     "type": "faq_item",
@@ -1078,7 +1086,6 @@ For local development, add mock block data to `config/settings_data.json`:
     ]
   }]
 }
-{% endschema %}
 ```
 
 #### Pricing Tiers
@@ -1148,7 +1155,7 @@ Common mistakes:
 #### "Section Error: Error rendering section"
 
 Causes:
-1. **Invalid JSON in schema** - Check `{% schema %}` block for syntax errors
+1. **Invalid JSON in schema** - Check `config/sections/{name}.json` for syntax errors
 2. **Section file not found** - Verify `sections/{name}.liquid` exists
 3. **Missing required settings** - Some settings may be required
 

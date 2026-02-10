@@ -9,7 +9,7 @@ Define customizable options for your theme and sections.
 Site Swarm themes support two levels of settings:
 
 1. **Theme Settings** - Global options defined in `config/settings_schema.json`
-2. **Section Settings** - Component-specific options defined in `{% schema %}` blocks
+2. **Section Settings** - Component-specific options defined in sidecar JSON files (`config/sections/`)
 
 Both use the same setting type definitions and are accessed via the `settings` object in templates.
 

@@ -81,8 +81,9 @@ Key points:
 
 ## Step 3: Create the Header Section
 
-Sections are reusable components with settings. Create `sections/header.liquid`:
+Sections are reusable components with settings. Create the Liquid template and its sidecar schema file.
 
+**sections/header.liquid** (pure Liquid, no schema block)
 ```liquid
 <header class="bg-white shadow-sm">
   <div class="container mx-auto px-4">
@@ -98,8 +99,10 @@ Sections are reusable components with settings. Create `sections/header.liquid`:
     </div>
   </div>
 </header>
+```
 
-{% schema %}
+**config/sections/header.json** (schema definition)
+```json
 {
   "name": "Header",
   "settings": [
@@ -111,30 +114,29 @@ Sections are reusable components with settings. Create `sections/header.liquid`:
     }
   ]
 }
-{% endschema %}
 ```
 
-The `{% schema %}` block defines settings that site owners can customize.
+The sidecar JSON file defines settings that site owners can customize. The file name matches the section name.
 
 ---
 
 ## Step 4: Create the Footer Section
 
-Create `sections/footer.liquid`:
-
+**sections/footer.liquid**
 ```liquid
 <footer class="bg-gray-800 text-white mt-auto">
   <div class="container mx-auto px-4 py-8 text-center">
     <p>&copy; {{ 'now' | date: '%Y' }} {{ site.name }}</p>
   </div>
 </footer>
+```
 
-{% schema %}
+**config/sections/footer.json**
+```json
 {
   "name": "Footer",
   "settings": []
 }
-{% endschema %}
 ```
 
 ---
@@ -394,7 +396,10 @@ my-theme.zip
 │   └── theme.css
 └── config/
     ├── settings_schema.json
-    └── settings_data.json
+    ├── settings_data.json
+    └── sections/
+        ├── header.json
+        └── footer.json
 ```
 
 Upload the ZIP through the Site Swarm dashboard:

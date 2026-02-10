@@ -83,7 +83,7 @@ theme/
 |-----------|---------|----------|
 | layout/ | HTML wrapper | No |
 | templates/ | Page content | No |
-| sections/ | Reusable components | Yes (via schema) |
+| sections/ | Reusable components | Yes (via sidecar JSON in `config/sections/`) |
 | snippets/ | Simple partials | No |
 | assets/ | Static files | No |
 | config/ | Configuration | N/A |
@@ -399,7 +399,7 @@ Renders a snippet from `snippets/` with isolated scope.
 
 ### schema
 
-Defines section settings (metadata only, renders nothing).
+Defines section settings (metadata only, renders nothing). **Deprecated** in favor of sidecar JSON files in `config/sections/`. Inline `{% schema %}` blocks are still supported for backward compatibility.
 
 ```liquid
 {% schema %}
@@ -535,16 +535,18 @@ Generates script element.
 
 ### Sections
 
-Reusable components with configurable settings.
+Reusable components with configurable settings. Sections use **sidecar schemas** - a separate JSON file in `config/sections/`.
 
+**sections/hero.liquid** (pure Liquid, no schema block)
 ```liquid
-<!-- sections/hero.liquid -->
 <section class="hero" style="background: {{ section.settings.bg_color }}">
   <h1>{{ section.settings.title }}</h1>
   <p>{{ section.settings.subtitle }}</p>
 </section>
+```
 
-{% schema %}
+**config/sections/hero.json** (schema definition)
+```json
 {
   "name": "Hero",
   "settings": [
@@ -567,7 +569,6 @@ Reusable components with configurable settings.
     }
   ]
 }
-{% endschema %}
 ```
 
 **Usage:**
@@ -619,12 +620,14 @@ Page templates are for static pages (about, contact, services) that need per-pag
 
 ### Creating a Page Template
 
+**page_templates/service.liquid** (pure Liquid)
 ```liquid
-{# page_templates/service.liquid #}
 <h1>{{ settings.headline }}</h1>
 <div class="prose">{{ settings.body }}</div>
+```
 
-{% schema %}
+**config/page_templates/service.json** (schema definition)
+```json
 {
   "name": "Service Page",
   "settings": [
@@ -632,7 +635,6 @@ Page templates are for static pages (about, contact, services) that need per-pag
     { "id": "body", "type": "richtext", "label": "Body Content" }
   ]
 }
-{% endschema %}
 ```
 
 ### Page ↔ PageTemplate Relationship
@@ -690,17 +692,16 @@ See [Page Templates](page-templates.md) for full documentation.
 
 ### Section Settings
 
-Defined in `{% schema %}` blocks:
+Defined in sidecar JSON files in `config/sections/`:
 
-```liquid
-{% schema %}
+**config/sections/hero.json**
+```json
 {
   "name": "Hero",
   "settings": [
     { "type": "text", "id": "title", "label": "Title" }
   ]
 }
-{% endschema %}
 ```
 
 **Access in section:**
@@ -1350,8 +1351,8 @@ Or use helper:
 
 ### Header Section
 
+**sections/header.liquid** (pure Liquid)
 ```liquid
-<!-- sections/header.liquid -->
 <header class="bg-white shadow-sm">
   <div class="container mx-auto px-4">
     <div class="flex items-center justify-between h-16">
@@ -1370,8 +1371,10 @@ Or use helper:
     </div>
   </div>
 </header>
+```
 
-{% schema %}
+**config/sections/header.json** (schema definition)
+```json
 {
   "name": "Header",
   "settings": [
@@ -1389,7 +1392,6 @@ Or use helper:
     }
   ]
 }
-{% endschema %}
 ```
 
 ### Article Card Snippet
@@ -1522,7 +1524,7 @@ Or use helper:
 | `{% section 'name' %}` | Render section with settings |
 | `{% swarm_render 'name' %}` | Render snippet |
 | `{% dropin 'name' %}` | Render user-managed HTML content |
-| `{% schema %}...{% endschema %}` | Define section settings |
+| `{% schema %}...{% endschema %}` | Define section settings (deprecated - use sidecar JSON) |
 | `{% routes %}...{% endroutes %}` | Define parameterized URL routes |
 | `{% assign_global var = value %}` | Set variable accessible in layout (for page titles) |
 

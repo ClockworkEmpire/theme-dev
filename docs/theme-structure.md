@@ -304,15 +304,15 @@ The layout uses these with fallbacks:
 
 ### sections/
 
-Reusable page sections with configurable settings. Sections are included with `{% section 'name' %}` and can define their own settings via `{% schema %}`.
+Reusable page sections with configurable settings. Sections are included with `{% section 'name' %}` and define their settings via **sidecar JSON files** in `config/sections/`.
 
 **Key characteristics:**
 - Have their own settings (configured by site owner)
 - Access settings via `section.settings`
 - Included in templates with `{% section 'name' %}`
-- Schema defined with `{% schema %}` block
+- Schema defined in `config/sections/NAME.json` (sidecar pattern)
 
-**Example: hero.liquid**
+**sections/hero.liquid** (pure Liquid, no schema block)
 ```liquid
 <section class="hero" style="background-color: {{ section.settings.bg_color }}">
   <div class="hero-content">
@@ -325,8 +325,10 @@ Reusable page sections with configurable settings. Sections are included with `{
     {% endif %}
   </div>
 </section>
+```
 
-{% schema %}
+**config/sections/hero.json** (schema definition)
+```json
 {
   "name": "Hero Banner",
   "settings": [
@@ -360,8 +362,9 @@ Reusable page sections with configurable settings. Sections are included with `{
     }
   ]
 }
-{% endschema %}
 ```
+
+> **Deprecated:** Inline `{% schema %}` blocks are still supported for backward compatibility but should not be used in new themes.
 
 ---
 
