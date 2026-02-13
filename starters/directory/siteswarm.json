@@ -5,6 +5,7 @@
   "subcategory": "listings",
   "description": "Business directory theme with listings, reviews, and blog functionality",
   "author": "Site Swarm",
+  "tags": ["directory", "listings", "responsive"],
 
   "datasets": {
     "businesses": {

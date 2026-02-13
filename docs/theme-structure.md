@@ -106,6 +106,7 @@ The `siteswarm.json` file is the theme manifest. It declares metadata about your
   "version": "1.0.0",
   "category": "business",
   "subcategory": "agency",
+  "tags": ["responsive", "dark-mode", "multi-page"],
   "description": "A professional business theme for agencies",
   "author": "Your Name",
   "datasets": {
@@ -135,13 +136,14 @@ The `siteswarm.json` file is the theme manifest. It declares metadata about your
 | `version` | Yes | Semantic version (e.g., "1.0.0") |
 | `description` | No | Brief description of the theme |
 | `author` | No | Theme author name |
-| `category` | No | Theme category for filtering (see below) |
+| `category` | No | Theme category for structured filtering (see below) |
 | `subcategory` | No | Subcategory within the category |
+| `tags` | No | Free-form tags for discovery (see below) |
 | `datasets` | No | Dataset requirements and schemas |
 
 ### Categories
 
-Categories help users discover themes. When you upload a theme with a category in the manifest, it's automatically applied.
+Categories provide a structured taxonomy for organizing themes. When you upload a theme with a category in the manifest, it's automatically applied.
 
 | Category | Subcategories |
 |----------|---------------|
@@ -163,12 +165,46 @@ Categories help users discover themes. When you upload a theme with a category i
   "name": "Directory Pro",
   "version": "1.0.0",
   "category": "directory",
-  "subcategory": "listings",
-  "description": "Business directory with search and filtering"
+  "subcategory": "listings"
 }
 ```
 
 Categories are optional. Themes without a category can still be uploaded and used.
+
+### Tags
+
+Tags provide a free-form folksonomy layer alongside the structured category system. They're useful for describing theme features, capabilities, and characteristics that don't fit neatly into predefined categories.
+
+**Format rules:**
+- Lowercase letters, numbers, and hyphens only (e.g., `responsive`, `dark-mode`, `multi-page`)
+- Maximum 20 tags per theme
+- Maximum 50 characters per tag
+- Spaces and underscores are automatically converted to hyphens
+- Tags are deduplicated and normalized on upload
+
+**Example:**
+```json
+{
+  "name": "Modern Agency",
+  "version": "1.0.0",
+  "category": "business",
+  "subcategory": "agency",
+  "tags": ["responsive", "dark-mode", "tailwind", "multi-page", "animated"]
+}
+```
+
+Tags are applied automatically when a theme is uploaded. They can also be edited from the theme settings page in the dashboard.
+
+**Suggested tag conventions:**
+
+| Tag Type | Examples |
+|----------|---------|
+| Layout features | `responsive`, `single-page`, `multi-page`, `sidebar` |
+| Visual style | `dark-mode`, `minimal`, `bold`, `animated`, `gradient` |
+| Technology | `tailwind`, `bootstrap`, `vanilla-css` |
+| Content type | `blog`, `portfolio`, `directory`, `landing` |
+| Capability | `search`, `pagination`, `contact-form`, `map` |
+| Status | `starter`, `production-ready`, `experimental` |
 
 ---
 

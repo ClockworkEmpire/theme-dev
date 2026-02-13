@@ -5,6 +5,7 @@
   "subcategory": "starter",
   "description": "A minimal starter theme with articles and company listings",
   "author": "Site Swarm",
+  "tags": ["starter", "responsive", "multi-page"],
 
   "datasets": {
     "articles": {

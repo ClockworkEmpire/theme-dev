@@ -98,14 +98,17 @@ The `siteswarm.json` manifest declares theme metadata (note: `hostnet.json` is s
   "version": "1.0.0",
   "category": "business",
   "subcategory": "agency",
+  "tags": ["responsive", "dark-mode", "tailwind"],
   "description": "Theme description",
   "author": "Your Name"
 }
 ```
 
-Categories help users discover themes. Available categories: `business`, `portfolio`, `blog`, `directory`, `ecommerce`, `landing_page`, `events`, `nonprofit`, `education`, `personal`, `other`.
+**Categories** provide structured taxonomy. Available categories: `business`, `portfolio`, `blog`, `directory`, `ecommerce`, `landing_page`, `events`, `nonprofit`, `education`, `personal`, `other`. Each has predefined subcategories.
 
-See [Theme Structure - Theme Manifest](theme-structure.md#theme-manifest-siteswarmjson) for full manifest documentation.
+**Tags** provide free-form labels for theme discovery. Use lowercase with hyphens (e.g., `responsive`, `dark-mode`, `multi-page`). Up to 20 tags, 50 chars each. Applied automatically on upload.
+
+See [Theme Structure - Theme Manifest](theme-structure.md#theme-manifest-siteswarmjson) for full manifest documentation including the complete category/subcategory table and tag conventions.
 
 ---
 

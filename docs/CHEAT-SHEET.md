@@ -48,6 +48,7 @@ theme/
   "version": "1.0.0",
   "category": "business",
   "subcategory": "agency",
+  "tags": ["responsive", "dark-mode", "tailwind"],
   "description": "Theme description",
   "author": "Your Name",
   "datasets": { }
@@ -55,6 +56,8 @@ theme/
 ```
 
 ### Categories
+
+Structured taxonomy for organizing themes. Applied automatically on upload.
 
 | Category | Subcategories |
 |----------|---------------|
@@ -69,6 +72,16 @@ theme/
 | `education` | school, course, university, training |
 | `personal` | resume, vcard, social, hobby |
 | `other` | miscellaneous, multipurpose, starter, experimental |
+
+### Tags
+
+Free-form labels for theme discovery. Lowercase, hyphens, numbers only. Max 20 tags, 50 chars each.
+
+```json
+"tags": ["responsive", "dark-mode", "multi-page", "tailwind", "animated"]
+```
+
+Spaces/underscores auto-convert to hyphens. Tags are editable from the dashboard after upload.
 
 ---
 
