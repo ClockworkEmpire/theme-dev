@@ -187,7 +187,7 @@ Fixes applied:
   - Fixed field 'config' in 'products': 'object' → 'json'
 ```
 
-See [Theme Structure: Field Types Reference](./theme-structure.md#field-types-reference) for the complete list of valid types.
+See [Cheat Sheet: Dataset Field Types](../cheat-sheet.md#dataset-field-types) for the complete list of valid types.
 
 ---
 
@@ -437,13 +437,12 @@ Warnings:
   - Post 'advanced-tips' references unknown author 'guest-author'
 ```
 
-See [Sample Content](./sample-content.md) for file format documentation.
+See [Sample Content](./sample-content.md) for file format documentation (in the same tools/ directory).
 
 ---
 
 ## See Also
 
-- [Schema Reference](./schemas.md) - Full schema file format
-- [Settings Types](./settings-types.md) - All available setting types
-- [Theme Structure](./theme-structure.md) - Directory layout
+- [Components](../components.md) - Schema reference and setting types
+- [README](../README.md) - Theme structure and key concepts
 - [Sample Content](./sample-content.md) - First-class content for themes

@@ -655,12 +655,7 @@ Renders a section from the `sections/` directory with its settings applied.
 {% section 'footer' %}
 ```
 
-The section tag:
-1. Loads the section file (e.g., `sections/header.liquid`)
-2. Parses the `{% schema %}` block for default settings
-3. Merges site-specific settings with defaults
-4. Makes `section.settings` available in the template
-5. Renders the section content
+The section tag loads the section file, merges its schema defaults with site-specific settings, and renders the content with `section.settings` available.
 
 ### swarm_render
 
@@ -740,7 +735,7 @@ Defines configurable settings for a section. Renders nothing - it's metadata onl
 }
 ```
 
-See [Settings Schema](settings-schema.md) for full schema documentation.
+See [Components](components.md) for full schema documentation.
 
 ### routes
 
@@ -777,9 +772,7 @@ Parameters are available both as top-level variables and via the `route_params` 
 <h2>{{ company.name }}</h2>
 ```
 
-**Example use cases:**
-
-Location-based filtering:
+**Example — location-based filtering:**
 ```liquid
 {% routes %}
 /properties/:city/:neighborhood
@@ -790,31 +783,7 @@ Location-based filtering:
 {% assign results = datasets.properties | where: 'city', city %}
 ```
 
-Category pages:
-```liquid
-{% routes %}
-/products/:category/:subcategory
-/products/:category
-{% endroutes %}
-
-{% for product in datasets.products %}
-  {% if product.category == category %}
-    {% swarm_render 'product-card', product: product %}
-  {% endif %}
-{% endfor %}
-```
-
-**How routing priority works:**
-
-1. Exact template match (e.g., `/about` → `templates/about.liquid`)
-2. Parameterized route patterns (sorted by specificity)
-3. Dataset mount points (e.g., `/blog/my-post`)
-4. 404 page
-
-Specificity is calculated by:
-- Number of segments (more = higher priority)
-- Static vs dynamic segments (static segments score higher)
-- Position (earlier segments weighted more)
+**Specificity:** Routes with more segments and more static parts are matched first. See [Content and Routing](content-and-routing.md) for the full URL resolution algorithm.
 
 ### dropin
 
@@ -1164,305 +1133,127 @@ Output:
 
 ## Standard Liquid Tags
 
+Site Swarm uses standard [Liquid](https://shopify.github.io/liquid/) syntax. Quick reference below; see the [Cheat Sheet](cheat-sheet.md) for more examples.
+
 ### Control Flow
 
-**if / elsif / else**
 ```liquid
 {% if article.featured %}
-  <span class="badge">Featured</span>
+  <span>Featured</span>
 {% elsif article.new %}
-  <span class="badge">New</span>
+  <span>New</span>
 {% else %}
-  <!-- Regular article -->
+  <!-- Regular -->
 {% endif %}
-```
 
-**unless** (inverse of if)
-```liquid
-{% unless article.draft %}
-  <!-- Show published content -->
-{% endunless %}
-```
+{% unless article.draft %}...{% endunless %}
 
-**case / when**
-```liquid
 {% case article.category %}
-  {% when 'news' %}
-    <span class="tag tag-news">News</span>
-  {% when 'tutorial' %}
-    <span class="tag tag-tutorial">Tutorial</span>
-  {% else %}
-    <span class="tag">{{ article.category }}</span>
+  {% when 'news' %}News
+  {% when 'tutorial' %}Tutorial
+  {% else %}{{ article.category }}
 {% endcase %}
 ```
 
 ### Iteration
 
-**for loop**
 ```liquid
 {% for article in collection %}
-  <article>
-    <h2>{{ article.title }}</h2>
-  </article>
-{% endfor %}
-```
-
-**for with else** (empty collection)
-```liquid
-{% for article in collection %}
-  {% swarm_render 'article-card', article: article %}
+  {{ article.title }}
 {% else %}
   <p>No articles found.</p>
 {% endfor %}
+
+{% for article in datasets.articles limit: 3 offset: 2 %}...{% endfor %}
+{% for article in collection reversed %}...{% endfor %}
 ```
 
-**for with limit and offset**
-```liquid
-{% for article in datasets.articles limit: 3 %}
-  <!-- First 3 articles -->
-{% endfor %}
+**forloop properties:** `index` (1-based), `index0` (0-based), `first`, `last`, `length`, `rindex`
 
-{% for article in datasets.articles limit: 5 offset: 3 %}
-  <!-- Articles 4-8 -->
-{% endfor %}
-```
-
-**for reversed**
-```liquid
-{% for article in collection reversed %}
-  <!-- Oldest first -->
-{% endfor %}
-```
-
-**forloop object**
-```liquid
-{% for article in collection %}
-  {{ forloop.index }}      <!-- 1, 2, 3... -->
-  {{ forloop.index0 }}     <!-- 0, 1, 2... -->
-  {{ forloop.first }}      <!-- true on first iteration -->
-  {{ forloop.last }}       <!-- true on last iteration -->
-  {{ forloop.length }}     <!-- total items -->
-  {{ forloop.rindex }}     <!-- reverse index (3, 2, 1) -->
-{% endfor %}
-```
-
-**break and continue**
-```liquid
-{% for article in collection %}
-  {% if article.draft %}
-    {% continue %}
-  {% endif %}
-  {% if forloop.index > 10 %}
-    {% break %}
-  {% endif %}
-  {{ article.title }}
-{% endfor %}
-```
+**Flow control:** `{% break %}` to exit loop, `{% continue %}` to skip iteration.
 
 ### Variables
 
-**assign**
 ```liquid
-{% assign featured_articles = datasets.articles | where: 'featured', true %}
-{% assign page_title = article.title | append: ' | ' | append: site.name %}
+{% assign featured = datasets.articles | where: 'featured', true %}
+{% capture name %}{{ first }} {{ last }}{% endcapture %}
+{% comment %}Not rendered{% endcomment %}
+{% raw %}This {{ is not }} processed{% endraw %}
 ```
 
-**capture**
-```liquid
-{% capture full_name %}{{ author.first_name }} {{ author.last_name }}{% endcapture %}
-<p>By {{ full_name }}</p>
-```
-
-**assign_global** (Site Swarm extension)
-
-Sets a variable that's accessible in the parent layout. Use this in templates to pass data (like page titles) up to the layout.
+**assign_global** (Site Swarm extension) — sets a variable accessible in the parent layout:
 
 ```liquid
-<!-- templates/tree-removal.liquid -->
 {% assign_global page_title = "Tree Removal - Box Tree Care" %}
-{% assign_global page_description = "Professional tree removal services..." %}
-
-<!-- Rest of template content -->
-{% section 'hero' %}
 ```
 
-The layout can then reference these values:
-
-```liquid
-<!-- layout/theme.liquid -->
-<title>{{ page_title | default: site.name }}</title>
-<meta name="description" content="{{ page_description | default: settings.tagline }}">
-<meta property="og:title" content="{{ page_title | default: site.name }}">
-```
-
-**Important:** Regular `assign` variables are scoped to the current template and are NOT accessible in the layout. Use `assign_global` when you need the layout to see the value.
-
-### Output Control
-
-**comment**
-```liquid
-{% comment %}
-  This content won't be rendered.
-  Use for documentation or temporarily disabling code.
-{% endcomment %}
-```
-
-**raw** (escape Liquid)
-```liquid
-{% raw %}
-  This {{ will not }} be processed as Liquid.
-{% endraw %}
-```
+**Important:** Regular `assign` variables are template-scoped and NOT accessible in the layout. Use `assign_global` for page titles, descriptions, and other layout-level data.
 
 ---
 
 ## Standard Liquid Filters
 
-### String Filters
+Standard Liquid filters are fully supported. See the [Cheat Sheet](cheat-sheet.md) for commonly used filters, or the [Liquid docs](https://shopify.github.io/liquid/filters/) for the complete list.
 
-| Filter | Input | Output |
-|--------|-------|--------|
-| `upcase` | `{{ 'hello' \| upcase }}` | `HELLO` |
-| `downcase` | `{{ 'HELLO' \| downcase }}` | `hello` |
-| `capitalize` | `{{ 'hello world' \| capitalize }}` | `Hello world` |
-| `strip` | `{{ '  hello  ' \| strip }}` | `hello` |
-| `lstrip` | `{{ '  hello' \| lstrip }}` | `hello` |
-| `rstrip` | `{{ 'hello  ' \| rstrip }}` | `hello` |
-| `truncate` | `{{ 'hello world' \| truncate: 8 }}` | `hello...` |
-| `append` | `{{ 'hello' \| append: ' world' }}` | `hello world` |
-| `prepend` | `{{ 'world' \| prepend: 'hello ' }}` | `hello world` |
-| `replace` | `{{ 'hello' \| replace: 'l', 'L' }}` | `heLLo` |
-| `replace_first` | `{{ 'hello' \| replace_first: 'l', 'L' }}` | `heLlo` |
-| `remove` | `{{ 'hello' \| remove: 'l' }}` | `heo` |
-| `remove_first` | `{{ 'hello' \| remove_first: 'l' }}` | `helo` |
-| `split` | `{{ 'a,b,c' \| split: ',' }}` | Array: `['a','b','c']` |
-| `strip_html` | `{{ '<p>hi</p>' \| strip_html }}` | `hi` |
-| `strip_newlines` | Removes newlines | |
-| `newline_to_br` | Converts `\n` to `<br>` | |
-| `escape` | HTML-escapes | |
-| `url_encode` | URL-encodes | |
+### Most Used
 
-### Array Filters
+```liquid
+{{ string | upcase }}                            <!-- HELLO -->
+{{ string | downcase }}                          <!-- hello -->
+{{ string | capitalize }}                        <!-- Hello world -->
+{{ string | strip }}                             <!-- trim whitespace -->
+{{ string | truncate: 100 }}                     <!-- Truncate characters -->
+{{ string | replace: 'old', 'new' }}             <!-- Replace text -->
+{{ string | split: ',' }}                        <!-- String to array -->
+{{ '<p>hi</p>' | strip_html }}                   <!-- hi -->
+```
 
-| Filter | Description |
-|--------|-------------|
-| `first` | First element |
-| `last` | Last element |
-| `size` | Number of elements |
-| `join` | Join with separator |
-| `reverse` | Reverse order |
-| `sort` | Sort alphabetically |
-| `sort_natural` | Case-insensitive sort |
-| `uniq` | Remove duplicates |
-| `compact` | Remove nil values |
-| `concat` | Combine arrays |
-| `map` | Extract property from objects |
-| `where` | Filter by property |
+### Arrays
 
 ```liquid
 {{ collection | size }}                          <!-- 10 -->
 {{ collection | first }}                         <!-- First item -->
-{{ collection | map: 'title' | join: ', ' }}    <!-- Title 1, Title 2, Title 3 -->
-{{ collection | where: 'featured', true }}      <!-- Filtered array -->
-{{ collection | sort: 'date' | reverse }}       <!-- Sorted, newest first -->
+{{ collection | map: 'title' | join: ', ' }}     <!-- Title 1, Title 2 -->
+{{ collection | where: 'featured', true }}       <!-- Filtered array -->
+{{ collection | sort: 'date' | reverse }}        <!-- Sorted, newest first -->
 ```
 
-### Math Filters
+Other array filters: `last`, `uniq`, `compact`, `concat`, `sort_natural`
 
-| Filter | Example | Output |
-|--------|---------|--------|
-| `plus` | `{{ 4 \| plus: 2 }}` | `6` |
-| `minus` | `{{ 4 \| minus: 2 }}` | `2` |
-| `times` | `{{ 4 \| times: 2 }}` | `8` |
-| `divided_by` | `{{ 10 \| divided_by: 3 }}` | `3` |
-| `modulo` | `{{ 10 \| modulo: 3 }}` | `1` |
-| `floor` | `{{ 4.7 \| floor }}` | `4` |
-| `ceil` | `{{ 4.2 \| ceil }}` | `5` |
-| `round` | `{{ 4.5 \| round }}` | `5` |
-| `abs` | `{{ -5 \| abs }}` | `5` |
+### Math
 
-### Other Filters
+```liquid
+{{ 4 | plus: 2 }}        <!-- 6 -->
+{{ 4 | minus: 2 }}       <!-- 2 -->
+{{ 4 | times: 2 }}       <!-- 8 -->
+{{ 10 | divided_by: 3 }} <!-- 3 -->
+{{ 10 | modulo: 3 }}     <!-- 1 -->
+{{ 4.7 | floor }}        <!-- 4 -->
+{{ 4.2 | ceil }}         <!-- 5 -->
+```
 
-| Filter | Description | Example |
-|--------|-------------|---------|
-| `default` | Fallback value | `{{ title \| default: 'Untitled' }}` |
-| `json` | Convert to JSON | `{{ object \| json }}` |
+### Other
+
+```liquid
+{{ title | default: 'Untitled' }}    <!-- Fallback value -->
+{{ object | json }}                  <!-- Convert to JSON -->
 
 ---
 
-## Operators
+## Operators and Truthiness
 
-### Comparison
+**Comparison:** `==`, `!=`, `>`, `<`, `>=`, `<=`
 
-| Operator | Description |
-|----------|-------------|
-| `==` | Equal |
-| `!=` | Not equal |
-| `>` | Greater than |
-| `<` | Less than |
-| `>=` | Greater or equal |
-| `<=` | Less or equal |
+**Logical:** `and`, `or`, `contains`
 
 ```liquid
-{% if article.views > 1000 %}
-  <span>Popular</span>
-{% endif %}
+{% if article.featured and article.published %}...{% endif %}
+{% if article.title contains 'Guide' %}...{% endif %}
 ```
 
-### Logical
+**Falsy values:** `false`, `nil`/`null`, empty string `""`
 
-| Operator | Description |
-|----------|-------------|
-| `and` | Both true |
-| `or` | Either true |
-
-```liquid
-{% if article.featured and article.published %}
-  <!-- Show -->
-{% endif %}
-
-{% if article.category == 'news' or article.category == 'updates' %}
-  <!-- Show -->
-{% endif %}
-```
-
-### contains
-
-Check if string contains substring or array contains element:
-
-```liquid
-{% if article.title contains 'Guide' %}
-  <span class="badge">Guide</span>
-{% endif %}
-
-{% if article.tags contains 'featured' %}
-  <!-- Featured article -->
-{% endif %}
-```
-
----
-
-## Truthy and Falsy
-
-In Liquid, these values are **falsy** (evaluate to false):
-- `false`
-- `nil` / `null`
-- Empty string `""`
-
-Everything else is **truthy**, including:
-- `0` (zero)
-- Empty array `[]`
-- Empty object `{}`
-
-```liquid
-{% if article.image %}
-  <!-- Runs if image exists and is not empty string -->
-{% endif %}
-
-{% if collection.size > 0 %}
-  <!-- More explicit check for non-empty collection -->
-{% endif %}
-```
+**Everything else is truthy**, including `0`, `[]`, and `{}`.
 
 ---
 

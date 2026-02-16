@@ -56,9 +56,10 @@ This opens the Theme Editor at Site Swarm with your local files.
 ## Documentation
 
 - [Getting Started](docs/getting-started.md)
-- [Theme Structure](docs/theme-structure.md)
+- [Components](docs/components.md)
+- [Content and Routing](docs/content-and-routing.md)
 - [Liquid Reference](docs/liquid-reference.md)
-- [Local Development](docs/local-development.md)
+- [Cheat Sheet](docs/cheat-sheet.md)
 
 ## Starter Themes
 

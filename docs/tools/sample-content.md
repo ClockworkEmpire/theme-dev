@@ -336,7 +336,7 @@ Pages in `pages.json` are also routable by slug. Visiting `/about` renders the p
 - `/about` → renders `page_templates/page.liquid` with the page record as `{{ page }}`
 - Page record settings are merged with the page_template's schema defaults
 
-This means multiple pages (about, contact, faqs) can share a single `page_templates/page.liquid` template — the most common pattern. See [Page Templates](page-templates.md) for full details.
+This means multiple pages (about, contact, faqs) can share a single `page_templates/page.liquid` template — the most common pattern. See [Content and Routing](../content-and-routing.md) for full details.
 
 ---
 
@@ -428,6 +428,6 @@ Before releasing your theme:
 
 ## See Also
 
-- [Theme Structure](./theme-structure.md) - Directory layout and datasets
+- [README](../README.md) - Theme structure and key concepts
 - [Linting](./linting.md) - Validation and auto-fix
-- [Page Templates](./page-templates.md) - Creating structured pages
+- [Content and Routing](../content-and-routing.md) - Templates, page templates, datasets

@@ -34,6 +34,7 @@ Create a new folder for your theme:
 my-theme/
 ├── layout/
 ├── templates/
+├── page_templates/
 ├── sections/
 ├── snippets/
 ├── assets/
@@ -386,6 +387,8 @@ my-theme.zip
 │   ├── collection.liquid
 │   ├── article.liquid
 │   └── 404.liquid
+├── page_templates/           # Optional: static pages
+│   └── about.liquid
 ├── sections/
 │   ├── header.liquid
 │   └── footer.liquid
@@ -397,9 +400,11 @@ my-theme.zip
 └── config/
     ├── settings_schema.json
     ├── settings_data.json
-    └── sections/
-        ├── header.json
-        └── footer.json
+    ├── sections/
+    │   ├── header.json
+    │   └── footer.json
+    └── page_templates/       # Optional: page template schemas
+        └── about.json
 ```
 
 Upload the ZIP through the Site Swarm dashboard:
@@ -415,11 +420,10 @@ Upload the ZIP through the Site Swarm dashboard:
 
 Now that you have a working theme:
 
-1. **[Theme Structure](theme-structure.md)** - Learn about all theme directories
-2. **[Liquid Reference](liquid-reference.md)** - Master the templating language
-3. **[Sections and Snippets](sections-and-snippets.md)** - Build reusable components
-4. **[Settings Schema](settings-schema.md)** - Add customizable options
-5. **[Datasets and Routing](datasets-and-routing.md)** - Work with dynamic content
+1. **[Components](components.md)** - Sections, snippets, blocks, drop-ins, and settings
+2. **[Content and Routing](content-and-routing.md)** - Templates, page templates, datasets, URL routing
+3. **[Liquid Reference](liquid-reference.md)** - Complete templating language reference
+4. **[Cheat Sheet](cheat-sheet.md)** - Quick reference card
 
 ---
 

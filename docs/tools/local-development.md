@@ -433,7 +433,7 @@ Pages defined in `data/content/pages.json` are routed to their assigned page tem
 - `/about` → renders `page_templates/page.liquid` with the "About Us" page record
 - `/contact` → renders `page_templates/page.liquid` with the "Contact" page record
 
-This is the most common pattern: multiple pages sharing a single page_template. See [Page Templates](page-templates.md) for details.
+This is the most common pattern: multiple pages sharing a single page_template. See [Content and Routing](../content-and-routing.md) for details.
 
 ---
 
@@ -506,3 +506,82 @@ gem install siteswarm-theme-dev
 
 ---
 
+## For Site Swarm Developers: Monorepo Workflow
+
+When working on themes inside the Site Swarm monorepo, you have additional features:
+
+### Theme Directory Structure
+
+Themes are symlinked into a root `themes/` directory for easy access:
+
+```
+hostnet/
+├── themes/                          # Edit themes here
+│   ├── blank -> ../lib/theme_dev_server/starters/blank
+│   └── minimal -> ../lib/theme_dev_server/starters/minimal
+├── lib/theme_dev_server/starters/   # Source of truth
+│   ├── blank/
+│   └── minimal/
+```
+
+### Development Workflow
+
+1. **Edit themes in `themes/`**:
+   ```bash
+   cd themes/minimal
+   # Make changes to templates, sections, etc.
+   ```
+
+2. **Preview with dev server** (monorepo shortcuts work):
+   ```bash
+   bin/theme-dev dev minimal    # Same as: bin/theme-dev dev themes/minimal
+   ```
+
+3. **Import into Rails database**:
+   ```bash
+   bin/theme-dev import minimal                        # Creates/updates theme
+   bin/theme-dev import minimal --name "Custom Name"   # Custom theme name
+   bin/theme-dev import minimal --account acme         # Specific account
+   ```
+
+4. **Test in Rails**:
+   ```bash
+   bin/dev
+   # Visit your site using the imported theme
+   ```
+
+### The `import` Command
+
+**Monorepo only.** Imports a theme directory into the local Rails database.
+
+```bash
+bin/theme-dev import <path> [options]
+```
+
+| Option | Description |
+|--------|-------------|
+| `--name NAME` | Theme name (default: directory name) |
+| `--account ACCOUNT` | Account ID or subdomain (default: first account) |
+
+**Behavior:**
+- Creates a new theme if it doesn't exist
+- Creates a new version if the theme already exists
+- Uses `ThemeUploadService` to process files
+- Skips `data/` directory (mock data for dev server only)
+
+**Examples:**
+```bash
+bin/theme-dev import minimal
+bin/theme-dev import ./my-custom-theme
+bin/theme-dev import themes/minimal --name "Production Theme"
+bin/theme-dev import themes/blank --account my-company
+```
+
+---
+
+## See Also
+
+- [README](../README.md) - Theme structure and key concepts
+- [Liquid Reference](liquid-reference.md) - Available tags and filters
+- [Components](../components.md) - Sections, snippets, blocks, and settings
+- [Dev Server Maintenance](dev-server-maintenance.md) - Internal developer documentation

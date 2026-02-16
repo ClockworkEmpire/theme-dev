@@ -1,6 +1,6 @@
 # Site Swarm Theme Cheat Sheet
 
-Quick reference for theme development. For full documentation, see [THEME-DEVELOPMENT-GUIDE.md](THEME-DEVELOPMENT-GUIDE.md).
+Quick reference for theme development. For full documentation, see [README.md](README.md).
 
 ---
 
@@ -11,12 +11,15 @@ theme/
 ├── siteswarm.json            # Theme manifest (name, version, category)
 ├── layout/
 │   └── theme.liquid          # Required - base HTML wrapper
-├── templates/
+├── templates/                # Dataset rendering
 │   ├── index.liquid          # Homepage
 │   ├── page.liquid           # Generic pages
 │   ├── collection.liquid     # Dataset list pages
 │   ├── article.liquid        # Dataset item pages
 │   └── 404.liquid            # Not found page
+├── page_templates/           # Static pages with per-page settings
+│   ├── about.liquid
+│   └── service.liquid
 ├── sections/
 │   ├── header.liquid         # Reusable sections (schema in config/)
 │   └── footer.liquid
@@ -31,9 +34,11 @@ theme/
 └── config/
     ├── settings_schema.json  # Theme settings definition
     ├── settings_data.json    # Default values
-    └── sections/             # Section schemas (sidecar pattern)
-        ├── header.json
-        └── footer.json
+    ├── sections/             # Section schemas (sidecar pattern)
+    │   ├── header.json
+    │   └── footer.json
+    └── page_templates/       # Page template schemas
+        └── about.json
 ```
 
 **Required file:** `layout/theme.liquid`
@@ -97,6 +102,7 @@ Spaces/underscores auto-convert to hyphens. Tags are editable from the dashboard
 | `collection` | Records (list pages) | `{% for item in collection %}` |
 | `pagination` | Page info (list pages) | `{{ pagination.current_page }}` |
 | `mount` | Dataset mount info | `{{ mount.alias }}` |
+| `page` | Page record (page templates) | `{{ page.title }}` |
 | `route_params` | URL params (parameterized routes) | `{{ route_params.city }}` |
 | `content_for_layout` | Page content (layouts) | `{{ content_for_layout }}` |
 | `section` | Section context | `{{ section.settings.title }}` |
@@ -339,10 +345,12 @@ Run `swarm lint --fix` to auto-correct invalid types.
 Priority order:
 
 1. **Template match:** `/about` → `templates/about.liquid`
-2. **Parameterized routes:** `/companies/seattle/wa/acme` → template with matching `{% routes %}`
-3. **Dataset list:** `/blog` → `templates/collection.liquid`
-4. **Dataset item:** `/blog/my-post` → `templates/article.liquid`
-5. **404:** `templates/404.liquid`
+2. **Page by slug:** `/plumbing` → Page record → `page_templates/service.liquid`
+3. **Implicit page template:** `/contact` → `page_templates/contact.liquid` (no Page record)
+4. **Parameterized routes:** `/companies/seattle/wa/acme` → template with matching `{% routes %}`
+5. **Dataset list:** `/blog` → `templates/collection.liquid`
+6. **Dataset item:** `/blog/my-post` → `templates/article.liquid`
+7. **404:** `templates/404.liquid`
 
 ---
 
@@ -491,7 +499,7 @@ Sections use **sidecar schemas** - a separate JSON file in `config/sections/` in
 }
 ```
 
-See [Sections, Snippets & Blocks](sections-and-snippets.md#section-blocks) for full documentation.
+See [Components](components.md) for full documentation on sections, snippets, and blocks.
 
 ### Block Data in settings_data.json
 
@@ -692,6 +700,7 @@ Sections with blocks need corresponding data in `config/settings_data.json`:
 |-----------|--------|---------|
 | `layout/` | `*.liquid` | `theme.liquid` |
 | `templates/` | `*.liquid` | `article.liquid`, `collection.liquid` |
+| `page_templates/` | `*.liquid` | `about.liquid`, `service.liquid` |
 | `sections/` | `*.liquid` | `hero.liquid`, `header.liquid` |
 | `snippets/` | `*.liquid` | `card.liquid`, `pagination.liquid` |
 | `assets/` | Any | `theme.css`, `app.js`, `logo.png` |
