@@ -527,12 +527,14 @@ Available on dataset list pages (e.g., `/blog`). Contains the paginated array of
 
 ### pagination
 
-Available on dataset list pages. Contains pagination metadata.
+Available on dataset list pages (auto-supplied by the controller) and inside `{% paginate %}` blocks. Contains pagination metadata.
 
 | Property | Type | Description |
 |----------|------|-------------|
 | `pagination.current_page` | Integer | Current page number (1-indexed) |
 | `pagination.total_pages` | Integer | Total number of pages |
+| `pagination.total_count` | Integer | Total number of records |
+| `pagination.per_page` | Integer | Records per page |
 | `pagination.next_url` | String/nil | URL to next page, or nil |
 | `pagination.prev_url` | String/nil | URL to previous page, or nil |
 
@@ -551,6 +553,53 @@ Available on dataset list pages. Contains pagination metadata.
   </nav>
 {% endif %}
 ```
+
+### {% paginate %} tag
+
+Universal pagination block tag that works with any collection in any template. Use this when you need pagination outside of mounted dataset collection pages (e.g., parameterized routes, templates using `datasets.*` globals).
+
+**Syntax:** `{% paginate <collection> by <number> [as <variable>] %}`
+
+The tag reads the current page from `?page=N` query parameter. For dataset proxies, it uses efficient DB offset/limit queries. For arrays (e.g., results of `| where:` filters), it slices in memory.
+
+```liquid
+{% paginate datasets.businesses by 12 %}
+  {% for business in paginate.collection %}
+    <h2>{{ business.name }}</h2>
+  {% endfor %}
+
+  {% if pagination.total_pages > 1 %}
+    <nav>
+      {% if pagination.prev_url %}<a href="{{ pagination.prev_url }}">← Prev</a>{% endif %}
+      <span>Page {{ pagination.current_page }} of {{ pagination.total_pages }}</span>
+      {% if pagination.next_url %}<a href="{{ pagination.next_url }}">Next →</a>{% endif %}
+    </nav>
+  {% endif %}
+{% endpaginate %}
+```
+
+**With `as` alias** for cleaner variable names:
+
+```liquid
+{% paginate datasets.articles by 10 as articles %}
+  {% for article in articles %}
+    <h2>{{ article.title }}</h2>
+  {% endfor %}
+{% endpaginate %}
+```
+
+Inside the block, two objects are available:
+
+| Object | Description |
+|--------|-------------|
+| `paginate.collection` | The current page's items |
+| `paginate.current_page` | Current page number |
+| `paginate.total_pages` | Total pages |
+| `paginate.total_count` | Total items across all pages |
+| `paginate.per_page` | Items per page |
+| `paginate.prev_url` | Previous page URL (nil on page 1) |
+| `paginate.next_url` | Next page URL (nil on last page) |
+| `pagination.*` | Same fields as `paginate` (backward compat) |
 
 ### dataset
 

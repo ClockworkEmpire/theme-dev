@@ -259,6 +259,15 @@ Create `snippets/pagination.liquid`:
 </nav>
 ```
 
+**Tip:** This snippet also works inside `{% paginate %}` blocks for paginating any collection:
+
+```liquid
+{% paginate datasets.articles by 10 as articles %}
+  {% for article in articles %}...{% endfor %}
+  {% swarm_render 'pagination' %}
+{% endpaginate %}
+```
+
 ---
 
 ## Step 9: Create the Article Template

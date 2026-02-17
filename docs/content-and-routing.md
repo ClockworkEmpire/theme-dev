@@ -265,6 +265,8 @@ Collection pages display paginated lists of dataset records. Use `templates/coll
 |----------|------|-------------|
 | `pagination.current_page` | Integer | Current page (1-indexed) |
 | `pagination.total_pages` | Integer | Total pages |
+| `pagination.total_count` | Integer | Total records across all pages |
+| `pagination.per_page` | Integer | Records per page |
 | `pagination.prev_url` | String/nil | Previous page URL |
 | `pagination.next_url` | String/nil | Next page URL |
 
@@ -569,6 +571,39 @@ When multiple patterns could match a URL, the most specific pattern wins:
 {% endfor %}
 ```
 
+### Adding Pagination with `{% paginate %}`
+
+Parameterized routes don't get automatic pagination like mounted collection pages do. Use the `{% paginate %}` block tag to add pagination to any template:
+
+```liquid
+{% routes %}
+/businesses/:city
+{% endroutes %}
+
+<h1>Businesses in {{ city | capitalize }}</h1>
+
+{% paginate datasets.businesses by 12 as businesses %}
+  {% for business in businesses %}
+    {% if business.city == city %}
+      {% swarm_render 'business-card', business: business %}
+    {% endif %}
+  {% endfor %}
+  {% swarm_render 'pagination' %}
+{% endpaginate %}
+```
+
+**Syntax:** `{% paginate <collection> by <number> [as <variable>] %}`
+
+The tag reads the current page from the `?page=N` query parameter automatically. Inside the block:
+
+- `paginate.collection` — the current page's items
+- `pagination.*` — same pagination object used by mounted collection pages (`current_page`, `total_pages`, `total_count`, `per_page`, `prev_url`, `next_url`)
+- Optional `as` alias provides a named variable for cleaner `{% for %}` loops
+
+For dataset proxies (`datasets.*`), the tag uses efficient database offset/limit queries. For arrays (e.g., results of `| where:` filters), it slices in memory.
+
+**Tip:** Create a reusable `snippets/pagination.liquid` — it works identically inside `{% paginate %}` blocks and on mounted collection pages since the `pagination` object has the same shape.
+
 ### When to Use Parameterized Routes vs Dataset Mounts
 
 | Use Case | Solution |
@@ -579,7 +614,7 @@ When multiple patterns could match a URL, the most specific pattern wins:
 | Simple record detail pages | Dataset mount item pages |
 | Complex multi-segment URLs | Parameterized routes |
 
-**Key difference:** Dataset mounts automatically handle list/item pages with pagination. Parameterized routes give you full control but require manual data fetching.
+**Key difference:** Dataset mounts automatically handle list/item pages with pagination. Parameterized routes give you full control but require manual data fetching. Use `{% paginate %}` to add pagination to parameterized routes or any template using `datasets.*`.
 
 ---
 

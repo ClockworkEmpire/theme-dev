@@ -1191,6 +1191,8 @@ A flexible card snippet that handles multiple content types:
 
 ### Pagination Component
 
+Works on mounted collection pages (where `pagination` is auto-supplied) **and** inside `{% paginate %}` blocks — the `pagination` object has the same shape in both contexts.
+
 ```liquid
 <!-- snippets/pagination.liquid -->
 {% if pagination.total_pages > 1 %}
@@ -1203,6 +1205,7 @@ A flexible card snippet that handles multiple content types:
 
     <span class="pagination-info">
       Page {{ pagination.current_page }} of {{ pagination.total_pages }}
+      ({{ pagination.total_count }} total)
     </span>
 
     {% if pagination.next_url %}
@@ -1212,6 +1215,17 @@ A flexible card snippet that handles multiple content types:
     {% endif %}
   </nav>
 {% endif %}
+```
+
+**Using with `{% paginate %}` tag:**
+
+```liquid
+{% paginate datasets.articles by 10 as articles %}
+  {% for article in articles %}
+    {% swarm_render 'article-card', article: article %}
+  {% endfor %}
+  {% swarm_render 'pagination' %}
+{% endpaginate %}
 ```
 
 ---

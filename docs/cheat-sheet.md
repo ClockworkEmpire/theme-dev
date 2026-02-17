@@ -100,7 +100,8 @@ Spaces/underscores auto-convert to hyphens. Tags are editable from the dashboard
 | `request` | Current request | `{{ request.path }}` |
 | `datasets` | Mounted datasets | `{% for p in datasets.posts %}` |
 | `collection` | Records (list pages) | `{% for item in collection %}` |
-| `pagination` | Page info (list pages) | `{{ pagination.current_page }}` |
+| `pagination` | Page info (list pages & `{% paginate %}`) | `{{ pagination.current_page }}` |
+| `paginate` | Paginate block object | `{% for item in paginate.collection %}` |
 | `mount` | Dataset mount info | `{{ mount.alias }}` |
 | `page` | Page record (page templates) | `{{ page.title }}` |
 | `route_params` | URL params (parameterized routes) | `{{ route_params.city }}` |
@@ -133,9 +134,11 @@ Spaces/underscores auto-convert to hyphens. Tags are editable from the dashboard
 {{ request.host }}
 {{ request.method }}
 
-# pagination
+# pagination (available on list pages and inside {% paginate %} blocks)
 {{ pagination.current_page }}
 {{ pagination.total_pages }}
+{{ pagination.total_count }}
+{{ pagination.per_page }}
 {{ pagination.next_url }}
 {{ pagination.prev_url }}
 
@@ -436,6 +439,29 @@ The layout's `<title>` tag references this with a fallback:
   {% endif %}
 </nav>
 ```
+
+### Paginate Tag (Universal Pagination)
+
+Use `{% paginate %}` to paginate **any** collection in **any** template — not just mounted collection pages.
+
+```liquid
+{% paginate datasets.articles by 10 %}
+  {% for article in paginate.collection %}
+    {% swarm_render 'article-card', article: article %}
+  {% endfor %}
+  {% swarm_render 'pagination' %}
+{% endpaginate %}
+
+<!-- With alias for cleaner variable names -->
+{% paginate datasets.businesses by 12 as businesses %}
+  {% for business in businesses %}
+    <h2>{{ business.name }}</h2>
+  {% endfor %}
+  {% swarm_render 'pagination' %}
+{% endpaginate %}
+```
+
+Works with: `datasets.*` proxies, arrays from `| where:` filters, any iterable. The same `snippets/pagination.liquid` works inside `{% paginate %}` blocks — the `pagination` object has the same shape.
 
 ### Section with Settings
 
