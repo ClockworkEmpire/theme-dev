@@ -18,7 +18,7 @@ Templates live in `templates/` and handle both static pages and dataset renderin
 | `collection.liquid` | Dataset listing page | Mount path (e.g., `/blog`) |
 | `article.liquid` | Single dataset item | Mount path + slug (e.g., `/blog/my-post`) |
 | `404.liquid` | Not found page | Any unmatched URL |
-| `search.liquid` | Search results | `/search?q=...` |
+| `search.liquid` | Search results page | `/search?q=...` (with search context) |
 | `page.liquid` | Generic page fallback | Various |
 
 ### Template Naming Conventions
@@ -403,15 +403,16 @@ When a request comes in, URLs resolve in this order:
 
 | Priority | Match Type | Description |
 |----------|-----------|-------------|
-| 1 | **Exact template match** | `/about` matches `templates/about.liquid` |
-| 2 | **Page by slug** | Page record with slug "about" renders its linked page_template |
-| 3 | **Implicit page_template** | `page_templates/about.liquid` exists with no Page record |
-| 4 | **Blog post routes** | `/blog` (list) or `/blog/:slug` (single post) |
-| 5 | **Mounted dataset routes** | Collection at mount_path, item at mount_path + slug |
-| 6 | **Parameterized routes** | Templates with `{% routes %}` patterns, matched by specificity |
-| 7 | **Fallthrough dataset slugs** | Root-level slug match against datasets without mount_path |
-| 8 | **Static pages (rich text)** | Page record with no page_template (plain content) |
-| 9 | **404 fallback** | `templates/404.liquid` |
+| 1 | **Search** | `/search?q=hello` renders `templates/search.liquid` with search context |
+| 2 | **Exact template match** | `/about` matches `templates/about.liquid` |
+| 3 | **Page by slug** | Page record with slug "about" renders its linked page_template |
+| 4 | **Implicit page_template** | `page_templates/about.liquid` exists with no Page record |
+| 5 | **Blog post routes** | `/blog` (list) or `/blog/:slug` (single post) |
+| 6 | **Mounted dataset routes** | Collection at mount_path, item at mount_path + slug |
+| 7 | **Parameterized routes** | Templates with `{% routes %}` patterns, matched by specificity |
+| 8 | **Fallthrough dataset slugs** | Root-level slug match against datasets without mount_path |
+| 9 | **Static pages (rich text)** | Page record with no page_template (plain content) |
+| 10 | **404 fallback** | `templates/404.liquid` |
 
 Templates always take precedence. This means you can override any URL by creating a matching template file.
 
@@ -699,19 +700,46 @@ For templates using `{% routes %}`, construct URLs manually:
 
 ## Search
 
-Search is a special template that receives query results:
+Search is a special route that intercepts `/search?q=...` before normal template matching, rendering `templates/search.liquid` with search context.
 
 ```
-GET /search?q=hello  -->  templates/search.liquid
+GET /search?q=hello  -->  templates/search.liquid (with search context)
+GET /search          -->  templates/search.liquid (regular template, no search context)
 ```
 
 **Available variables:**
 
-| Variable | Description |
-|----------|-------------|
-| `search.query` | The search query string |
-| `search.results` | Matching records across searchable datasets |
-| `search.total` | Total number of matches |
+| Variable | Type | Description |
+|----------|------|-------------|
+| `search.query` | String | The search query string |
+| `search.results` | Array | Matching records (paginated, 10 per page) |
+| `search.total` | Integer | Total number of matches |
+| `pagination.*` | Object | Standard pagination (same shape as collection pages) |
+
+**Result metadata:** Each result includes `_item_url`, `_dataset_alias`, and `_mount_path` for linking and display.
+
+**Basic example:**
+
+```liquid
+<!-- templates/search.liquid -->
+<form action="/search" method="get">
+  <input type="text" name="q" value="{{ search.query }}" placeholder="Search...">
+  <button type="submit">Search</button>
+</form>
+
+{% for result in search.results %}
+  <h3><a href="{{ result._item_url }}">{{ result.title | default: result.name }}</a></h3>
+  <p>{{ result.excerpt | default: result.body | truncate_words: 30 }}</p>
+{% else %}
+  <p>No results found.</p>
+{% endfor %}
+
+{% if pagination.total_pages > 1 %}
+  {% swarm_render 'pagination' %}
+{% endif %}
+```
+
+**Full guide:** [Search](search.md) covers forms, styling, empty states, dev server vs production differences, and best practices.
 
 ---
 

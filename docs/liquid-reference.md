@@ -264,6 +264,7 @@ Current HTTP request information.
 | `request.path` | String | URL path (e.g., `/blog/my-post`) |
 | `request.host` | String | Hostname |
 | `request.method` | String | HTTP method (GET, POST, etc.) |
+| `request.query` | String/nil | Search query string (value of `?q=` parameter) |
 
 ```liquid
 {% if request.path == '/' %}
@@ -512,6 +513,40 @@ Available when viewing `/tags/:tag` URLs. Contains the current tag being filtere
   {% swarm_render 'post-card', post: post %}
 {% endfor %}
 ```
+
+### search (contextual)
+
+Available in `templates/search.liquid` when a search query is active (`/search?q=...`). Contains search results and metadata.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `search.query` | String | The search query string |
+| `search.results` | Array | Matching records for the current page |
+| `search.total` | Integer | Total number of matches across all datasets |
+
+Each result in `search.results` is a dataset record with additional metadata:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `result._item_url` | String | URL path to the record (e.g., `/articles/hello-world`) |
+| `result._dataset_alias` | String | Dataset alias (e.g., `articles`) |
+| `result._mount_path` | String | Dataset mount path (e.g., `/articles`) |
+
+Standard `pagination` is also available on search pages (same shape as collection pages).
+
+```liquid
+{% for result in search.results %}
+  <article>
+    <h3><a href="{{ result._item_url }}">{{ result.title | default: result.name }}</a></h3>
+    <p>{{ result.excerpt | default: result.body | truncate_words: 30 }}</p>
+    <small>{{ result._dataset_alias | capitalize }}</small>
+  </article>
+{% else %}
+  <p>No results found for "{{ search.query }}".</p>
+{% endfor %}
+```
+
+See [Search](search.md) for the full guide including forms, styling, and best practices.
 
 ### collection
 

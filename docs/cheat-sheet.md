@@ -16,6 +16,7 @@ theme/
 │   ├── page.liquid           # Generic pages
 │   ├── collection.liquid     # Dataset list pages
 │   ├── article.liquid        # Dataset item pages
+│   ├── search.liquid         # Search results (/search?q=...)
 │   └── 404.liquid            # Not found page
 ├── page_templates/           # Static pages with per-page settings
 │   ├── about.liquid
@@ -97,7 +98,8 @@ Spaces/underscores auto-convert to hyphens. Tags are editable from the dashboard
 | `site` | Site info | `{{ site.name }}` |
 | `site.media` | Media library | `{{ site.media.logo.url }}` |
 | `settings` | Theme settings | `{{ settings.logo_text }}` |
-| `request` | Current request | `{{ request.path }}` |
+| `request` | Current request | `{{ request.path }}`, `{{ request.query }}` |
+| `search` | Search context (search page) | `{{ search.query }}`, `{{ search.results }}` |
 | `datasets` | Mounted datasets | `{% for p in datasets.posts %}` |
 | `collection` | Records (list pages) | `{% for item in collection %}` |
 | `pagination` | Page info (list pages & `{% paginate %}`) | `{{ pagination.current_page }}` |
@@ -133,6 +135,12 @@ Spaces/underscores auto-convert to hyphens. Tags are editable from the dashboard
 {{ request.path }}
 {{ request.host }}
 {{ request.method }}
+{{ request.query }}              # search query string (value of ?q=)
+
+# search (available on /search?q=...)
+{{ search.query }}               # "hello"
+{{ search.results }}             # matching records (paginated)
+{{ search.total }}               # total matches
 
 # pagination (available on list pages and inside {% paginate %} blocks)
 {{ pagination.current_page }}
@@ -347,13 +355,14 @@ Run `swarm lint --fix` to auto-correct invalid types.
 
 Priority order:
 
-1. **Template match:** `/about` → `templates/about.liquid`
-2. **Page by slug:** `/plumbing` → Page record → `page_templates/service.liquid`
-3. **Implicit page template:** `/contact` → `page_templates/contact.liquid` (no Page record)
-4. **Parameterized routes:** `/companies/seattle/wa/acme` → template with matching `{% routes %}`
-5. **Dataset list:** `/blog` → `templates/collection.liquid`
-6. **Dataset item:** `/blog/my-post` → `templates/article.liquid`
-7. **404:** `templates/404.liquid`
+1. **Search:** `/search?q=hello` → `templates/search.liquid` (with search context)
+2. **Template match:** `/about` → `templates/about.liquid`
+3. **Page by slug:** `/plumbing` → Page record → `page_templates/service.liquid`
+4. **Implicit page template:** `/contact` → `page_templates/contact.liquid` (no Page record)
+5. **Parameterized routes:** `/companies/seattle/wa/acme` → template with matching `{% routes %}`
+6. **Dataset list:** `/blog` → `templates/collection.liquid`
+7. **Dataset item:** `/blog/my-post` → `templates/article.liquid`
+8. **404:** `templates/404.liquid`
 
 ---
 
@@ -439,6 +448,33 @@ The layout's `<title>` tag references this with a fallback:
   {% endif %}
 </nav>
 ```
+
+### Search Results Page
+```liquid
+<!-- templates/search.liquid -->
+<form action="/search" method="get">
+  <input type="text" name="q" value="{{ search.query }}" placeholder="Search...">
+  <button type="submit">Search</button>
+</form>
+
+{% if search.query %}
+  <p>{{ search.total }} results for "{{ search.query }}"</p>
+  {% for result in search.results %}
+    <article>
+      <h3><a href="{{ result._item_url }}">{{ result.title | default: result.name }}</a></h3>
+      <p>{{ result.excerpt | default: result.body | truncate_words: 30 }}</p>
+      <small>{{ result._dataset_alias | capitalize }}</small>
+    </article>
+  {% else %}
+    <p>No results found.</p>
+  {% endfor %}
+  {% if pagination.total_pages > 1 %}
+    {% swarm_render 'pagination' %}
+  {% endif %}
+{% endif %}
+```
+
+See [Search](search.md) for the full guide.
 
 ### Paginate Tag (Universal Pagination)
 

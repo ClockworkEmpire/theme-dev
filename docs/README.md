@@ -73,6 +73,7 @@ swarm help                 # Show help
 | [Architecture Decisions](architecture-decisions.md) | When to use datasets vs settings, sections vs snippets, routing strategies |
 | [Components](components.md) | Sections, snippets, blocks, drop-ins, and settings |
 | [Content and Routing](content-and-routing.md) | Templates, page templates, datasets, URL routing |
+| [Search](search.md) | Search template, result variables, forms, pagination |
 | [Liquid Reference](liquid-reference.md) | Complete templating language reference |
 | [Cheat Sheet](cheat-sheet.md) | Condensed reference card |
 
