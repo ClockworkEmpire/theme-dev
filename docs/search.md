@@ -33,7 +33,7 @@ Create `templates/search.liquid`:
     {% endfor %}
 
     {% if pagination.total_pages > 1 %}
-      {% swarm_render 'pagination' %}
+      {% render 'pagination' %}
     {% endif %}
   {% endif %}
 </div>
@@ -176,7 +176,7 @@ A full-featured search template with empty states, result cards, and pagination:
       </div>
 
       {% if pagination.total_pages > 1 %}
-        {% swarm_render 'pagination' %}
+        {% render 'pagination' %}
       {% endif %}
 
     {% else %}
@@ -218,7 +218,7 @@ Then in your search template:
 
 ```liquid
 {% for result in search.results %}
-  {% swarm_render 'search-result', result: result %}
+  {% render 'search-result', result: result %}
 {% endfor %}
 ```
 
@@ -277,7 +277,7 @@ The search `pagination` object has the same shape as collection pages, so your e
 
 ```liquid
 {% if pagination.total_pages > 1 %}
-  {% swarm_render 'pagination' %}
+  {% render 'pagination' %}
 {% endif %}
 ```
 

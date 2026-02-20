@@ -284,7 +284,7 @@ Access to all mounted datasets by their alias. Each dataset is a collection of r
 {% endfor %}
 
 {% for product in datasets.products %}
-  {% swarm_render 'product-card', product: product %}
+  {% render 'product-card', product: product %}
 {% endfor %}
 ```
 
@@ -510,7 +510,7 @@ Available when viewing `/tags/:tag` URLs. Contains the current tag being filtere
 ```liquid
 <h1>Posts tagged "{{ current_tag }}"</h1>
 {% for post in posts %}
-  {% swarm_render 'post-card', post: post %}
+  {% render 'post-card', post: post %}
 {% endfor %}
 ```
 
@@ -554,7 +554,7 @@ Available on dataset list pages (e.g., `/blog`). Contains the paginated array of
 
 ```liquid
 {% for article in collection %}
-  {% swarm_render 'article-card', article: article %}
+  {% render 'article-card', article: article %}
 {% else %}
   <p>No articles found.</p>
 {% endfor %}
@@ -741,52 +741,47 @@ Renders a section from the `sections/` directory with its settings applied.
 
 The section tag loads the section file, merges its schema defaults with site-specific settings, and renders the content with `section.settings` available.
 
-### swarm_render
+### render
 
-Renders a snippet from the `snippets/` directory with isolated variable scope.
+Renders a snippet from the `snippets/` directory. This is an enhanced version of Liquid's built-in `render` that passes the full parent context into the snippet.
 
 **Basic usage:**
 ```liquid
-{% swarm_render 'icon' %}
-{% swarm_render 'social-links' %}
+{% render 'icon' %}
+{% render 'social-links' %}
 ```
 
 **With variables:**
 ```liquid
-{% swarm_render 'article-card', article: post %}
-{% swarm_render 'product-card', product: item, show_price: true %}
-{% swarm_render 'button', text: 'Buy Now', url: product.url, style: 'primary' %}
+{% render 'article-card', article: post %}
+{% render 'product-card', product: item, show_price: true %}
+{% render 'button', text: 'Buy Now', url: product.url, style: 'primary' %}
 ```
 
 **Collection iteration:**
 ```liquid
-{% swarm_render 'article-card' for articles as article %}
-{% swarm_render 'product-card' for featured_products as product %}
+{% render 'article-card' for articles as article %}
+{% render 'product-card' for featured_products as product %}
 ```
 
 This is equivalent to:
 ```liquid
 {% for article in articles %}
-  {% swarm_render 'article-card', article: article %}
+  {% render 'article-card', article: article %}
 {% endfor %}
 ```
 
-**Why `swarm_render` instead of `render`?**
+**Context propagation:**
 
-Site Swarm uses a custom database-backed render implementation. The `swarm_render` name distinguishes it from Liquid's built-in file-based `render` tag and makes the behavior explicit. (The legacy `hostnet_render` tag still works for backward compatibility.)
+Unlike standard Liquid's `render` (which uses isolated scope), Site Swarm's `render` passes the full parent context into the snippet. All parent variables and global objects (`site`, `settings`, `request`, `datasets`, `mount`, etc.) are available. Explicitly passed variables override parent values with the same name:
 
-**Variable isolation:**
-
-Snippets have isolated scope. They only receive:
-- Variables explicitly passed
-- Global objects (`site`, `site_settings`, `settings`, `request`, `datasets`, `mount`)
-
-Variables from the parent template are NOT automatically available:
 ```liquid
 {% assign featured = true %}
-{% swarm_render 'card' %}  <!-- 'featured' is NOT available in card.liquid -->
-{% swarm_render 'card', featured: featured %}  <!-- Now it's available -->
+{% render 'card' %}  <!-- 'featured' IS available from parent context -->
+{% render 'card', featured: false %}  <!-- overrides parent's value -->
 ```
+
+**Best practice:** Explicitly pass variables even though parent context is available — it documents dependencies and makes templates easier to understand.
 
 ### schema
 

@@ -238,14 +238,14 @@ Collection pages display paginated lists of dataset records. Use `templates/coll
 
   <div class="grid">
     {% for item in collection %}
-      {% swarm_render 'card', item: item %}
+      {% render 'card', item: item %}
     {% else %}
       <p>No items found.</p>
     {% endfor %}
   </div>
 
   {% if pagination.total_pages > 1 %}
-    {% swarm_render 'pagination' %}
+    {% render 'pagination' %}
   {% endif %}
 </div>
 ```
@@ -358,14 +358,14 @@ The `datasets` object is available in every template, not just collection or ite
 <section class="featured-articles">
   <h2>Latest Articles</h2>
   {% for article in datasets.articles limit: 3 %}
-    {% swarm_render 'article-card', article: article %}
+    {% render 'article-card', article: article %}
   {% endfor %}
 </section>
 
 <section class="featured-products">
   <h2>Popular Products</h2>
   {% for product in datasets.products limit: 4 %}
-    {% swarm_render 'product-card', product: product %}
+    {% render 'product-card', product: product %}
   {% endfor %}
 </section>
 ```
@@ -386,7 +386,7 @@ The `datasets` object is available in every template, not just collection or ite
 <!-- Check for content -->
 {% if datasets.articles.size > 0 %}
   {% for article in datasets.articles limit: 3 %}
-    {% swarm_render 'article-card', article: article %}
+    {% render 'article-card', article: article %}
   {% endfor %}
 {% endif %}
 ```
@@ -566,7 +566,7 @@ When multiple patterns could match a URL, the most specific pattern wins:
 {% for business in datasets.businesses %}
   {% if business.city == city %}
     {% if category == blank or business.category == category %}
-      {% swarm_render 'business-card', business: business %}
+      {% render 'business-card', business: business %}
     {% endif %}
   {% endif %}
 {% endfor %}
@@ -586,10 +586,10 @@ Parameterized routes don't get automatic pagination like mounted collection page
 {% paginate datasets.businesses by 12 as businesses %}
   {% for business in businesses %}
     {% if business.city == city %}
-      {% swarm_render 'business-card', business: business %}
+      {% render 'business-card', business: business %}
     {% endif %}
   {% endfor %}
-  {% swarm_render 'pagination' %}
+  {% render 'pagination' %}
 {% endpaginate %}
 ```
 
@@ -735,7 +735,7 @@ GET /search          -->  templates/search.liquid (regular template, no search c
 {% endfor %}
 
 {% if pagination.total_pages > 1 %}
-  {% swarm_render 'pagination' %}
+  {% render 'pagination' %}
 {% endif %}
 ```
 
@@ -753,11 +753,11 @@ Use different card snippets based on the dataset type in collection templates:
   {% for item in collection %}
     {% case mount.alias %}
       {% when 'articles' %}
-        {% swarm_render 'article-card', article: item %}
+        {% render 'article-card', article: item %}
       {% when 'products' %}
-        {% swarm_render 'product-card', product: item %}
+        {% render 'product-card', product: item %}
       {% else %}
-        {% swarm_render 'generic-card', item: item %}
+        {% render 'generic-card', item: item %}
     {% endcase %}
   {% endfor %}
 </div>
@@ -767,7 +767,7 @@ Or use a naming convention:
 
 ```liquid
 {% assign card_name = mount.alias | remove_last: 's' | append: '-card' %}
-{% swarm_render card_name, item: item %}
+{% render card_name, item: item %}
 ```
 
 ---
@@ -806,7 +806,7 @@ The same `collection.liquid` can serve multiple datasets:
 ```liquid
 <h1>{{ mount.alias | capitalize }}</h1>
 {% for item in collection %}
-  {% swarm_render 'card', item: item %}
+  {% render 'card', item: item %}
 {% endfor %}
 ```
 

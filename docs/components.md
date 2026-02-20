@@ -134,13 +134,21 @@ Snippets are simple partials without built-in settings. They receive data via va
 
 ### Including Snippets
 
-Use `{% swarm_render %}` to include snippets:
+Use `{% render %}` to include snippets:
 
 ```liquid
-{% swarm_render 'article-card', article: post %}
+{% render 'article-card', article: post %}
 ```
 
-Site Swarm uses database-backed templates, not files. The `swarm_render` tag looks up snippets from the database. The legacy `hostnet_render` tag still works for backward compatibility.
+### What render Can Render
+
+The `render` tag includes files from the `snippets/` directory. It is an enhanced version of Liquid's built-in `render` with these capabilities:
+
+- **Full parent context** — Unlike standard Liquid's isolated `render`, Site Swarm's `render` passes the full parent context (all variables, `settings`, `site`, `datasets`, etc.) into the snippet. Passed variables override parent values but don't replace the rest.
+- **Variable passing** — Explicitly pass variables for clarity (recommended even though parent context is available).
+- **Collection iteration** — Render a snippet once per item in a collection.
+- **Snippet settings** — Load configurable settings from sidecar schemas (`config/snippets/{name}.json`) or inline `{% schema %}` blocks. Access via `snippet.settings`.
+- **Snippet object** — Inside a snippet, `snippet.name` and `snippet.settings` are available.
 
 ### Passing Variables
 
@@ -148,42 +156,42 @@ Pass any variables the snippet needs:
 
 ```liquid
 <!-- Single variable -->
-{% swarm_render 'article-card', article: post %}
+{% render 'article-card', article: post %}
 
 <!-- Multiple variables -->
-{% swarm_render 'product-card', product: item, show_price: true, featured: false %}
+{% render 'product-card', product: item, show_price: true, featured: false %}
 
 <!-- Complex data -->
-{% swarm_render 'stats', count: collection.size, label: 'Articles' %}
+{% render 'stats', count: collection.size, label: 'Articles' %}
 ```
 
 ### Variable Scope
 
-Snippets have **isolated scope**. They only see:
-- Variables explicitly passed
-- Global objects (`site`, `settings`, `request`, `datasets`, `mount`, `pagination`)
+Snippets receive the **full parent context**. All parent template variables, global objects (`site`, `settings`, `request`, `datasets`, `mount`, `pagination`), and any explicitly passed variables are available inside the snippet.
 
-Variables from the parent template are NOT automatically available:
+Passed variables **override** parent values with the same name, but the rest of the parent context remains accessible:
 
 ```liquid
 {% assign highlight = true %}
-{% swarm_render 'card' %}  <!-- 'highlight' is NOT available -->
-{% swarm_render 'card', highlight: highlight %}  <!-- Now it is -->
+{% render 'card' %}  <!-- 'highlight' IS available from parent context -->
+{% render 'card', highlight: false %}  <!-- overrides parent's 'highlight' value -->
 ```
+
+**Best practice:** Even though parent variables are available, explicitly passing variables documents what the snippet depends on and makes templates easier to understand.
 
 ### Collection Iteration
 
 Render a snippet for each item in a collection:
 
 ```liquid
-{% swarm_render 'article-card' for articles as article %}
+{% render 'article-card' for articles as article %}
 ```
 
 This is equivalent to:
 
 ```liquid
 {% for article in articles %}
-  {% swarm_render 'article-card', article: article %}
+  {% render 'article-card', article: article %}
 {% endfor %}
 ```
 
@@ -1154,7 +1162,7 @@ A flexible card snippet that handles multiple content types:
 
 ```liquid
 <!-- snippets/card.liquid -->
-<!-- Usage: {% swarm_render 'card', item: record, show_image: true %} -->
+<!-- Usage: {% render 'card', item: record, show_image: true %} -->
 
 <article class="card bg-white rounded-lg shadow-sm overflow-hidden">
   {% if show_image and item.image %}
@@ -1222,9 +1230,9 @@ Works on mounted collection pages (where `pagination` is auto-supplied) **and** 
 ```liquid
 {% paginate datasets.articles by 10 as articles %}
   {% for article in articles %}
-    {% swarm_render 'article-card', article: article %}
+    {% render 'article-card', article: article %}
   {% endfor %}
-  {% swarm_render 'pagination' %}
+  {% render 'pagination' %}
 {% endpaginate %}
 ```
 
@@ -1238,12 +1246,12 @@ Each snippet should do one thing well:
 
 ```liquid
 <!-- Good: focused, reusable -->
-{% swarm_render 'article-card', article: post %}
-{% swarm_render 'pagination' %}
-{% swarm_render 'breadcrumb', items: crumbs %}
+{% render 'article-card', article: post %}
+{% render 'pagination' %}
+{% render 'breadcrumb', items: crumbs %}
 
 <!-- Avoid: too many responsibilities -->
-{% swarm_render 'article-list-with-sidebar-and-pagination' %}
+{% render 'article-list-with-sidebar-and-pagination' %}
 ```
 
 ### Document Expected Variables
@@ -1253,7 +1261,7 @@ Add comments showing expected variables in snippets:
 ```liquid
 {% comment %}
   Product Card
-  Usage: {% swarm_render 'product-card', product: item %}
+  Usage: {% render 'product-card', product: item %}
 
   Expected variables:
     - product.name (required)
@@ -1289,11 +1297,11 @@ Build complex layouts from simple components:
 ```liquid
 <!-- Good: compose simple snippets -->
 <article class="article-full">
-  {% swarm_render 'breadcrumb', items: breadcrumb %}
-  {% swarm_render 'article-header', article: article %}
-  {% swarm_render 'article-content', content: article.content %}
-  {% swarm_render 'author-bio', author: article.author %}
-  {% swarm_render 'related-articles', articles: related %}
+  {% render 'breadcrumb', items: breadcrumb %}
+  {% render 'article-header', article: article %}
+  {% render 'article-content', content: article.content %}
+  {% render 'author-bio', author: article.author %}
+  {% render 'related-articles', articles: related %}
 </article>
 ```
 
@@ -1396,10 +1404,10 @@ Field names in `settings_data.json` must exactly match schema `id` values:
 
 ### Snippet Variables Not Available
 
-Remember that snippets have isolated scope. Pass all needed variables explicitly:
+Although snippets receive the full parent context, explicitly passing variables is recommended for clarity:
 
 ```liquid
 {% assign highlight = true %}
-{% swarm_render 'card' %}                          <!-- 'highlight' is NOT available -->
-{% swarm_render 'card', highlight: highlight %}     <!-- Now it is -->
+{% render 'card' %}                          <!-- 'highlight' IS available from parent -->
+{% render 'card', highlight: highlight %}     <!-- Explicit passing (recommended) -->
 ```

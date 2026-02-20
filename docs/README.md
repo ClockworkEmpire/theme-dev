@@ -171,7 +171,7 @@ Loops:
 
 **Snippets** receive data (cards, buttons):
 ```liquid
-{% swarm_render 'article-card', article: post %}
+{% render 'article-card', article: post %}
 ```
 
 **Drop-ins** are user-managed HTML blocks (disclaimers, promos):
@@ -184,7 +184,7 @@ Loops:
 Access datasets anywhere:
 ```liquid
 {% for product in datasets.products limit: 4 %}
-  {% swarm_render 'product-card', product: product %}
+  {% render 'product-card', product: product %}
 {% endfor %}
 ```
 

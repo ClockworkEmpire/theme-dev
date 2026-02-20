@@ -171,12 +171,12 @@ Renders a section from `sections/` with its settings applied.
 
 ### Render Tag
 ```liquid
-{% swarm_render 'card' %}
-{% swarm_render 'card', item: article %}
-{% swarm_render 'card', item: article, show_image: true %}
-{% swarm_render 'card' for articles as article %}
+{% render 'card' %}
+{% render 'card', item: article %}
+{% render 'card', item: article, show_image: true %}
+{% render 'card' for articles as article %}
 ```
-Renders a snippet from `snippets/` with isolated variable scope. (The legacy `hostnet_render` tag still works for backward compatibility.)
+Renders a snippet from `snippets/` with full parent context propagation.
 
 ### Schema Tag (deprecated - use sidecar JSON)
 ```liquid
@@ -241,7 +241,7 @@ Defines parameterized URL patterns. Dynamic segments start with `:` and capture 
 <h1>{{ category | capitalize }} Products</h1>
 {% for product in datasets.products %}
   {% if product.category == category %}
-    {% swarm_render 'product-card', product: product %}
+    {% render 'product-card', product: product %}
   {% endif %}
 {% endfor %}
 ```
@@ -422,14 +422,14 @@ The layout's `<title>` tag references this with a fallback:
 ```liquid
 <div class="grid">
   {% for article in collection %}
-    {% swarm_render 'article-card', article: article %}
+    {% render 'article-card', article: article %}
   {% else %}
     <p>No articles found.</p>
   {% endfor %}
 </div>
 
 {% if pagination.total_pages > 1 %}
-  {% swarm_render 'pagination' %}
+  {% render 'pagination' %}
 {% endif %}
 ```
 
@@ -469,7 +469,7 @@ The layout's `<title>` tag references this with a fallback:
     <p>No results found.</p>
   {% endfor %}
   {% if pagination.total_pages > 1 %}
-    {% swarm_render 'pagination' %}
+    {% render 'pagination' %}
   {% endif %}
 {% endif %}
 ```
@@ -483,9 +483,9 @@ Use `{% paginate %}` to paginate **any** collection in **any** template — not 
 ```liquid
 {% paginate datasets.articles by 10 %}
   {% for article in paginate.collection %}
-    {% swarm_render 'article-card', article: article %}
+    {% render 'article-card', article: article %}
   {% endfor %}
-  {% swarm_render 'pagination' %}
+  {% render 'pagination' %}
 {% endpaginate %}
 
 <!-- With alias for cleaner variable names -->
@@ -493,7 +493,7 @@ Use `{% paginate %}` to paginate **any** collection in **any** template — not 
   {% for business in businesses %}
     <h2>{{ business.name }}</h2>
   {% endfor %}
-  {% swarm_render 'pagination' %}
+  {% render 'pagination' %}
 {% endpaginate %}
 ```
 
@@ -626,12 +626,12 @@ Sections with blocks need corresponding data in `config/settings_data.json`:
 <!-- Access mounted datasets anywhere -->
 <h2>Latest Posts</h2>
 {% for post in datasets.posts limit: 3 %}
-  {% swarm_render 'post-card', post: post %}
+  {% render 'post-card', post: post %}
 {% endfor %}
 
 <h2>Featured Products</h2>
 {% for product in datasets.products limit: 4 %}
-  {% swarm_render 'product-card', product: product %}
+  {% render 'product-card', product: product %}
 {% endfor %}
 ```
 
@@ -644,7 +644,7 @@ Sections with blocks need corresponding data in `config/settings_data.json`:
 {% if collection.size > 0 %}
   <div class="grid">
     {% for item in collection %}
-      {% swarm_render 'card', item: item %}
+      {% render 'card', item: item %}
     {% endfor %}
   </div>
 {% else %}

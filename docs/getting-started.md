@@ -158,7 +158,7 @@ Create `templates/index.liquid`:
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         {% for article in datasets.articles limit: 3 %}
-          {% swarm_render 'article-card', article: article %}
+          {% render 'article-card', article: article %}
         {% endfor %}
       </div>
     </section>
@@ -219,7 +219,7 @@ For dataset list pages (like `/articles`), create `templates/collection.liquid`:
 
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
     {% for item in collection %}
-      {% swarm_render 'article-card', article: item %}
+      {% render 'article-card', article: item %}
     {% else %}
       <p class="col-span-3 text-gray-500 text-center py-12">
         No items found.
@@ -228,7 +228,7 @@ For dataset list pages (like `/articles`), create `templates/collection.liquid`:
   </div>
 
   {% if pagination.total_pages > 1 %}
-    {% swarm_render 'pagination' %}
+    {% render 'pagination' %}
   {% endif %}
 </div>
 ```
@@ -264,7 +264,7 @@ Create `snippets/pagination.liquid`:
 ```liquid
 {% paginate datasets.articles by 10 as articles %}
   {% for article in articles %}...{% endfor %}
-  {% swarm_render 'pagination' %}
+  {% render 'pagination' %}
 {% endpaginate %}
 ```
 
