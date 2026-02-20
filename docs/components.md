@@ -113,7 +113,7 @@ Section schemas are defined in separate JSON files in `config/sections/`. This i
 
 ## Snippets
 
-Snippets are simple partials without built-in settings. They receive data via variables passed from the parent template.
+Snippets are reusable partial components. They receive data via variables passed from the parent template and can optionally have their own settings via sidecar schemas in `config/snippets/`.
 
 ### Creating a Snippet
 

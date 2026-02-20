@@ -44,7 +44,6 @@ This opens the Theme Editor at Site Swarm with your local files.
 | Command | Description |
 |---------|-------------|
 | `swarm new <name>` | Create a new theme from blank scaffold |
-| `swarm new <name> --example` | Create from full example theme |
 | `swarm dev [path]` | Start local dev server (offline mode) |
 | `swarm dev --port 3000` | Use custom port |
 | `swarm connect [path]` | Connect to Site Swarm Theme Editor (tunnel mode) |
@@ -61,10 +60,6 @@ This opens the Theme Editor at Site Swarm with your local files.
 - [Liquid Reference](docs/liquid-reference.md)
 - [Cheat Sheet](docs/cheat-sheet.md)
 
-## Starter Themes
+## Starter Theme
 
-Browse the [starters/](starters/) directory for example themes:
-
-- **blank/** - Minimal scaffold to start from scratch
-- **minimal/** - Basic theme with datasets and mock data
-- **directory/** - Full-featured business directory theme
+The [starters/blank/](starters/blank/) directory provides a minimal scaffold to start from scratch.

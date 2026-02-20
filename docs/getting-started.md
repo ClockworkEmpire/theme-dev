@@ -384,7 +384,53 @@ Create `config/settings_data.json`:
 
 ---
 
-## Step 13: Package and Upload
+## Step 13: Add Page Templates and Sample Pages
+
+Most themes need static pages (About, Contact, Privacy, etc.). Instead of creating individual template files, create a generic page_template and provide sample pages.
+
+**page_templates/page.liquid:**
+```liquid
+{% assign_global page_title = page.title %}
+{% assign_global page_description = page.settings.description %}
+
+<div class="container mx-auto px-4 py-12 max-w-3xl">
+  <h1 class="text-4xl font-bold mb-6">
+    {{ page.settings.headline | default: page.title }}
+  </h1>
+
+  <div class="prose">
+    {{ page.content }}
+  </div>
+</div>
+```
+
+**config/page_templates/page.json:**
+```json
+{
+  "name": "Standard Page",
+  "settings": [
+    { "type": "text", "id": "headline", "label": "Headline", "info": "Leave blank to use page title" },
+    { "type": "textarea", "id": "description", "label": "Meta Description" }
+  ]
+}
+```
+
+**data/content/pages.json** — provide starter content that's imported with the theme:
+```json
+{
+  "records": [
+    { "slug": "about", "title": "About Us", "page_template": "page", "content": "<p>Tell your story here.</p>", "position": 1 },
+    { "slug": "contact", "title": "Contact", "page_template": "page", "content": "<p>Get in touch.</p>", "position": 2 },
+    { "slug": "privacy", "title": "Privacy Policy", "page_template": "page", "content": "<p>Your privacy matters.</p>", "position": 3 }
+  ]
+}
+```
+
+This pattern lets site owners add, edit, and reorder pages from the dashboard without touching theme code. One template powers many pages.
+
+---
+
+## Step 14: Package and Upload
 
 Create a ZIP file of your theme folder:
 

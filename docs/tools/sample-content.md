@@ -183,6 +183,10 @@ Blog posts with rich text content and references to authors and tags.
 
 Static pages with optional page templates and author attribution.
 
+> **Theme builders SHOULD provide sample pages in `data/content/pages.json`.** These pages are imported when a site owner activates the theme, giving them starter content they can immediately edit from the dashboard. This is the correct way to provide static pages — not by creating individual template files.
+
+The one-to-many pattern: **one page_template, many Page records.** A theme with a single `page_templates/page.liquid` can power About, Contact, Privacy, Terms, and any other static page the site owner creates.
+
 ```json
 {
   "records": [
@@ -190,8 +194,7 @@ Static pages with optional page templates and author attribution.
       "slug": "about",
       "title": "About Us",
       "content": "<p>We are a team of passionate developers building tools for the modern web.</p>",
-      "author_slug": "jane-smith",
-      "page_template": "about",
+      "page_template": "page",
       "position": 1,
       "schema_type": "AboutPage",
       "settings": {
@@ -203,9 +206,25 @@ Static pages with optional page templates and author attribution.
       "slug": "contact",
       "title": "Contact Us",
       "content": "<p>Get in touch with our team.</p>",
-      "page_template": "contact",
+      "page_template": "page",
       "position": 2,
       "schema_type": "ContactPage"
+    },
+    {
+      "slug": "privacy",
+      "title": "Privacy Policy",
+      "content": "<p>Your privacy is important to us. This policy outlines how we handle your data.</p>",
+      "page_template": "page",
+      "position": 3,
+      "schema_type": "WebPage"
+    },
+    {
+      "slug": "terms",
+      "title": "Terms of Service",
+      "content": "<p>By using our services, you agree to the following terms and conditions.</p>",
+      "page_template": "page",
+      "position": 4,
+      "schema_type": "WebPage"
     }
   ]
 }

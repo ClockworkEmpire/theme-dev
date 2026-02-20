@@ -713,6 +713,7 @@ Available inside section templates. Contains section metadata and settings.
 |----------|------|-------------|
 | `section.id` | String | Unique section identifier |
 | `section.settings` | Object | Section settings values |
+| `section.blocks` | Array | Array of block objects |
 
 ```liquid
 <!-- sections/hero.liquid -->
@@ -720,6 +721,40 @@ Available inside section templates. Contains section metadata and settings.
   <h1>{{ section.settings.title }}</h1>
   <p>{{ section.settings.subtitle }}</p>
 </section>
+```
+
+### snippet
+
+Available inside snippet templates. Contains snippet metadata and settings.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `snippet.id` | String | Unique snippet identifier |
+| `snippet.name` | String | Snippet file name |
+| `snippet.settings` | Object | Snippet settings values |
+| `snippet.blocks` | Array | Array of block objects |
+
+```liquid
+<!-- snippets/card.liquid -->
+<div id="{{ snippet.id }}" class="card">
+  <h3>{{ snippet.settings.title }}</h3>
+</div>
+```
+
+### template (context object)
+
+Available inside template files rendered via `{% template %}` tag. Contains template metadata and settings.
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `template.id` | String | Unique template identifier |
+| `template.settings` | Object | Template settings values |
+
+```liquid
+<!-- templates/about.liquid -->
+<main>
+  <h1>{{ template.settings.heading }}</h1>
+</main>
 ```
 
 ---
@@ -782,6 +817,29 @@ Unlike standard Liquid's `render` (which uses isolated scope), Site Swarm's `ren
 ```
 
 **Best practice:** Explicitly pass variables even though parent context is available — it documents dependencies and makes templates easier to understand.
+
+### snippet
+
+Renders a snippet from the `snippets/` directory. Functionally equivalent to `render` but scoped specifically to `snippets/`.
+
+```liquid
+{% snippet 'card' %}
+{% snippet 'card', article: post %}
+{% snippet 'card' for articles as article %}
+```
+
+The snippet tag supports the full settings chain, variable passing, collection iteration, and blocks. Inside the snippet, the `snippet` context object is available with `snippet.settings`, `snippet.blocks`, and `snippet.name`.
+
+### template
+
+Renders a page template from the `templates/` directory. Supports the settings chain and variable passing but does **not** support blocks.
+
+```liquid
+{% template 'about' %}
+{% template 'landing', campaign: 'summer' %}
+```
+
+Inside the rendered template, the `template` context object provides `template.settings`.
 
 ### schema
 

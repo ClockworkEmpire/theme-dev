@@ -11,9 +11,8 @@ theme/
 ├── siteswarm.json            # Theme manifest (name, version, category)
 ├── layout/
 │   └── theme.liquid          # Required - base HTML wrapper
-├── templates/                # Dataset rendering
+├── templates/                # Homepage, dataset rendering, special pages
 │   ├── index.liquid          # Homepage
-│   ├── page.liquid           # Generic pages
 │   ├── collection.liquid     # Dataset list pages
 │   ├── article.liquid        # Dataset item pages
 │   ├── search.liquid         # Search results (/search?q=...)
@@ -177,6 +176,21 @@ Renders a section from `sections/` with its settings applied.
 {% render 'card' for articles as article %}
 ```
 Renders a snippet from `snippets/` with full parent context propagation.
+
+### Snippet Tag
+```liquid
+{% snippet 'card' %}
+{% snippet 'card', article: post %}
+{% snippet 'card' for articles as article %}
+```
+Renders a snippet from `snippets/` with settings, blocks, and `snippet.*` context object. Functionally equivalent to `render` but scoped to snippets.
+
+### Template Tag
+```liquid
+{% template 'about' %}
+{% template 'landing', campaign: 'summer' %}
+```
+Renders a page template from `templates/` with settings and `template.*` context object. Does not support blocks.
 
 ### Schema Tag (deprecated - use sidecar JSON)
 ```liquid
@@ -363,6 +377,8 @@ Priority order:
 6. **Dataset list:** `/blog` → `templates/collection.liquid`
 7. **Dataset item:** `/blog/my-post` → `templates/article.liquid`
 8. **404:** `templates/404.liquid`
+
+> **Page templates best practice:** Static pages like About, Contact, Privacy, and Terms should use **page_templates + Page records** (priority 3 above), not individual template files (priority 2). This lets site owners edit content from the dashboard without touching theme code. Keep your page_template count low (1-2 generic templates) and create many Page records. See [Content and Routing](content-and-routing.md#best-practice-prefer-page-templates-over-individual-templates) for details.
 
 ---
 

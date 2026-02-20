@@ -55,12 +55,11 @@ Run directly from the source tree with monorepo shortcuts:
 
 ```bash
 # Use theme name directly
-bin/theme-dev dev minimal
 bin/theme-dev dev blank
 
 # Or use full path
-bin/theme-dev dev themes/minimal
-bin/theme-dev dev lib/theme_dev_server/starters/minimal
+bin/theme-dev dev themes/blank
+bin/theme-dev dev lib/theme_dev_server/starters/blank
 ```
 
 See [Monorepo Workflow](#for-hostnet-developers-monorepo-workflow) below for the full development workflow.
@@ -74,8 +73,7 @@ See [Monorepo Workflow](#for-hostnet-developers-monorepo-workflow) below for the
 Create a new theme from a starter template.
 
 ```bash
-swarm new my-theme              # Blank scaffold
-swarm new my-theme --example   # Full example with sections and mock data
+swarm new my-theme
 ```
 
 The blank scaffold includes:
@@ -83,8 +81,6 @@ The blank scaffold includes:
 - Placeholder templates (index, collection, article, 404)
 - Empty sections/snippets directories
 - Minimal CSS
-
-The `--example` flag copies the full minimal-theme example with working sections, snippets, and mock datasets.
 
 ### `swarm dev`
 
@@ -517,31 +513,29 @@ Themes are symlinked into a root `themes/` directory for easy access:
 ```
 hostnet/
 ├── themes/                          # Edit themes here
-│   ├── blank -> ../lib/theme_dev_server/starters/blank
-│   └── minimal -> ../lib/theme_dev_server/starters/minimal
+│   └── blank -> ../lib/theme_dev_server/starters/blank
 ├── lib/theme_dev_server/starters/   # Source of truth
-│   ├── blank/
-│   └── minimal/
+│   └── blank/
 ```
 
 ### Development Workflow
 
 1. **Edit themes in `themes/`**:
    ```bash
-   cd themes/minimal
+   cd themes/blank
    # Make changes to templates, sections, etc.
    ```
 
 2. **Preview with dev server** (monorepo shortcuts work):
    ```bash
-   bin/theme-dev dev minimal    # Same as: bin/theme-dev dev themes/minimal
+   bin/theme-dev dev blank    # Same as: bin/theme-dev dev themes/blank
    ```
 
 3. **Import into Rails database**:
    ```bash
-   bin/theme-dev import minimal                        # Creates/updates theme
-   bin/theme-dev import minimal --name "Custom Name"   # Custom theme name
-   bin/theme-dev import minimal --account acme         # Specific account
+   bin/theme-dev import blank                        # Creates/updates theme
+   bin/theme-dev import blank --name "Custom Name"   # Custom theme name
+   bin/theme-dev import blank --account acme         # Specific account
    ```
 
 4. **Test in Rails**:
@@ -571,9 +565,9 @@ bin/theme-dev import <path> [options]
 
 **Examples:**
 ```bash
-bin/theme-dev import minimal
+bin/theme-dev import blank
 bin/theme-dev import ./my-custom-theme
-bin/theme-dev import themes/minimal --name "Production Theme"
+bin/theme-dev import themes/blank --name "Production Theme"
 bin/theme-dev import themes/blank --account my-company
 ```
 

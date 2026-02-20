@@ -187,6 +187,45 @@ When a Page record links to a page_template with a schema:
 | Multiple instances | One template --> many Pages | One template --> one URL |
 | Dashboard editing | Page settings form | Theme settings only |
 
+### Best Practice: Prefer Page Templates Over Individual Templates
+
+> **Rule of thumb:** If a page doesn't render dataset records and doesn't need a truly unique layout, it should be a **Page record** using a **page_template** — not an individual template file.
+
+**Anti-pattern — one template file per static page:**
+
+```
+templates/
+├── about.liquid
+├── contact.liquid
+├── privacy.liquid
+├── terms.liquid
+├── faq.liquid
+└── careers.liquid       # 6 files for 6 static pages
+```
+
+This is wrong because:
+- Site owners can't edit page content without touching theme code
+- Adding a new page (e.g., "Careers") requires a theme update and re-upload
+- It defeats the purpose of a CMS — content should be manageable from the dashboard
+
+**Correct pattern — one page_template, many Page records:**
+
+```
+page_templates/
+└── page.liquid          # 1 generic template
+
+data/content/pages.json  # 6 Page records using the same template
+```
+
+Create 1-2 generic page_templates (e.g., `page.liquid` for standard pages, `service.liquid` for service-specific layouts), then let site owners create Page records in the dashboard. Theme builders should provide sample pages via `data/content/pages.json` so users get starter content on import (see [Sample Content: pages.json](tools/sample-content.md#pagesjson)).
+
+**When individual templates ARE appropriate:**
+- **Homepage** (`templates/index.liquid`) — unique layout, always exists
+- **Dataset templates** (`templates/collection.liquid`, `templates/article.liquid`) — render dataset records
+- **Search** (`templates/search.liquid`) — unique search context
+- **404** (`templates/404.liquid`) — error page
+- **Truly unique layouts** that can't be served by a page_template with settings
+
 ---
 
 ## Datasets

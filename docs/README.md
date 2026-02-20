@@ -41,7 +41,6 @@ See [Local Development](tools/local-development.md) for detailed installation an
 ```bash
 # Local development
 swarm new <name>           # Create a new theme (blank scaffold)
-swarm new <name> --example # Create from full example theme
 swarm dev [path]           # Start dev server with live reload
 swarm lint [path]          # Validate theme structure and schemas
 swarm lint --fix [path]    # Auto-fix issues and scaffold missing schemas
@@ -204,16 +203,6 @@ swarm new my-theme
 ```
 
 Minimal scaffold with placeholder templates. Good for starting from scratch.
-
-### Minimal Example
-
-```bash
-swarm new my-theme --example
-```
-
-Full working theme with header/footer sections, hero, article/company card snippets, pagination, mock datasets, and complete settings schema.
-
-Also available at [examples/minimal-theme/](examples/minimal-theme/).
 
 ---
 

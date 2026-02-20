@@ -1109,3 +1109,5 @@ Based on patterns across all three themes:
 | **Snippet variants** | No | Yes (business-card: 4) | No |
 | **Page templates** | 1 (generic) | 1+ | 2+ (about, generic) |
 | **Complexity** | Low-medium | High | High |
+
+> **Guidance:** Page template count should be LOW (1-2 generic templates). Static pages are created as Page records in the dashboard, not as individual template files. See [Best Practice: Prefer Page Templates](../content-and-routing.md#best-practice-prefer-page-templates-over-individual-templates).
