@@ -24,8 +24,10 @@ Do you have a collection of similar items?
 ```
 Is this UI component reusable?
 ├── YES → Does it need admin-configurable settings?
-│   ├── YES → Section (with sidecar schema)
-│   └── NO → Snippet
+│   ├── YES → Is it a top-level page component?
+│   │   ├── YES → Section (with sidecar schema)
+│   │   └── NO → Snippet with settings (sidecar schema in config/snippets/)
+│   └── NO → Snippet (simple, data via parameters)
 │       └── Does it need visual variants?
 │           ├── YES → Snippet with variant parameter
 │           └── NO → Simple snippet
@@ -336,12 +338,16 @@ Self-contained UI components with **admin-configurable settings** via sidecar sc
 
 ### Snippets
 
-Reusable partials that receive data via parameters. Used with `{% render 'name', param: value %}`.
+Reusable partial components. Called with `{% snippet 'name' %}` (settings-aware) or `{% render 'name', param: value %}` (parameter-based).
 
 **When to use:**
 - Rendering a single item from a dataset (card, row, badge)
 - Reusable across multiple templates/sections
-- No admin settings needed (data comes from caller)
+- Optionally with admin settings via sidecar schema (`config/snippets/name.json`)
+
+**Two calling styles:**
+- `{% snippet 'name' %}` — loads sidecar schema, provides `snippet.settings`, supports blocks
+- `{% render 'name', param: value %}` — passes data via parameters, searches all directories
 
 **Examples across themes:**
 
@@ -398,6 +404,26 @@ When a snippet needs multiple visual presentations, use a `variant` parameter wi
 {% render 'business-card', business: business %}  <!-- default -->
 ```
 
+### Template Tag
+
+Templates can also be rendered as components using `{% template 'name' %}`. This loads the template's sidecar schema from `config/templates/name.json` and provides `template.settings`. Unlike sections and snippets, the template tag does **not** support blocks.
+
+```liquid
+<!-- Render a template as a component with settings -->
+{% template 'location' %}
+```
+
+### All Four Component Tags
+
+All component-rendering tags share the same base engine (`ComponentTag`). Here's the quick reference:
+
+| Tag | Directory | Context Object | Schema Location | Blocks? |
+|-----|-----------|---------------|-----------------|---------|
+| `{% section 'name' %}` | `sections/` | `section` | `config/sections/` | Yes |
+| `{% snippet 'name' %}` | `snippets/` | `snippet` | `config/snippets/` | Yes |
+| `{% template 'name' %}` | `templates/` | `template` | `config/templates/` | No |
+| `{% render 'name' %}` | Any directory | `snippet` | Tries all | No |
+
 ### Inline Code
 
 Leave code inline only when it's a small, template-specific block. However, **err on the side of extracting** — if a template accumulates multiple inline blocks, it becomes harder to read and maintain. A good rule of thumb: if a template has more than 2-3 inline content blocks, start extracting them into snippets or sections namespaced to that template (e.g., `service-benefits`, `service-process`).
@@ -431,8 +457,10 @@ Is the parent template getting complex (3+ content blocks)?
 ├── YES → Extract into sections/snippets regardless of reuse
 └── NO → Is this code used in more than one place?
     ├── YES → Does it need admin-configurable settings?
-    │   ├── YES → Section (with sidecar schema)
-    │   └── NO → Snippet
+    │   ├── YES → Is it a top-level page component?
+    │   │   ├── YES → Section ({% section 'name' %})
+    │   │   └── NO → Snippet with settings ({% snippet 'name' %})
+    │   └── NO → Simple snippet ({% render 'name', data: value %})
     │       └── Multiple visual presentations?
     │           ├── YES → Snippet with variant parameter
     │           └── NO → Simple snippet with data parameters
@@ -1032,14 +1060,16 @@ Reference: compass
 
 ### Section vs Snippet Decision Matrix
 
-| Criterion | Section | Snippet |
-|-----------|---------|---------|
-| Has admin settings? | Yes (sidecar schema) | No |
-| Called with? | `{% section 'name' %}` | `{% render 'name', data: value %}` |
-| Receives data from? | `section.settings`, `datasets` | Parameters from caller |
-| One per page? | Yes (by default) | No limit |
-| Schema file? | `config/sections/name.json` | None |
-| Use case | Hero, footer, contact form | Cards, badges, icons |
+| Criterion | Section | Snippet (with settings) | Snippet (simple) |
+|-----------|---------|------------------------|-------------------|
+| Has admin settings? | Yes (sidecar schema) | Yes (sidecar schema) | No |
+| Called with? | `{% section 'name' %}` | `{% snippet 'name' %}` | `{% render 'name', data: value %}` |
+| Receives data from? | `section.settings`, `datasets` | `snippet.settings`, `datasets` | Parameters from caller |
+| One per page? | Yes (by default) | No limit | No limit |
+| Schema file? | `config/sections/name.json` | `config/snippets/name.json` | None |
+| Supports blocks? | Yes | Yes | No |
+| Context object | `section` | `snippet` | N/A |
+| Use case | Hero, footer, contact form | Configurable cards, reusable widgets | Simple cards, badges, icons |
 
 ### Field Type Quick Reference
 
@@ -1059,7 +1089,8 @@ Reference: compass
 | Situation | Create | Don't Create |
 |-----------|--------|--------------|
 | Reusable card for dataset items | Snippet | |
-| Component with admin settings | Section + sidecar schema | |
+| Top-level page component with admin settings | Section + sidecar schema | |
+| Reusable widget with admin settings | Snippet + sidecar schema (`config/snippets/`) | |
 | One-off template-specific block | | Inline in template |
 | New type of routable content | Dataset + template | |
 | Static page (privacy, terms) | Page template | Template |
