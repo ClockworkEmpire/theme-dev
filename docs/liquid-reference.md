@@ -55,6 +55,7 @@ These objects are available in every template.
 | `posts` | Published blog posts |
 | `pages` | Static pages |
 | `tags` | Content tags |
+| `seo` | SEO metadata with cascading overrides (title, description, canonical, OG, robots) |
 
 ### site
 
@@ -474,6 +475,43 @@ Access to all tags for the current site.
 | `tag.name` | String | Tag display name |
 | `tag.slug` | String | URL-friendly identifier |
 | `tag.url` | String | Full URL path (e.g., `/tags/ruby`) |
+
+### seo
+
+SEO metadata object with a 5-level override cascade. See [SEO Metadata](seo-metadata.md) for the full guide.
+
+**Zero-effort approach** — renders all meta, OG, and Twitter tags:
+```liquid
+<head>
+  {{ seo.meta_tags }}
+</head>
+```
+
+**Granular control:**
+```liquid
+<title>{{ seo.title }}</title>
+<meta name="description" content="{{ seo.description }}">
+<link rel="canonical" href="{{ seo.canonical_url }}">
+<meta property="og:image" content="{{ seo.og_image }}">
+```
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `seo.title` | String | Page title (cascaded from record → template settings → title template → site name) |
+| `seo.description` | String | Meta description (cascaded from record → template settings → description template → tagline) |
+| `seo.canonical_url` | String | Canonical URL (pre-computed: `site.url + request.path`, no query strings) |
+| `seo.og_image` | String | Open Graph image URL (from record → template settings → site default) |
+| `seo.og_type` | String | Open Graph type (`"article"` for posts, `"website"` otherwise) |
+| `seo.robots` | String | Robots directive (e.g., `"noindex"`) or nil (= index) |
+| `seo.allow_indexing` | Boolean | Whether the site allows search engine indexing |
+| `seo.meta_tags` | String | Renders ALL meta/OG/Twitter tags as one HTML block |
+
+**Override cascade (highest → lowest):**
+1. Record-level field (e.g., `record.seo_title`)
+2. Template settings (customizer per-page override)
+3. Title/description template (site SEO defaults with Liquid variables)
+4. Site defaults (site name, tagline)
+5. System fallback
 
 ### post (contextual)
 

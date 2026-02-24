@@ -74,6 +74,8 @@ swarm help                 # Show help
 | [Content and Routing](content-and-routing.md) | Templates, page templates, datasets, URL routing |
 | [Search](search.md) | Search template, result variables, forms, pagination |
 | [Liquid Reference](liquid-reference.md) | Complete templating language reference |
+| [SEO Metadata](seo-metadata.md) | SEO system: `seo.*` variables, JSON-LD, overrides |
+| [SEO Cheat Sheet](seo-cheatsheet.md) | Quick reference for SEO variables and patterns |
 | [Cheat Sheet](cheat-sheet.md) | Condensed reference card |
 
 ### Tools
