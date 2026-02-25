@@ -750,6 +750,21 @@ Sections with blocks need corresponding data in `config/settings_data.json`:
 {% for item in collection reversed %}
 ```
 
+### Sorting and Filtering
+```liquid
+<!-- Sort: assign first, then loop (filters can't go inside {% for %} tags) -->
+{% assign sorted = datasets.articles | sort: 'order' %}
+{% for article in sorted %}
+  {{ article.title }}
+{% endfor %}
+
+<!-- Sort descending -->
+{% assign newest = datasets.articles | sort: 'date' | reverse %}
+
+<!-- Filter -->
+{% assign featured = datasets.articles | where: 'featured', true %}
+```
+
 ### Common Filters
 ```liquid
 {{ string | upcase }}

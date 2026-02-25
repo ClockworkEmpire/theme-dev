@@ -430,6 +430,35 @@ The `datasets` object is available in every template, not just collection or ite
 {% endif %}
 ```
 
+### Sorting
+
+Sort datasets using `{% assign %}` before the loop:
+
+```liquid
+{% assign sorted_articles = datasets.articles | sort: 'order' %}
+{% for article in sorted_articles %}
+  {{ article.title }}
+{% endfor %}
+```
+
+For reverse order:
+
+```liquid
+{% assign newest_first = datasets.articles | sort: 'published_at' | reverse %}
+{% for article in newest_first %}
+  {{ article.title }}
+{% endfor %}
+```
+
+> **Warning:** You **cannot** use filters inline inside `{% for %}` tags. This is invalid Liquid and will cause a syntax error:
+>
+> ```liquid
+> <!-- WRONG — filters cannot go inside {% for %} tags -->
+> {% for article in datasets.articles | sort: 'order' %}
+> ```
+>
+> Always assign first, then loop over the sorted variable.
+
 ---
 
 ## URL Routing

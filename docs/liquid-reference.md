@@ -1395,6 +1395,22 @@ Standard Liquid filters are fully supported. See the [Cheat Sheet](cheat-sheet.m
 
 Other array filters: `last`, `uniq`, `compact`, `concat`, `sort_natural`
 
+> **Important:** Filters like `| sort:` and `| where:` **cannot** be used inline inside `{% for %}` tags. This is invalid Liquid:
+>
+> ```liquid
+> <!-- WRONG — causes syntax error -->
+> {% for item in collection | sort: 'date' %}
+> ```
+>
+> Instead, assign the filtered result first:
+>
+> ```liquid
+> {% assign sorted = collection | sort: 'date' %}
+> {% for item in sorted %}
+>   {{ item.title }}
+> {% endfor %}
+> ```
+
 ### Math
 
 ```liquid
