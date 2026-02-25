@@ -382,6 +382,67 @@ The linter infers types from setting names. Override by editing the schema direc
 
 The linter won't overwrite manually configured types.
 
+### 6. Scaffold SEO Config
+
+When your theme uses `seo.*` variables or has datasets, `--fix` will scaffold `config/seo/` with field-aware templates generated from your manifest datasets:
+
+```
+Fixes applied:
+  - Scaffolded config/seo/defaults.json
+  - Scaffolded config/seo/datasets/articles.json
+  - Scaffolded config/seo/datasets/services.json
+  - Scaffolded config/seo/templates/article.json
+  - Scaffolded config/seo/templates/index.json
+```
+
+The scaffolder reads your dataset field definitions and picks the best fields for title, description, and OG image templates. For example, if your `articles` dataset has `title`, `excerpt`, and `featured_image` fields, the generated config will use those:
+
+```json
+{
+  "title_template": "{{ record.title }} | {{ settings.brand_name | default: site.name }}",
+  "description_template": "{{ record.excerpt | truncate: 155 }}",
+  "og_type": "article",
+  "og_image": "{{ record.featured_image }}"
+}
+```
+
+See [SEO Metadata: Theme SEO Templates](../seo-metadata.md#theme-seo-templates-configseo) for the full `config/seo/` reference.
+
+---
+
+## Rebuilding Schema Files
+
+Use `--rebuild` to force-regenerate a specific schema file, even if it already exists:
+
+```bash
+# Rebuild all SEO config files
+swarm lint --fix --rebuild seo
+
+# Rebuild only defaults.json
+swarm lint --fix --rebuild seo:defaults
+
+# Rebuild a specific dataset's SEO config
+swarm lint --fix --rebuild seo:datasets/articles
+
+# Rebuild a specific template's SEO config
+swarm lint --fix --rebuild seo:templates/article
+```
+
+### Granular Targets
+
+| Target | What Gets Rebuilt |
+|--------|-------------------|
+| `seo` | All `config/seo/` files |
+| `seo:defaults` | Only `config/seo/defaults.json` |
+| `seo:datasets` | All files in `config/seo/datasets/` |
+| `seo:datasets/NAME` | Only `config/seo/datasets/NAME.json` |
+| `seo:templates` | All files in `config/seo/templates/` |
+| `seo:templates/NAME` | Only `config/seo/templates/NAME.json` |
+
+**Note:** `--rebuild` requires `--fix`. Without `--fix`, no files are written.
+
+This is useful when you've added new fields to a dataset and want the SEO config regenerated with the updated field references, without touching other SEO files you've customized.
+
 ---
 
 ## Sample Content Validation

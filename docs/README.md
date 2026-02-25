@@ -128,7 +128,11 @@ theme/
 │   │   └── footer.json
 │   ├── snippets/               # Snippet schemas
 │   ├── templates/              # Template schemas
-│   └── page_templates/         # Page template schemas
+│   ├── page_templates/         # Page template schemas
+│   └── seo/                    # Theme SEO defaults
+│       ├── defaults.json       # Global SEO defaults
+│       ├── templates/          # Per-template SEO overrides
+│       └── datasets/           # Per-dataset SEO overrides
 ├── locales/                    # Translations (en.json, es.json)
 └── data/                       # Dev server sample content
     ├── site.json

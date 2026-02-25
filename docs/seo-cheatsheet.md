@@ -41,11 +41,12 @@
 ## Override Cascade (highest → lowest)
 
 ```
-1. Record field       → record.seo_title
-2. Template setting   → template.settings.seo_title
-3. Title template     → site SEO defaults title_template
-4. Site default       → site SEO defaults
-5. System fallback    → site.name
+1.   Record field       → record.seo_title
+2.   Template setting   → template.settings.seo_title
+3.   Title template     → site SEO defaults title_template
+3.5  Theme SEO config   → config/seo/ files (dataset → template → global)
+4.   Site default       → site SEO defaults
+5.   System fallback    → site.name
 ```
 
 ## Dataset Record SEO Fields (convention)
