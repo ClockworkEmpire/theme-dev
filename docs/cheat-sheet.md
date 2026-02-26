@@ -148,6 +148,7 @@ Spaces/underscores auto-convert to hyphens. Tags are editable from the dashboard
 {{ pagination.per_page }}
 {{ pagination.next_url }}
 {{ pagination.prev_url }}
+{{ pagination.parts }}             # pre-computed page links array (see Pagination Snippet)
 
 # mount
 {{ mount.alias }}
@@ -451,19 +452,29 @@ The layout's `<title>` tag references this with a fallback:
 
 ### Pagination Snippet
 ```liquid
-<!-- snippets/pagination.liquid -->
+<!-- snippets/pagination.liquid — uses pagination.parts for numbered pages -->
+{% if pagination.total_pages > 1 %}
 <nav class="pagination">
   {% if pagination.prev_url %}
-    <a href="{{ pagination.prev_url }}">Previous</a>
+    <a href="{{ pagination.prev_url }}">&lsaquo;</a>
   {% endif %}
-
-  <span>Page {{ pagination.current_page }} of {{ pagination.total_pages }}</span>
-
+  {% for part in pagination.parts %}
+    {% if part.is_current %}
+      <span class="active">{{ part.title }}</span>
+    {% elsif part.is_link %}
+      <a href="{{ part.url }}">{{ part.title }}</a>
+    {% else %}
+      <span class="ellipsis">&hellip;</span>
+    {% endif %}
+  {% endfor %}
   {% if pagination.next_url %}
-    <a href="{{ pagination.next_url }}">Next</a>
+    <a href="{{ pagination.next_url }}">&rsaquo;</a>
   {% endif %}
 </nav>
+{% endif %}
 ```
+
+Each part in `pagination.parts` has: `title` (page number or "…"), `url`, `is_link`, `is_current`.
 
 ### Search Results Page
 ```liquid
@@ -513,7 +524,7 @@ Use `{% paginate %}` to paginate **any** collection in **any** template — not 
 {% endpaginate %}
 ```
 
-Works with: `datasets.*` proxies, arrays from `| where:` filters, any iterable. The same `snippets/pagination.liquid` works inside `{% paginate %}` blocks — the `pagination` object has the same shape.
+Works with: `datasets.*` proxies, arrays from `| where:` filters, any iterable. The same `snippets/pagination.liquid` works inside `{% paginate %}` blocks — the `pagination` object (including `parts`) has the same shape.
 
 ### Section with Settings
 

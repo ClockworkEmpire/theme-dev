@@ -610,20 +610,38 @@ Available on dataset list pages (auto-supplied by the controller) and inside `{%
 | `pagination.per_page` | Integer | Records per page |
 | `pagination.next_url` | String/nil | URL to next page, or nil |
 | `pagination.prev_url` | String/nil | URL to previous page, or nil |
+| `pagination.parts` | Array | Pre-computed page links with URLs, ellipsis, and current-page flags |
+
+**`pagination.parts`** is an array of objects, each with:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `part.title` | String | Page number (e.g., "3") or ellipsis ("…") |
+| `part.url` | String/nil | Page URL, nil for current page and ellipsis |
+| `part.is_link` | Boolean | `true` if this part should be a clickable link |
+| `part.is_current` | Boolean | `true` if this is the current page |
+
+**Recommended pagination snippet using `parts`:**
 
 ```liquid
 {% if pagination.total_pages > 1 %}
-  <nav class="pagination">
-    {% if pagination.prev_url %}
-      <a href="{{ pagination.prev_url }}">← Previous</a>
+<nav class="pagination">
+  {% if pagination.prev_url %}
+    <a href="{{ pagination.prev_url }}">&lsaquo;</a>
+  {% endif %}
+  {% for part in pagination.parts %}
+    {% if part.is_current %}
+      <span class="active">{{ part.title }}</span>
+    {% elsif part.is_link %}
+      <a href="{{ part.url }}">{{ part.title }}</a>
+    {% else %}
+      <span class="ellipsis">&hellip;</span>
     {% endif %}
-
-    <span>Page {{ pagination.current_page }} of {{ pagination.total_pages }}</span>
-
-    {% if pagination.next_url %}
-      <a href="{{ pagination.next_url }}">Next →</a>
-    {% endif %}
-  </nav>
+  {% endfor %}
+  {% if pagination.next_url %}
+    <a href="{{ pagination.next_url }}">&rsaquo;</a>
+  {% endif %}
+</nav>
 {% endif %}
 ```
 
@@ -640,14 +658,7 @@ The tag reads the current page from `?page=N` query parameter. For dataset proxi
   {% for business in paginate.collection %}
     <h2>{{ business.name }}</h2>
   {% endfor %}
-
-  {% if pagination.total_pages > 1 %}
-    <nav>
-      {% if pagination.prev_url %}<a href="{{ pagination.prev_url }}">← Prev</a>{% endif %}
-      <span>Page {{ pagination.current_page }} of {{ pagination.total_pages }}</span>
-      {% if pagination.next_url %}<a href="{{ pagination.next_url }}">Next →</a>{% endif %}
-    </nav>
-  {% endif %}
+  {% render 'pagination' %}
 {% endpaginate %}
 ```
 
@@ -658,6 +669,7 @@ The tag reads the current page from `?page=N` query parameter. For dataset proxi
   {% for article in articles %}
     <h2>{{ article.title }}</h2>
   {% endfor %}
+  {% render 'pagination' %}
 {% endpaginate %}
 ```
 
@@ -672,6 +684,7 @@ Inside the block, two objects are available:
 | `paginate.per_page` | Items per page |
 | `paginate.prev_url` | Previous page URL (nil on page 1) |
 | `paginate.next_url` | Next page URL (nil on last page) |
+| `paginate.parts` | Pre-computed page links array |
 | `pagination.*` | Same fields as `paginate` (backward compat) |
 
 ### dataset

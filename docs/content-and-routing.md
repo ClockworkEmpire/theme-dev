@@ -308,6 +308,35 @@ Collection pages display paginated lists of dataset records. Use `templates/coll
 | `pagination.per_page` | Integer | Records per page |
 | `pagination.prev_url` | String/nil | Previous page URL |
 | `pagination.next_url` | String/nil | Next page URL |
+| `pagination.parts` | Array | Pre-computed page links, ellipsis markers, and current-page indicators (see below) |
+
+**Using `pagination.parts` (recommended):**
+
+The `parts` array provides pre-computed page numbers with URLs so you don't need to do any math in Liquid. Each part has: `title` (page number or "…"), `url` (link target or nil), `is_link` (boolean), and `is_current` (boolean).
+
+```liquid
+{% if pagination.total_pages > 1 %}
+  <nav class="pagination">
+    {% if pagination.prev_url %}
+      <a href="{{ pagination.prev_url }}">Previous</a>
+    {% endif %}
+    {% for part in pagination.parts %}
+      {% if part.is_current %}
+        <span class="active">{{ part.title }}</span>
+      {% elsif part.is_link %}
+        <a href="{{ part.url }}">{{ part.title }}</a>
+      {% else %}
+        <span class="ellipsis">&hellip;</span>
+      {% endif %}
+    {% endfor %}
+    {% if pagination.next_url %}
+      <a href="{{ pagination.next_url }}">Next</a>
+    {% endif %}
+  </nav>
+{% endif %}
+```
+
+For a minimal prev/next-only pagination, you can ignore `parts` and use just `prev_url`/`next_url`:
 
 ```liquid
 {% if pagination.total_pages > 1 %}
@@ -666,12 +695,12 @@ Parameterized routes don't get automatic pagination like mounted collection page
 The tag reads the current page from the `?page=N` query parameter automatically. Inside the block:
 
 - `paginate.collection` — the current page's items
-- `pagination.*` — same pagination object used by mounted collection pages (`current_page`, `total_pages`, `total_count`, `per_page`, `prev_url`, `next_url`)
+- `pagination.*` — same pagination object used by mounted collection pages (`current_page`, `total_pages`, `total_count`, `per_page`, `prev_url`, `next_url`, `parts`)
 - Optional `as` alias provides a named variable for cleaner `{% for %}` loops
 
 For dataset proxies (`datasets.*`), the tag uses efficient database offset/limit queries. For arrays (e.g., results of `| where:` filters), it slices in memory.
 
-**Tip:** Create a reusable `snippets/pagination.liquid` — it works identically inside `{% paginate %}` blocks and on mounted collection pages since the `pagination` object has the same shape.
+**Tip:** Create a reusable `snippets/pagination.liquid` using `pagination.parts` — it works identically inside `{% paginate %}` blocks and on mounted collection pages since the `pagination` object has the same shape. Use `parts` instead of hand-rolling page number math — Liquid's `if` conditions cannot contain filters, so expressions like `i == pagination.current_page | minus: 1` will cause syntax errors.
 
 ### When to Use Parameterized Routes vs Dataset Mounts
 
