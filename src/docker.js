@@ -87,7 +87,7 @@ function ensureGlobalConfigFile() {
  *
  * @param {Object} options - Configuration options
  * @param {string} [options.themePath] - Path to theme directory (mounted to /theme)
- * @param {boolean} [options.interactive=true] - Whether to use -it flags
+ * @param {boolean} [options.interactive=process.stdin.isTTY] - Whether to use -it flags (auto-detects TTY)
  * @param {Object} [options.ports] - Port mappings { host: container }
  * @param {Object} [options.env] - Environment variables to pass through
  * @returns {string[]} Docker run arguments
@@ -95,7 +95,7 @@ function ensureGlobalConfigFile() {
 function buildDockerArgs(options = {}) {
   const {
     themePath,
-    interactive = true,
+    interactive = process.stdin.isTTY || false,
     ports = {},
     env = {}
   } = options;

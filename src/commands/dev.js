@@ -28,7 +28,7 @@ module.exports = function(args) {
   const docker = spawn('docker', [
     'run',
     '--rm',
-    '-it',
+    ...(process.stdin.isTTY ? ['-it'] : ['-i']),
     '-v', `${themePath}:/theme`,
     '-p', `${port}:4000`,
     '-p', `${wsPort}:4001`,
