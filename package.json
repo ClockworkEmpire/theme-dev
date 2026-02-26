@@ -1,6 +1,6 @@
 {
   "name": "@clockworkempire/theme-dev",
-  "version": "0.5.65",
+  "version": "0.5.66",
   "description": "Local development server for Site Swarm themes",
   "bin": {
     "swarm": "./src/index.js"

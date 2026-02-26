@@ -252,10 +252,15 @@ The alias (e.g., `articles`, `products`) is configured by the site owner when mo
 
 | Method | Description |
 |--------|-------------|
-| `datasets.articles` | Access records as an array |
-| `datasets.articles.size` | Count of records |
-| `datasets.articles.first` | First record |
-| `datasets.articles.last` | Last record |
+| `datasets.articles` | Access records (capped at 200; use `{% paginate %}` for larger sets) |
+| `datasets.articles.size` | Total count of records (efficient SQL query, loads no records) |
+| `datasets.articles.first` | First record (loads only 1 record) |
+| `datasets.articles.last` | Last record (loads only 1 record) |
+| `datasets.articles.empty` | Whether the dataset has no records (SQL check, loads no records) |
+| `datasets.articles.all_records` | All records with no cap (use sparingly for large datasets) |
+| `datasets.articles \| count_where: 'field', 'value'` | Count matching records (SQL optimized, loads no records) |
+
+> **Note:** Direct iteration over `datasets.articles` returns up to 200 records. For datasets with more than 200 records, use `{% paginate datasets.articles by 20 %}` for paginated access, or `datasets.articles.all_records` if you truly need every record at once.
 
 ### Collection Pages
 

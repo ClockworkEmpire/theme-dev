@@ -289,6 +289,19 @@ Access to all mounted datasets by their alias. Each dataset is a collection of r
 {% endfor %}
 ```
 
+**Methods:**
+
+| Method | Records loaded | Description |
+|--------|---------------|-------------|
+| `datasets.articles` | Up to 200 | Iterate records (capped at 200) |
+| `datasets.articles.size` | 0 (SQL COUNT) | Total record count |
+| `datasets.articles.first` | 1 | First record |
+| `datasets.articles.last` | 1 | Last record |
+| `datasets.articles.empty` | 0 (SQL EXISTS) | True if no records |
+| `datasets.articles.all_records` | All | Every record, no cap |
+
+> **Note:** Direct iteration is capped at 200 records for safety. Use `{% paginate datasets.articles by 20 %}` for proper pagination of large datasets, or `datasets.articles.all_records` when you need every record.
+
 Dataset records are Liquid drops with dynamic properties based on your dataset schema:
 
 ```liquid
@@ -1258,6 +1271,28 @@ Truncates text to a specified number of words, adding ellipsis.
 ```liquid
 {{ article.content | truncate_words: 30 }}
 {{ product.description | truncate_words: 15 }}
+```
+
+### count_where
+
+Counts records matching a field/value pair. When applied to a dataset proxy, uses SQL `COUNT` for efficiency (loads zero records). When applied to a plain array, filters and counts in memory.
+
+```liquid
+{{ datasets.businesses | count_where: 'category_slug', 'restaurants' }}
+<!-- => 142 (SQL COUNT, no records loaded) -->
+
+{% assign active = datasets.users | where: 'status', 'active' %}
+{{ active | count_where: 'role', 'admin' }}
+<!-- => 3 (in-memory count on pre-filtered array) -->
+```
+
+This is much more efficient than the verbose alternative for counting:
+```liquid
+<!-- SLOW: loads all records, filters in Ruby, then counts -->
+{% assign count = datasets.businesses | where: 'category_slug', 'restaurants' | size %}
+
+<!-- FAST: single SQL COUNT query -->
+{{ datasets.businesses | count_where: 'category_slug', 'restaurants' }}
 ```
 
 ### slugify
