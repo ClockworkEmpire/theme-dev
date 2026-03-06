@@ -8,18 +8,29 @@ Site Swarm sites combine two content systems: **page templates** for static page
 
 ## Templates
 
-Templates live in `templates/` and handle both static pages and dataset rendering.
+Templates live in `templates/` and handle standalone pages. Dataset templates live in `dataset_templates/` (preferred) or `templates/` (fallback).
 
 ### Standard Template Types
 
 | Template | Purpose | URL |
 |----------|---------|-----|
 | `index.liquid` | Homepage | `/` |
-| `collection.liquid` | Dataset listing page | Mount path (e.g., `/blog`) |
-| `article.liquid` | Single dataset item | Mount path + slug (e.g., `/blog/my-post`) |
 | `404.liquid` | Not found page | Any unmatched URL |
 | `search.liquid` | Search results page | `/search?q=...` (with search context) |
 | `page.liquid` | Generic page fallback | Various |
+
+### Dataset Templates
+
+Templates for rendering dataset records should be placed in `dataset_templates/`. These are **only rendered in dataset context** (list/item pages) and are invisible to the URL router — they won't accidentally serve as standalone pages.
+
+| Template | Purpose | URL |
+|----------|---------|-----|
+| `collection.liquid` | Dataset listing page | Mount path (e.g., `/blog`) |
+| `article.liquid` | Single dataset item | Mount path + slug (e.g., `/blog/my-post`) |
+
+**Lookup order:** `dataset_templates/{name}.liquid` → `templates/{name}.liquid`
+
+Placing `collection.liquid` in `templates/` means `/collection` serves it as a standalone page (with no dataset context). Placing it in `dataset_templates/` avoids this — it's only used when rendering dataset lists.
 
 ### Template Naming Conventions
 
@@ -27,10 +38,12 @@ Item templates use the **singular form** of the dataset alias:
 
 | Dataset Alias | Item Template |
 |---------------|---------------|
-| `articles` | `templates/article.liquid` |
-| `products` | `templates/product.liquid` |
-| `team` | `templates/member.liquid` |
-| `companies` | `templates/company.liquid` |
+| `articles` | `dataset_templates/article.liquid` |
+| `products` | `dataset_templates/product.liquid` |
+| `team` | `dataset_templates/member.liquid` |
+| `companies` | `dataset_templates/company.liquid` |
+
+> **Backward compatibility:** Templates in `templates/` still work for dataset rendering. The system checks `dataset_templates/` first, then falls back to `templates/`.
 
 Any template file in `templates/` can also serve as a static page. For example, `templates/about.liquid` renders at `/about`, and `templates/contact.liquid` renders at `/contact`.
 

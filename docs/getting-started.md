@@ -34,6 +34,7 @@ Create a new folder for your theme:
 my-theme/
 ├── layout/
 ├── templates/
+├── dataset_templates/
 ├── page_templates/
 ├── sections/
 ├── snippets/
@@ -211,7 +212,9 @@ Key points:
 
 ## Step 7: Create the Collection Template
 
-For dataset list pages (like `/articles`), create `templates/collection.liquid`:
+For dataset list pages (like `/articles`), create `dataset_templates/collection.liquid` (preferred) or `templates/collection.liquid`:
+
+> **Tip:** Placing collection and article templates in `dataset_templates/` ensures they're only rendered in dataset context. If placed in `templates/`, they'd also be accessible as standalone pages at `/collection` and `/article`.
 
 ```liquid
 <div class="container mx-auto px-4 py-12">
@@ -272,7 +275,7 @@ Create `snippets/pagination.liquid`:
 
 ## Step 9: Create the Article Template
 
-For single items, create `templates/article.liquid`:
+For single items, create `dataset_templates/article.liquid` (preferred) or `templates/article.liquid`:
 
 ```liquid
 <article class="container mx-auto px-4 py-12 max-w-3xl">
@@ -439,9 +442,10 @@ my-theme.zip
 ├── layout/theme.liquid
 ├── templates/
 │   ├── index.liquid
-│   ├── collection.liquid
-│   ├── article.liquid
 │   └── 404.liquid
+├── dataset_templates/        # Preferred: dataset-only templates
+│   ├── collection.liquid
+│   └── article.liquid
 ├── page_templates/           # Optional: static pages
 │   └── about.liquid
 ├── sections/

@@ -11,12 +11,13 @@ theme/
 ├── siteswarm.json            # Theme manifest (name, version, category)
 ├── layout/
 │   └── theme.liquid          # Required - base HTML wrapper
-├── templates/                # Homepage, dataset rendering, special pages
+├── templates/                # Homepage, special pages, standalone pages
 │   ├── index.liquid          # Homepage
-│   ├── collection.liquid     # Dataset list pages
-│   ├── article.liquid        # Dataset item pages
 │   ├── search.liquid         # Search results (/search?q=...)
 │   └── 404.liquid            # Not found page
+├── dataset_templates/        # Dataset-only templates (not URL-accessible)
+│   ├── collection.liquid     # Dataset list pages
+│   └── article.liquid        # Dataset item pages
 ├── page_templates/           # Static pages with per-page settings
 │   ├── about.liquid
 │   └── service.liquid
@@ -375,8 +376,8 @@ Priority order:
 3. **Page by slug:** `/plumbing` → Page record → `page_templates/service.liquid`
 4. **Implicit page template:** `/contact` → `page_templates/contact.liquid` (no Page record)
 5. **Parameterized routes:** `/companies/seattle/wa/acme` → template with matching `{% routes %}`
-6. **Dataset list:** `/blog` → `templates/collection.liquid`
-7. **Dataset item:** `/blog/my-post` → `templates/article.liquid`
+6. **Dataset list:** `/blog` → `dataset_templates/collection.liquid` (falls back to `templates/`)
+7. **Dataset item:** `/blog/my-post` → `dataset_templates/article.liquid` (falls back to `templates/`)
 8. **404:** `templates/404.liquid`
 
 > **Page templates best practice:** Static pages like About, Contact, Privacy, and Terms should use **page_templates + Page records** (priority 3 above), not individual template files (priority 2). This lets site owners edit content from the dashboard without touching theme code. Keep your page_template count low (1-2 generic templates) and create many Page records. See [Content and Routing](content-and-routing.md#best-practice-prefer-page-templates-over-individual-templates) for details.
@@ -803,7 +804,8 @@ Sections with blocks need corresponding data in `config/settings_data.json`:
 | Directory | Naming | Example |
 |-----------|--------|---------|
 | `layout/` | `*.liquid` | `theme.liquid` |
-| `templates/` | `*.liquid` | `article.liquid`, `collection.liquid` |
+| `templates/` | `*.liquid` | `index.liquid`, `search.liquid`, `404.liquid` |
+| `dataset_templates/` | `*.liquid` | `article.liquid`, `collection.liquid` |
 | `page_templates/` | `*.liquid` | `about.liquid`, `service.liquid` |
 | `sections/` | `*.liquid` | `hero.liquid`, `header.liquid` |
 | `snippets/` | `*.liquid` | `card.liquid`, `pagination.liquid` |
