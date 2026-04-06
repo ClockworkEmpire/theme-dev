@@ -77,6 +77,7 @@ swarm help                 # Show help
 | [SEO Metadata](seo-metadata.md) | SEO system: `seo.*` variables, JSON-LD, overrides |
 | [SEO Cheat Sheet](seo-cheatsheet.md) | Quick reference for SEO variables and patterns |
 | [Cheat Sheet](cheat-sheet.md) | Condensed reference card |
+| [A/B Testing](ab-testing.md) | Build testable themes with template variants |
 
 ### Tools
 

@@ -345,6 +345,20 @@ Schema files should be committed to version control. They define the editing int
 
 ## Troubleshooting
 
+### Liquid syntax error: "Expected end_of_string"
+
+A `| default:` value has apostrophes inside single quotes. Liquid has no escape sequences — `''` is not valid. Switch to double quotes:
+
+```liquid
+<!-- Before (broken) -->
+{{ section.settings.text | default: 'You''re great' }}
+
+<!-- After (fixed) -->
+{{ section.settings.text | default: "You're great" }}
+```
+
+Run `swarm lint --fix` to auto-repair all instances.
+
 ### "Schema is complete" but defaults are wrong
 
 The linter only updates defaults when they **differ** from the schema. If your Liquid has:
@@ -407,6 +421,20 @@ The scaffolder reads your dataset field definitions and picks the best fields fo
 ```
 
 See [SEO Metadata: Theme SEO Templates](../seo-metadata.md#theme-seo-templates-configseo) for the full `config/seo/` reference.
+
+### 7. Fix Invalid Apostrophe Escaping
+
+Liquid has no escape sequences in strings. If a `| default:` value contains apostrophes, use double quotes:
+
+```liquid
+<!-- WRONG: Liquid syntax error -->
+{{ section.settings.body | default: 'You''re not failing' }}
+
+<!-- RIGHT: use double quotes for strings with apostrophes -->
+{{ section.settings.body | default: "You're not failing" }}
+```
+
+The linter detects `''` in single-quoted defaults and auto-fixes them to double-quoted strings.
 
 ---
 
