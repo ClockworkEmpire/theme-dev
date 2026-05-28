@@ -76,6 +76,7 @@ swarm help                 # Show help
 | [Liquid Reference](liquid-reference.md) | Complete templating language reference |
 | [SEO Metadata](seo-metadata.md) | SEO system: `seo.*` variables, JSON-LD, overrides |
 | [SEO Cheat Sheet](seo-cheatsheet.md) | Quick reference for SEO variables and patterns |
+| [Rich Text Editor](richtext-editor.md) | WYSIWYG `richtext` fields, styling, sanitization, link picker |
 | [Cheat Sheet](cheat-sheet.md) | Condensed reference card |
 | [A/B Testing](ab-testing.md) | Build testable themes with template variants |
 

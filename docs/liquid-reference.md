@@ -1324,6 +1324,12 @@ Works with any Liquid syntax including filters:
 {%- comment -%} If intro = "Welcome, {{ customer.name | upcase }}!" → "Welcome, ALICE!" {%- endcomment -%}
 ```
 
+Common use: richtext fields where the admin pastes Liquid expressions into the WYSIWYG body for site-wide values like phone, brand name, location.
+
+```liquid
+<div class="my-prose">{{ service.additional_content | parse_liquid }}</div>
+```
+
 Returns an empty string for nil/blank input. Syntax errors are shown as inline error messages in development mode.
 
 ### stylesheet_tag

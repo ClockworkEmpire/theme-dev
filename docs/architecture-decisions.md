@@ -488,8 +488,11 @@ Is the parent template getting complex (3+ content blocks)?
 | `json` | Structured nested data | `"process": [{"step": 1, "title": "..."}]` |
 | `attachment` | Images, files | `"image": "images/hero.webp"` |
 | `attachments` | Multiple images/files | `"gallery": [...]` |
+| `richtext` | WYSIWYG HTML content | `"body": "<p>Hello with <strong>bold</strong>...</p>"` |
 
-**Invalid types:** `url` (use `string`), `number` (use `integer` or `decimal`), `richtext` (use `text`)
+`richtext` is `text` plus a WYSIWYG editor and HTML sanitization on save — use it when the admin should format content with headings, lists, links, etc. See [richtext-editor.md](richtext-editor.md).
+
+**Invalid types:** `url` (use `string`), `number` (use `integer` or `decimal`)
 
 ### Complexity Scale
 
@@ -1078,7 +1081,8 @@ Reference: compass
 | URL | `string` | ~~url~~ |
 | Number (whole) | `integer` | ~~number~~ |
 | Number (decimal) | `decimal` | ~~float~~ |
-| Rich text | `text` | ~~richtext~~ |
+| Plain multi-line text | `text` | — |
+| WYSIWYG / formatted content | `richtext` | ~~text + handwritten HTML~~ |
 | Simple list | `array` | `json` |
 | Structured list | `json` | `array` |
 | Single image | `attachment` | `string` |

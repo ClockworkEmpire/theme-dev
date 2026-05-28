@@ -144,7 +144,7 @@ The schema file name matches the page template file name (without extension). In
 |------|-------------|---------|
 | `text` | Single line text | Headlines, labels |
 | `textarea` | Multi-line text | Descriptions |
-| `richtext` | Rich text editor | Body content |
+| `richtext` | WYSIWYG editor producing sanitized HTML — see [richtext-editor.md](richtext-editor.md) | Body content, FAQ answers, "about" blurbs |
 | `image_picker` | Image from media library | Hero images |
 | `url` | URL input | Links |
 | `checkbox` | Boolean toggle | Feature flags |

@@ -163,15 +163,17 @@ The platform automatically injects JSON-LD structured data before `</head>`. Thi
 
 ### JSON-LD Layers (all with on/off toggles)
 
-| Layer | Stored In | Rendered On |
-|-------|-----------|-------------|
-| Site-wide | Site SEO defaults | Every page |
-| Auto Article/BlogPosting | Auto-generated from Post data | Post pages |
-| Auto WebPage | Auto-generated from Page data | Page pages |
-| Dataset-specific | SiteDataset `json_ld_template` | Record pages |
-| Per-page override | Page/Post `seo_metadata.json_ld_override` | That page |
+| Layer | Edited via | Storage | Renders on |
+|-------|-----------|---------|------------|
+| Site-wide | Configuration → SEO tab (code editor) | `site.json_ld_site_schema` | Every page |
+| Auto Article/BlogPosting | Configuration → SEO toggle | Computed from Post fields | Post pages |
+| Auto WebPage | Configuration → SEO toggle | Computed from Page fields | Page pages |
+| Dataset-wide template | Dataset edit form → "Structured Data (JSON-LD)" card | `SiteDataset.json_ld_template` | All records in that dataset |
+| Per-page override | Customizer SEO drawer → "JSON-LD Override" (on every page) | Page/Post: `seo_metadata.json_ld_override`. DatasetRecord: `record.data["seo_json_ld"]`. Plain template path: `staging_settings.template_settings["/path"]["seo_json_ld"]` | That page only |
 
-Per-page overrides replace auto-generated schemas for that page, but site-wide schema always renders.
+Resolution order: per-page override wins if set; otherwise dataset-wide template renders on dataset record pages; otherwise auto-generated for Page/Post; otherwise nothing for the page-scoped layer. Site-wide schema **always** renders in addition (it never gets replaced).
+
+The "JSON-LD Override" field is available in the customizer SEO drawer on **every** page — Pages, Posts, dataset records, the homepage, and any custom template path. The save target depends on what the path resolves to (see Storage column above).
 
 ### Theme Opt-Out
 
@@ -187,39 +189,218 @@ If your theme handles JSON-LD manually, opt out of auto-injection in `siteswarm.
 
 When auto-inject is disabled, the `{% json_ld %}` tag works normally. When auto-inject is enabled, `{% json_ld %}` becomes a no-op to prevent duplicate structured data.
 
-### Site-Wide Schema Example
+### Available Liquid variables
+
+JSON-LD templates render through Liquid, so you can interpolate values from these contexts. Field names are illustrative — your dataset will define its own (e.g. `record.scientific_name`, `record.price`).
+
+- **`settings.*`** — global theme settings (`brand_name`, `phone`, `address_street`, `tagline`, etc.)
+- **`site.*`** — `site.name`, `site.url`, `site.environment`
+- **`record.*`** — the current dataset record (also accessible via the record's aliased name: `service`, `location`, `product`, `business`, `event`, `item`, `article`)
+- **`page.*` / `post.*`** — when rendering a Page or Post
+- **Date filters** — `{{ record.published_at | date: "%Y-%m-%dT%H:%M:%S%:z" }}` for ISO 8601 timestamps
+
+Strip whitespace with `| strip`, escape quotes with `| escape`, truncate descriptions with `| truncate: 200`.
+
+### Sample: Site-wide LocalBusiness
+
+Paste this into Configuration → SEO → Site-wide JSON-LD Schema. Renders on every page.
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "{{ settings.brand_name }}",
+  "url": "{{ site.url }}",
   "telephone": "{{ settings.phone }}",
+  "image": "{{ settings.logo }}",
+  "priceRange": "$$",
   "address": {
     "@type": "PostalAddress",
     "streetAddress": "{{ settings.address_street }}",
     "addressLocality": "{{ settings.address_city }}",
-    "addressRegion": "{{ settings.address_state }}"
-  }
+    "addressRegion": "{{ settings.address_state }}",
+    "postalCode": "{{ settings.address_zip }}",
+    "addressCountry": "US"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "08:00",
+      "closes": "17:00"
+    }
+  ]
 }
 ```
 
-### Dataset-Specific Schema Example
+### Sample: Service dataset (tree care, plumbing, HVAC, ...)
 
-For a services dataset:
+Paste this on the **services** dataset's edit form → "Structured Data (JSON-LD)" card. Renders on every service page (`/tree-removal`, `/stump-grinding`, etc.).
 
 ```json
 {
   "@context": "https://schema.org",
   "@type": "Service",
   "name": "{{ record.title }}",
-  "description": "{{ record.description }}",
+  "description": "{{ record.hero_description | default: record.description | strip | truncate: 200 }}",
+  "serviceType": "{{ record.title }}",
+  "image": "{{ record.image }}",
   "provider": {
     "@type": "LocalBusiness",
-    "name": "{{ settings.brand_name }}"
+    "name": "{{ settings.brand_name }}",
+    "telephone": "{{ settings.phone }}",
+    "url": "{{ site.url }}"
+  },
+  "areaServed": {
+    "@type": "State",
+    "name": "{{ settings.service_state | default: 'Texas' }}"
+  },
+  "url": "{{ site.url }}/{{ record.slug }}"
+}
+```
+
+### Sample: Location dataset (service areas)
+
+Paste this on the **locations** dataset's edit form. Renders on every location page (`/leander-tx`, `/austin-tx`, etc.).
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "{{ settings.brand_name }} — {{ record.name }}",
+  "description": "{{ settings.industry_name | default: 'Tree care' }} services in {{ record.name }}, {{ record.state_full }}.",
+  "image": "{{ record.image | default: settings.logo }}",
+  "telephone": "{{ settings.phone }}",
+  "url": "{{ site.url }}/{{ record.slug }}",
+  "areaServed": {
+    "@type": "City",
+    "name": "{{ record.name }}",
+    "containedInPlace": {
+      "@type": "State",
+      "name": "{{ record.state_full }}"
+    }
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "{{ record.name }}",
+    "addressRegion": "{{ record.state }}",
+    "addressCountry": "US"
   }
 }
 ```
+
+### Sample: Product dataset (e-commerce)
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ record.name }}",
+  "description": "{{ record.description | strip | truncate: 200 }}",
+  "image": "{{ record.image }}",
+  "sku": "{{ record.sku }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "{{ settings.brand_name }}"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ site.url }}/products/{{ record.slug }}",
+    "priceCurrency": "USD",
+    "price": "{{ record.price }}",
+    "availability": "https://schema.org/InStock"
+  }
+}
+```
+
+### Sample: Article / blog post
+
+Enable Configuration → SEO → "Auto-generate Article schema for blog posts" for default coverage, OR write your own on the **articles** dataset for full control:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ record.title }}",
+  "description": "{{ record.excerpt | strip | truncate: 200 }}",
+  "image": "{{ record.featured_image }}",
+  "datePublished": "{{ record.published_at | date: '%Y-%m-%dT%H:%M:%S%:z' }}",
+  "dateModified": "{{ record.updated_at | date: '%Y-%m-%dT%H:%M:%S%:z' }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ record.author.name | default: settings.brand_name }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{ settings.brand_name }}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ settings.logo }}"
+    }
+  }
+}
+```
+
+### Sample: FAQ page (per-record override)
+
+Use the Customizer SEO drawer → "JSON-LD Override" on a specific record where you want richer markup than the dataset-wide template provides. Replaces the dataset template for THAT record only.
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do you offer free estimates?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — we provide free, no-obligation estimates for all tree care work."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are you insured?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fully licensed and insured, including general liability and workers' compensation."
+      }
+    }
+  ]
+}
+```
+
+### Sample: Event
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "{{ record.title }}",
+  "description": "{{ record.description | strip | truncate: 200 }}",
+  "startDate": "{{ record.start_date | date: '%Y-%m-%dT%H:%M:%S%:z' }}",
+  "endDate": "{{ record.end_date | date: '%Y-%m-%dT%H:%M:%S%:z' }}",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "location": {
+    "@type": "Place",
+    "name": "{{ record.venue }}",
+    "address": "{{ record.venue_address }}"
+  },
+  "organizer": {
+    "@type": "Organization",
+    "name": "{{ settings.brand_name }}",
+    "url": "{{ site.url }}"
+  }
+}
+```
+
+### Validation
+
+Test your structured data after pasting and saving:
+1. View the rendered page source and find the `<script type="application/ld+json">` block(s)
+2. Paste the JSON into Google's [Rich Results Test](https://search.google.com/test/rich-results) or [Schema Markup Validator](https://validator.schema.org/)
+3. Liquid syntax errors silently render the block as empty — if you see no JSON-LD on a page where you set a template, double-check `{{ variable }}` spelling against the dataset's actual field keys
 
 ## Theme SEO Templates (`config/seo/`)
 

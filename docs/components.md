@@ -822,7 +822,7 @@ Multi-line text input.
 
 ### richtext
 
-Rich text editor with formatting options. Output includes HTML tags.
+WYSIWYG editor (TipTap) with a fixed toolbar: bold, italic, strike, paragraph, H2, H3, bullet/ordered lists, blockquote, inline code, link. Output is sanitized HTML stored as a string.
 
 ```json
 {
@@ -834,8 +834,19 @@ Rich text editor with formatting options. Output includes HTML tags.
 ```
 
 ```liquid
-{{ section.settings.content }}
-<!-- Outputs: <p>Enter content here</p> -->
+<div class="my-prose">{{ section.settings.content }}</div>
+```
+
+Admin can also edit a richtext field inline — clicking the rendered content in the customizer preview opens a TipTap modal. Saves are HTML-sanitized server-side (script, iframe, event handlers stripped).
+
+The same `"type": "richtext"` works in **section settings**, **block settings**, **template settings**, **page/post settings**, and **dataset record fields** (see [content-and-routing.md](content-and-routing.md)).
+
+**Styling:** the platform ships no prose CSS — your theme owns it. See [richtext-editor.md](richtext-editor.md) for the full guide and `btc-converted/assets/_prose.css` as a reference implementation. Brief version: wrap the output in your own class (`.my-prose`), then style descendant `h2/h3/p/ul/li/blockquote/a/code` to match your theme's tokens.
+
+**Liquid in richtext:** content is rendered as stored HTML by default. To interpolate Liquid inside the saved value (e.g. `{{ settings.phone }}` inside the body), apply the `parse_liquid` filter:
+
+```liquid
+{{ section.settings.content | parse_liquid }}
 ```
 
 ### image_picker

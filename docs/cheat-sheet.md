@@ -320,7 +320,7 @@ Images are auto-optimized on upload (85% quality, max 2400px). Use `original` to
 |------|-------------|
 | `text` | Single line input |
 | `textarea` | Multi-line input |
-| `richtext` | Rich text editor |
+| `richtext` | WYSIWYG (TipTap) → sanitized HTML — see [richtext-editor.md](richtext-editor.md) |
 | `image_picker` | Image selector |
 | `url` | URL input |
 | `checkbox` | Boolean toggle |
@@ -328,6 +328,18 @@ Images are auto-optimized on upload (85% quality, max 2400px). Use `original` to
 | `select` | Dropdown options |
 | `color` | Color picker |
 | `dataset` | Dataset selector |
+
+**Rendering richtext content:**
+
+```liquid
+<div class="my-prose">{{ section.settings.body }}</div>
+<div class="my-prose">{{ service.additional_content }}</div>   {# dataset field #}
+
+{# Allow Liquid interpolation inside the stored HTML: #}
+<div class="my-prose">{{ section.settings.body | parse_liquid }}</div>
+```
+
+Always style `.my-prose` (or your equivalent) descendants — the platform ships no default prose CSS. Reference: `btc-converted/assets/_prose.css`.
 
 ### Setting Properties
 
