@@ -1,0 +1,16 @@
+<main>
+  {% section 'hero' %}
+
+  <section class="content-section" aria-labelledby="latest-articles">
+    <p class="eyebrow">Sample dataset</p>
+    <h2 id="latest-articles">Latest articles</h2>
+
+    <div class="card-grid">
+      {% for article in datasets.articles %}
+        {% render 'article-card', article: article %}
+      {% else %}
+        <p>Add records to the articles dataset to populate this section.</p>
+      {% endfor %}
+    </div>
+  </section>
+</main>

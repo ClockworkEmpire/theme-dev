@@ -1,0 +1,23 @@
+{
+  "alias": "articles",
+  "slug_field": "slug",
+  "item_template": "article",
+  "records": [
+    {
+      "slug": "welcome-to-siteswarm",
+      "title": "Welcome to SiteSwarm",
+      "excerpt": "See how a small theme is assembled from reusable pieces.",
+      "content": "Build the next version of this example by editing its Liquid, settings, styles, and sample records.",
+      "author": "SiteSwarm Team",
+      "published_at": "2026-09-03T09:00:00Z"
+    },
+    {
+      "slug": "customize-the-starter",
+      "title": "Customize the starter",
+      "excerpt": "Change the hero settings and article data, then watch the local preview update.",
+      "content": "The starter is intentionally small enough to understand while showing the main theme building blocks.",
+      "author": "SiteSwarm Team",
+      "published_at": "2026-09-02T09:00:00Z"
+    }
+  ]
+}

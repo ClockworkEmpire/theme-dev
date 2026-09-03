@@ -1,0 +1,13 @@
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Footer text",
+      "default": "Built with SiteSwarm."
+    }
+  ],
+  "blocks": [],
+  "presets": [{"name": "Footer", "category": "Layout"}]
+}

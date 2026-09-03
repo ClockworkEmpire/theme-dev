@@ -2,8 +2,14 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = function(args) {
+  const unknownOption = args.find(arg => arg.startsWith('-') && arg !== '--example');
+  if (unknownOption) {
+    console.error(`Error: Unknown option: ${unknownOption}`);
+    console.error('Usage: swarm new <name> [--example]');
+    process.exit(1);
+  }
+
   const name = args.find(a => !a.startsWith('-'));
-  const useExample = args.includes('--example');
 
   if (!name) {
     console.error('Error: Please provide a theme name');
@@ -18,7 +24,7 @@ module.exports = function(args) {
     process.exit(1);
   }
 
-  const starterName = useExample ? 'minimal' : 'blank';
+  const starterName = args.includes('--example') ? 'minimal' : 'blank';
   const starterDir = path.join(__dirname, '..', '..', 'starters', starterName);
 
   if (!fs.existsSync(starterDir)) {

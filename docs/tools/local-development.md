@@ -74,6 +74,7 @@ Create a new theme from a starter template.
 
 ```bash
 swarm new my-theme
+swarm new example-theme --example
 ```
 
 The blank scaffold includes:
@@ -81,6 +82,8 @@ The blank scaffold includes:
 - Placeholder templates (index, collection, article, 404)
 - Empty sections/snippets directories
 - Minimal CSS
+
+Use `--example` for a working theme that demonstrates sections, component settings, a reusable snippet, SEO configuration, and local dataset records.
 
 ### `swarm dev`
 
