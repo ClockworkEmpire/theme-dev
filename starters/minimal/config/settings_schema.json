@@ -1,0 +1,13 @@
+[
+  {
+    "name": "General",
+    "settings": [
+      {
+        "type": "textarea",
+        "id": "site_description",
+        "label": "Site description",
+        "default": "A practical SiteSwarm starter you can make your own."
+      }
+    ]
+  }
+]

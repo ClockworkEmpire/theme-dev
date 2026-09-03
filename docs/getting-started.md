@@ -488,4 +488,4 @@ Now that you have a working theme:
 
 ## Complete Example
 
-A complete minimal theme is available in the [examples/minimal-theme](examples/minimal-theme/) directory. This includes all the files from this tutorial plus additional templates and snippets.
+A complete minimal theme is packaged in `starters/minimal`. Install the theme-development client and run `swarm new my-theme --example` to copy it into a new project.

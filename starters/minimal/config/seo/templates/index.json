@@ -1,0 +1,4 @@
+{
+  "title_template": "{{ site.name }}",
+  "description_template": "{{ settings.site_description }}"
+}

@@ -1,0 +1,4 @@
+{
+  "title_template": "Page Not Found | {{ site.name }}",
+  "noindex": true
+}

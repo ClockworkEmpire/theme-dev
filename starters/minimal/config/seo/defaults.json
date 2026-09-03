@@ -1,0 +1,4 @@
+{
+  "title_template": "{{ record.title | default: page.title | default: site.name }}",
+  "description_template": "{{ record.excerpt | default: settings.site_description | truncate: 155 }}"
+}

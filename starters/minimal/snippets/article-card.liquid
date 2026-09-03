@@ -1,0 +1,5 @@
+<article class="card">
+  <p class="eyebrow">{{ article.author }} &middot; {{ article.published_at | date: '%B %d, %Y' }}</p>
+  <h3><a href="{{ article | item_url }}">{{ article.title }}</a></h3>
+  <p>{{ article.excerpt }}</p>
+</article>

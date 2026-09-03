@@ -1,0 +1,5 @@
+{
+  "title_template": "{{ record.title }} | {{ site.name }}",
+  "description_template": "{{ record.excerpt | truncate: 155 }}",
+  "og_type": "article"
+}

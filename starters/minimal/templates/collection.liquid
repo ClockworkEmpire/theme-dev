@@ -1,0 +1,14 @@
+<main class="content-section">
+  <p class="eyebrow">Dataset</p>
+  <h1>{{ mount.alias | capitalize }}</h1>
+
+  <div class="card-grid">
+    {% for article in collection %}
+      {% render 'article-card', article: article %}
+    {% else %}
+      <p>No articles are available yet.</p>
+    {% endfor %}
+  </div>
+
+  {% render 'pagination' %}
+</main>

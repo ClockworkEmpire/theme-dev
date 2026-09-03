@@ -1,0 +1,29 @@
+{
+  "name": "Minimal Example",
+  "version": "1.0.0",
+  "category": "other",
+  "subcategory": "starter",
+  "description": "A working SiteSwarm example with sections, snippets, settings, and sample content",
+  "author": "Site Swarm",
+  "tags": ["starter", "example"],
+  "datasets": {
+    "articles": {
+      "name": "Articles",
+      "description": "Sample articles displayed by the starter theme",
+      "required": false,
+      "slug_field": "slug",
+      "mount": {
+        "item_template": "article",
+        "list_template": "collection"
+      },
+      "fields": [
+        {"key": "slug", "type": "string", "required": true},
+        {"key": "title", "type": "string", "required": true},
+        {"key": "excerpt", "type": "text", "required": false},
+        {"key": "content", "type": "text", "required": false},
+        {"key": "author", "type": "string", "required": false},
+        {"key": "published_at", "type": "datetime", "required": false}
+      ]
+    }
+  }
+}

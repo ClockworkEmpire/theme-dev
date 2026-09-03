@@ -1,0 +1,13 @@
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "text",
+      "id": "site_title",
+      "label": "Site title",
+      "default": "SiteSwarm Example"
+    }
+  ],
+  "blocks": [],
+  "presets": [{"name": "Header", "category": "Layout"}]
+}

@@ -18,6 +18,9 @@ npm install -g github:clockworkempire/theme-dev
 # Create a new theme
 swarm new my-theme
 
+# Or add --example to create a working example theme
+# swarm new my-theme --example
+
 # Start the dev server (offline mode)
 cd my-theme
 swarm dev
@@ -43,7 +46,7 @@ This opens the Theme Editor at Site Swarm with your local files.
 
 | Command | Description |
 |---------|-------------|
-| `swarm new <name>` | Create a new theme from blank scaffold |
+| `swarm new <name>` | Create a new theme from the blank scaffold; add `--example` for a working example |
 | `swarm dev [path]` | Start local dev server (offline mode) |
 | `swarm dev --port 3000` | Use custom port |
 | `swarm connect [path]` | Connect to Site Swarm Theme Editor (tunnel mode) |
@@ -60,6 +63,6 @@ This opens the Theme Editor at Site Swarm with your local files.
 - [Liquid Reference](docs/liquid-reference.md)
 - [Cheat Sheet](docs/cheat-sheet.md)
 
-## Starter Theme
+## Starter Themes
 
-The [starters/blank/](starters/blank/) directory provides a minimal scaffold to start from scratch.
+The [blank starter](starters/blank/) is a small scaffold for starting from scratch. The [minimal example](starters/minimal/) demonstrates working sections, settings, snippets, SEO configuration, and sample dataset content.

@@ -12,9 +12,13 @@ npm install -g github:clockworkempire/theme-dev
 
 # Create and run a new theme
 swarm new my-theme
+
+# Or start with working sections, settings, and sample content instead
+# swarm new my-theme --example
+
+# Preview either project
 cd my-theme
 swarm dev
-
 # Open http://localhost:4000
 ```
 
@@ -41,6 +45,7 @@ See [Local Development](tools/local-development.md) for detailed installation an
 ```bash
 # Local development
 swarm new <name>           # Create a new theme (blank scaffold)
+swarm new <name> --example # Create a working example theme
 swarm dev [path]           # Start dev server with live reload
 swarm lint [path]          # Validate theme structure and schemas
 swarm lint --fix [path]    # Auto-fix issues and scaffold missing schemas

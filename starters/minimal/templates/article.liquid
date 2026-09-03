@@ -1,0 +1,7 @@
+<main class="content-section article-page">
+  <a class="back-link" href="/">&larr; Back home</a>
+  <p class="eyebrow">{{ article.author }} &middot; {{ article.published_at | date: '%B %d, %Y' }}</p>
+  <h1>{{ article.title }}</h1>
+  <p class="article-excerpt">{{ article.excerpt }}</p>
+  <div class="article-content">{{ article.content }}</div>
+</main>

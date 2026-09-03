@@ -32,7 +32,7 @@ Usage: swarm <command> [options]
 
 Commands:
   new <name>           Create a new theme
-    --example          Use the full example theme instead of blank scaffold
+    --example          Start with a working example theme
 
   dev [path]           Start local development server (offline mode)
     --port <port>      Port to listen on (default: 4000)
