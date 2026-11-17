@@ -265,7 +265,37 @@ Current HTTP request information.
 | `request.path` | String | URL path (e.g., `/blog/my-post`) |
 | `request.host` | String | Hostname |
 | `request.method` | String | HTTP method (GET, POST, etc.) |
-| `request.query` | String/nil | Search query string (value of `?q=` parameter) |
+| `request.params` | Hash | Query-string values only, with string keys; arbitrary names are supported |
+| `request.params.q` | String/nil | Search text from `?q=` |
+| `request.query_string` | String | Raw, encoded query string on hosted requests |
+
+Use `request.params` in both hosted themes and local preview. For
+`/probe?q=stump&foo=bar`, `request.params.q` is `stump` and
+`request.params.foo` is `bar`. Missing keys are nil; `?q=` is an empty string.
+Hosted requests preserve parsed arrays (`?category[]=tree&category[]=garden`)
+and nested values (`?filter[city]=Lahore`, read as `request.params.filter.city`).
+Values are URL-decoded strings, arrays, or hashes, not coerced numbers or booleans.
+
+This object excludes request bodies, route/controller parameters, headers, and
+cookies. Query values are user input: escape text and HTML attributes, validate
+expected types before using them, and do not put secrets in URLs. Reading a
+value does not automatically filter records; apply the intended filter explicitly
+or use the platform's supported search/mounted-collection behavior.
+
+**Migration:** replace `request.query.q` with `request.params.q` and
+`request.query.category` with `request.params.category`. Replace bare
+`request.query` used as search text with `request.params.q`. The old scalar
+shortcut is retained in local preview for compatibility; it is not a hosted API.
+`search.query` remains supported on `/search?q=...` and is a separate search-results
+property. Parameterized routes remain available for path-based category pages.
+
+```liquid
+<form action="/search" method="get">
+  <input name="q" value="{{ request.params.q | escape }}">
+  <button type="submit">Search</button>
+</form>
+{{ request.params.category | escape }}
+```
 
 ```liquid
 {% if request.path == '/' %}
