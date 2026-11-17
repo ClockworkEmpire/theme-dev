@@ -82,9 +82,19 @@ Standard pagination object, same shape as collection pages:
 | `pagination.next_url` | String/nil | Next page URL (e.g., `/search?q=hello&page=2`) |
 | `pagination.prev_url` | String/nil | Previous page URL |
 
-### request.query
+### request.params
 
-The raw query string is also available via `{{ request.query }}`.
+Read search text through `request.params.q` on hosted sites and local preview.
+Other query values are also available, for example `request.params.category`
+for `?category=tree`. These values do not apply filters automatically.
+Missing keys are nil and explicitly empty values remain empty strings.
+
+Migrate `request.query.q` and bare `request.query` search-text expressions to
+`request.params.q`. The bare shortcut remains local-only for compatibility.
+`search.query` remains the search-results query on `/search?q=...`.
+The raw encoded query string on hosted requests is `request.query_string`.
+See the [request reference](liquid-reference.md#request) for arrays, nested values,
+encoding, and the query-only security boundary.
 
 ### Result Metadata
 
@@ -107,12 +117,12 @@ Add a search form anywhere in your theme (header, sidebar, search page):
 
 ```liquid
 <form action="/search" method="get">
-  <input type="text" name="q" value="{{ request.query }}" placeholder="Search...">
+  <input type="text" name="q" value="{{ request.params.q | escape }}" placeholder="Search...">
   <button type="submit">Search</button>
 </form>
 ```
 
-Use `{{ request.query }}` to pre-fill the input with the current search term.
+Use `{{ request.params.q | escape }}` to pre-fill the input with the current search term safely.
 
 ### Header Search Example
 
@@ -124,7 +134,7 @@ Use `{{ request.query }}` to pre-fill the input with the current search term.
     <a href="/about">About</a>
     <a href="/blog">Blog</a>
     <form action="/search" method="get" class="header-search">
-      <input type="search" name="q" value="{{ request.query }}" placeholder="Search...">
+      <input type="search" name="q" value="{{ request.params.q | escape }}" placeholder="Search...">
     </form>
   </nav>
 </header>

@@ -98,7 +98,7 @@ Spaces/underscores auto-convert to hyphens. Tags are editable from the dashboard
 | `site` | Site info | `{{ site.name }}` |
 | `site.media` | Media library | `{{ site.media.logo.url }}` |
 | `settings` | Theme settings | `{{ settings.logo_text }}` |
-| `request` | Current request | `{{ request.path }}`, `{{ request.query }}` |
+| `request` | Current request | `{{ request.path }}`, `{{ request.params.q }}` |
 | `search` | Search context (search page) | `{{ search.query }}`, `{{ search.results }}` |
 | `datasets` | Mounted datasets | `{% for p in datasets.posts %}` |
 | `collection` | Records (list pages) | `{% for item in collection %}` |
@@ -135,7 +135,9 @@ Spaces/underscores auto-convert to hyphens. Tags are editable from the dashboard
 {{ request.path }}
 {{ request.host }}
 {{ request.method }}
-{{ request.query }}              # search query string (value of ?q=)
+{{ request.params.q | escape }}  # decoded search text (value of ?q=)
+{{ request.params.foo | escape }} # arbitrary query value (?foo=bar)
+{{ request.query_string | escape }} # raw encoded query string (hosted requests)
 
 # search (available on /search?q=...)
 {{ search.query }}               # "hello"
