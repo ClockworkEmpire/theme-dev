@@ -525,7 +525,7 @@ When a request comes in, URLs resolve in this order:
 | 5 | **Blog post routes** | `/blog` (list) or `/blog/:slug` (single post) |
 | 6 | **Mounted dataset routes** | Collection at mount_path, item at mount_path + slug |
 | 7 | **Parameterized routes** | Templates with `{% routes %}` patterns, matched by specificity |
-| 8 | **Fallthrough dataset slugs** | Root-level slug match against datasets without mount_path |
+| 8 | **Fallthrough dataset slugs** | Root-level slug match against fallthrough connections |
 | 9 | **Static pages (rich text)** | Page record with no page_template (plain content) |
 | 10 | **404 fallback** | `templates/404.liquid` |
 
@@ -547,7 +547,7 @@ Templates always take precedence. This means you can override any URL by creatin
 
 ### Dataset Routing Modes
 
-Datasets support two routing modes controlled by the `mount_path` setting.
+Declare the routing mode in `siteswarm.json` under the dataset's `mount.mode`. Use `mounted` for a dedicated prefix, `fallthrough` for root-level item pages, and `none` for lookup-only data. For new connections, a legacy manifest that omits the mode uses the mount path to choose between mounted and fallthrough routing.
 
 **Mounted datasets** (explicit URL path):
 
@@ -580,6 +580,20 @@ Features:
 - Alphabetical resolution order by alias
 - Only single-segment paths (no `/foo/bar`)
 
+**Lookup-only datasets** (records for use on other pages)
+
+```json
+{
+  "datasets": {
+    "reviews": {
+      "mount": { "mode": "none" }
+    }
+  }
+}
+```
+
+Choose **Lookup only** on the site's dataset connection. Theme templates can read `datasets.reviews` and display those records on existing pages. SiteSwarm skips automatic item and collection routes and sitemap entries for the connection. The `item_url` filter returns an empty string even when a record has a slug.
+
 **Choosing the right mode:**
 
 | Scenario | Mode |
@@ -587,6 +601,7 @@ Features:
 | Blog/articles with listing page | Mounted (`/blog`) |
 | City landing pages at root | Fallthrough |
 | Product catalog with categories | Mounted (`/products`) |
+| Reviews displayed on a business page | Lookup only (`none`) |
 | Mixed SEO strategy | Both -- mounted for blog, fallthrough for cities |
 
 Mounted datasets are checked before fallthrough, so there is no conflict when using both modes.
@@ -762,7 +777,7 @@ For dataset templates that should not appear in sitemaps (because the dataset re
 
 ### The item_url Filter
 
-Generate URLs for dataset records:
+Use `item_url` to generate URLs for routed dataset records. Lookup-only connections return an empty string.
 
 ```liquid
 {{ article | item_url }}
@@ -831,7 +846,7 @@ GET /search          -->  templates/search.liquid (regular template, no search c
 | `search.total` | Integer | Total number of matches |
 | `pagination.*` | Object | Standard pagination (same shape as collection pages) |
 
-**Result metadata:** Each result includes `_item_url`, `_dataset_alias`, and `_mount_path` for linking and display.
+Each result includes `_item_url`, `_dataset_alias`, and `_mount_path` for linking and display. Render a plain title when `_item_url` is empty, as it is for lookup-only results.
 
 **Basic example:**
 
@@ -843,7 +858,14 @@ GET /search          -->  templates/search.liquid (regular template, no search c
 </form>
 
 {% for result in search.results %}
-  <h3><a href="{{ result._item_url }}">{{ result.title | default: result.name }}</a></h3>
+  {% assign result_title = result.title | default: result.name %}
+  <h3>
+    {% if result._item_url and result._item_url != empty %}
+      <a href="{{ result._item_url }}">{{ result_title }}</a>
+    {% else %}
+      {{ result_title }}
+    {% endif %}
+  </h3>
   <p>{{ result.excerpt | default: result.body | truncate_words: 30 }}</p>
 {% else %}
   <p>No results found.</p>

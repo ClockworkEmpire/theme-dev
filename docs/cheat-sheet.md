@@ -503,7 +503,14 @@ Each part in `pagination.parts` has: `title` (page number or "…"), `url`, `is_
   <p>{{ search.total }} results for "{{ search.query }}"</p>
   {% for result in search.results %}
     <article>
-      <h3><a href="{{ result._item_url }}">{{ result.title | default: result.name }}</a></h3>
+      {% assign result_title = result.title | default: result.name %}
+      <h3>
+        {% if result._item_url and result._item_url != empty %}
+          <a href="{{ result._item_url }}">{{ result_title }}</a>
+        {% else %}
+          {{ result_title }}
+        {% endif %}
+      </h3>
       <p>{{ result.excerpt | default: result.body | truncate_words: 30 }}</p>
       <small>{{ result._dataset_alias | capitalize }}</small>
     </article>

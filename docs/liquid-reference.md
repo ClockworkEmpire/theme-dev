@@ -609,7 +609,7 @@ Each result in `search.results` is a dataset record with additional metadata:
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `result._item_url` | String | URL path to the record (e.g., `/articles/hello-world`) |
+| `result._item_url` | String | URL path such as `/articles/hello-world`, or empty for a lookup-only connection |
 | `result._dataset_alias` | String | Dataset alias (e.g., `articles`) |
 | `result._mount_path` | String | Dataset mount path (e.g., `/articles`) |
 
@@ -618,7 +618,14 @@ Standard `pagination` is also available on search pages (same shape as collectio
 ```liquid
 {% for result in search.results %}
   <article>
-    <h3><a href="{{ result._item_url }}">{{ result.title | default: result.name }}</a></h3>
+    {% assign result_title = result.title | default: result.name %}
+    <h3>
+      {% if result._item_url and result._item_url != empty %}
+        <a href="{{ result._item_url }}">{{ result_title }}</a>
+      {% else %}
+        {{ result_title }}
+      {% endif %}
+    </h3>
     <p>{{ result.excerpt | default: result.body | truncate_words: 30 }}</p>
     <small>{{ result._dataset_alias | capitalize }}</small>
   </article>
@@ -1240,7 +1247,7 @@ These two filters serve different purposes. Using the wrong one is a common sour
 
 ### item_url
 
-Generates the URL for a dataset record using its mount path and slug.
+Generates a URL for a routed dataset record using its mount path and slug. Returns an empty string for lookup-only connections.
 
 ```liquid
 {{ article | item_url }}         <!-- /blog/my-article-slug -->
