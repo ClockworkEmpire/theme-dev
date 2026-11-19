@@ -24,7 +24,14 @@ Create `templates/search.liquid`:
 
     {% for result in search.results %}
       <article>
-        <h3><a href="{{ result._item_url }}">{{ result.title | default: result.name }}</a></h3>
+        {% assign result_title = result.title | default: result.name %}
+        <h3>
+          {% if result._item_url and result._item_url != empty %}
+            <a href="{{ result._item_url }}">{{ result_title }}</a>
+          {% else %}
+            {{ result_title }}
+          {% endif %}
+        </h3>
         <p>{{ result.excerpt | default: result.body | truncate_words: 30 }}</p>
         <span class="dataset">{{ result._dataset_alias }}</span>
       </article>
@@ -102,7 +109,7 @@ Each result in `search.results` is a dataset record with additional metadata fie
 
 | Property | Description | Example |
 |----------|-------------|---------|
-| `result._item_url` | Full URL path to the record | `/articles/hello-world` |
+| `result._item_url` | URL path to a routed record. Empty for a lookup-only connection. | `/articles/hello-world` |
 | `result._dataset_alias` | Which dataset this result came from | `articles` |
 | `result._dataset_name` | Same as `_dataset_alias` | `articles` |
 | `result._mount_path` | Dataset mount path | `/articles` |
@@ -171,7 +178,14 @@ A full-featured search template with empty states, result cards, and pagination:
       <div class="search-results">
         {% for result in search.results %}
           <article class="search-result">
-            <h3><a href="{{ result._item_url }}">{{ result.title | default: result.name | default: 'Untitled' }}</a></h3>
+            {% assign result_title = result.title | default: result.name | default: 'Untitled' %}
+            <h3>
+              {% if result._item_url and result._item_url != empty %}
+                <a href="{{ result._item_url }}">{{ result_title }}</a>
+              {% else %}
+                {{ result_title }}
+              {% endif %}
+            </h3>
             {% if result.excerpt or result.body or result.description %}
               <p>{{ result.excerpt | default: result.body | default: result.description | truncate_words: 40 }}</p>
             {% endif %}
@@ -215,9 +229,14 @@ Search results come from multiple datasets, so design cards that handle differen
     <img src="{{ result.image | img_url: 'small' }}" alt="">
   {% endif %}
   <div>
-    <h3><a href="{{ result._item_url }}">
-      {{ result.title | default: result.name | default: 'Untitled' }}
-    </a></h3>
+    {% assign result_title = result.title | default: result.name | default: 'Untitled' %}
+    <h3>
+      {% if result._item_url and result._item_url != empty %}
+        <a href="{{ result._item_url }}">{{ result_title }}</a>
+      {% else %}
+        {{ result_title }}
+      {% endif %}
+    </h3>
     <p>{{ result.excerpt | default: result.description | default: result.body | truncate_words: 30 }}</p>
     <small>{{ result._dataset_alias | capitalize }}</small>
   </div>

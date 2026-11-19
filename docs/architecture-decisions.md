@@ -74,28 +74,7 @@ Items get their own URL and dedicated template. Requires `slug_field` + `item_te
 
 ### Support Datasets
 
-Provide structured data used by templates/sections, but items don't have their own pages.
-
-```json
-// btc-converted: why_choose dataset — no slug_field, no item_template
-{
-  "alias": "why_choose",
-  "name": "Why Choose Us Items",
-  "records": [
-    { "id": "licensed", "label": "Licensed & Insured", "icon": "check-circle" },
-    { "id": "estimates", "label": "Free Estimates", "icon": "check-circle" }
-  ]
-}
-```
-
-```json
-// digest: sponsors dataset — has slug_field but NO item_template
-{
-  "alias": "sponsors",
-  "slug_field": "slug",
-  "description": "Sponsor logos (no routing)"
-}
-```
+Use a support dataset for structured data such as reviews or sponsor logos displayed on existing pages. Set `mount.mode` to `"none"` in the theme manifest and choose **Lookup only** on the site connection. Keep any slugs you use as lookup keys. [Dataset routing modes](content-and-routing.md#dataset-routing-modes)
 
 ### Decision Matrix: Dataset vs Settings vs Content
 
